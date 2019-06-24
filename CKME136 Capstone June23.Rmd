@@ -1,0 +1,647 @@
+---
+title: 'CKME 136 Capstone'
+Submitted By: 'TODD BETHELL'
+
+output:
+  word_document: default
+  pdf_document: default
+---
+---
+install.packages("PerformanceAnalytics")
+install.packages("lsr")
+install.packages("tidyverse")
+install.packages("dplyr")
+install.packages("class")
+install.packages("gmodels")
+install.packages("corrplot")
+library(PerformanceAnalytics)
+library(lsr)
+library(tidyverse)
+library(dplyr)
+library(class)
+library(gmodels)
+library(corrplot)
+---
+
+# When it is time to pull from Github, use the following example:
+# FullSetB4<-read.csv(file="https://raw.githubusercontent.com/ToddB/master/data/Z-# Alizadeh sani MAIN dataset.csv",header=T,sep=",")
+
+```{r}
+FullSetB4 <- read.csv(file = "C:/Users/TGB/Documents/Ryerson/CKME 136/Data/ZAlizadeh_dataset.csv", header = T, sep = ",")
+```
+
+# Review Data Set
+```{r}
+head(FullSetB4)
+tail(FullSetB4)
+str(FullSetB4)
+```
+# Fixing 'Age' column header (not displaying correctly):
+```{r}
+FullSetB4 <- FullSetB4%>%
+  rename(Age = 1)
+colnames(FullSetB4)[1]
+```
+
+# Remove 'Length' attribute - since not used in final study; and captured via BMI:
+```{r}
+FullSetB4 <- FullSetB4[-3]
+dim(FullSetB4)
+```
+
+#create an ID field for possible merging later:
+```{r}
+#FullB4wID <- FullSetB4
+
+#FullB4wID$ID <- seq(dim(FullB4wID)[1])
+
+#FullB4wID <- FullB4wID[,c(55, 1:54)]
+#FullB4wID
+
+```
+# CHECKING FOR MISSING DATA & ERRORS:
+
+# Check number of observations and whether there is any missing data:
+```{r}
+nrow(FullSetB4)
+sum(is.na(FullSetB4))
+```
+
+# Double checking whether all observations are complete (no missing data):
+```{r}
+FullSetB4[complete.cases(FullSetB4),]
+```
+
+# Checking for errors, starting with 'Sex' attribute (column 3):
+```{r}
+SexF <- sum(FullSetB4$Sex == 'Fmale')
+SexM <- sum(FullSetB4$Sex == 'Male')
+sum(SexF + SexM)
+```
+
+# Checking for errors in columns 5:9, 19, 24, 31:34 (must be '0' or '1')
+```{r}
+library(tidyverse)
+library(dbplyr)
+library(lintr)
+
+Bins0 <- FullSetB4%>%
+  gather(x, value, 5:9,19,24,31:34)%>%
+  tally(value == 0)
+Bins1 <- FullSetB4%>%
+  gather(x, value, 5:9,19,24,31:34)%>%
+  tally(value == 1)
+ (Bins0 + Bins1)/11
+```
+
+# Checking for errors in columns 10:16, 20:23, 25, 27:28, 30, 35:36  (must be 'Y' or 'N')
+```{r}
+
+BinsY <- FullSetB4%>%
+  gather(x, value, 10:16,20:23,25,27:28,30,35:36)%>%
+  tally(value == 'Y')
+BinsN <- FullSetB4%>%
+  gather(x, value, 10:16,20:23,25,27:28,30,35:36)%>%
+  tally(value == 'N')
+ (BinsY + BinsN)/17
+```
+
+# Checking for errors in the 'BBB'(Bundle Branch Block) attribute (column 37):
+```{r}
+nBBB <- sum(FullSetB4$BBB == 'N')
+LBBB <- sum(FullSetB4$BBB == 'LBBB')
+RBBB <- sum(FullSetB4$BBB == 'RBBB')
+sum(nBBB+LBBB+RBBB)
+```
+
+# Checking for errors in the 'VHD'(Valvular Heart Disease) attribute (column 54):
+```{r}
+Vmild <- sum(FullSetB4$VHD == 'mild')
+VMod <- sum(FullSetB4$VHD == 'Moderate')
+VN <- sum(FullSetB4$VHD == 'N')
+VSev <- sum(FullSetB4$VHD == 'Severe')
+sum(Vmild+VMod+VN+VSev)
+```
+
+# Converting int types to factor, where appropriate:
+```{r}
+Allv1 <- FullSetB4
+Allv1$DM <- as.factor(Allv1$DM)
+Allv1$HTN <- as.factor(Allv1$HTN)
+Allv1$Smoker <- as.factor(Allv1$Smoker)
+Allv1$ExSmoker <- as.factor(Allv1$ExSmoker)
+Allv1$FH <- as.factor(Allv1$FH)
+Allv1$Edema <- as.factor(Allv1$Edema)
+Allv1$TCP <- as.factor(Allv1$TCP)
+Allv1$QWave <- as.factor(Allv1$QWave)
+Allv1$STelev <- as.factor(Allv1$STelev)
+Allv1$STdep <- as.factor(Allv1$STdep)
+Allv1$Tinv <- as.factor(Allv1$Tinv)
+#str(Allv1)
+```
+# DISCRETIZING:
+
+# Change age attribute to factor: If male and age is <= to 45, OR if female and age is <= 55; categorize as "med" (for 'medium').  If male and age is > 45 or female and age is > 55, categorize as "high".
+```{r}
+Allv1$Age <- factor(ifelse(Allv1$Age <= 45 & Allv1$Sex == 'Male' | Allv1$Age <= 55 & Allv1$Sex == 'Fmale', "Med", "High"))
+#str(Allv1)
+```
+# Checking for any errors in Age factor values, and the proportion of 'medium' to 'high' ages (after being discretized):
+```{r}
+MedAge <- sum(Allv1$Age == 'Med')
+HighAge <- sum(Allv1$Age == 'High')
+sum(MedAge+HighAge)
+(MedAge/(MedAge+HighAge))*100
+```
+
+# Discretize Blood Pressure (BP):
+```{r}
+max(Allv1$BP)
+Allv1$BP <- cut(Allv1$BP, breaks = c(0,89,140,200), labels = c("Low", "Med", "High"))
+
+BPlow <- sum(Allv1$BP == "Low")
+BPlow
+BPmed <- sum(Allv1$BP == "Med")
+BPmed
+BPhigh <- sum(Allv1$BP == "High")
+BPhigh
+BPcount <- sum(BPlow+BPmed+BPhigh)
+BPcount
+```
+
+# Note that no patients had a 'low' blood pressure. Check the proportion of medium to high blood pressure results:
+```{r}
+(BPmed/(BPmed+BPhigh))*100
+```
+
+# Discretize PUlse Rate (PR). Note: Very low variation in pulse rate (98.3% was categorized with a 'medium' heart rate). THis would make the 'Pulse rate' attribute a good candidate for removal.
+```{r}
+max(Allv1$PR)
+Allv1$PR <- cut(Allv1$PR, breaks = c(0,59,100,200), labels = c("Low", "Med", "High"))
+
+PRlow <- sum(Allv1$PR == "Low")
+PRlow
+PRmed <- sum(Allv1$PR == "Med")
+PRmed
+PRhigh <- sum(Allv1$PR == "High")
+PRhigh
+PRcount <- sum(PRlow+PRmed+PRhigh)
+PRcount
+```
+# Discretize Heart Rate Functional Class (Fclass): Class 0 equals 'Med' and classes 1, 2, and 3 equal 'High'.  Note that 69.6% of the patients were evaluated to have a "Medium" Heart Failure Functional Class.
+```{r}
+sum(Allv1$Fclass == 0)
+Allv1$Fclass <- ifelse(Allv1$Fclass == 0, "Med", "High")
+
+FCmed <- sum(Allv1$Fclass == "Med")
+FCmed
+FChigh <- sum(Allv1$Fclass == "High")
+FChigh
+sum(FCmed+FChigh)
+(FCmed/(FCmed+FChigh))*100
+
+```
+
+# Count the levels and results of the 'Exertional Chest Pain' (ECP) attribute (yes/no entries).  
+```{r}
+nlevels(Allv1$ECP)
+sum(Allv1$ECP == 'N')
+```
+# Deleting this attribute given that there is no variation in the results, and as such, does not improve predictive effectiveness:
+```{r}
+Allv1$ECP <- NULL
+Allv2 <- Allv1
+```
+
+
+# Checking 'Bundle Branch Block' (BBB) for the numbers of LBBB and RBBB results there are in the total (93% of patients had no BBB).
+```{r}
+sum(Allv2$BBB == 'N')
+sum(Allv2$BBB == 'LBBB')
+sum(Allv2$BBB == 'RBBB')
+
+```
+
+#
+```{r}
+max(Allv2$FBS)
+Allv2$FBS <- cut(Allv2$FBS, breaks = c(0,69,105,500), labels = c("Low", "Med", "High"))
+
+FBSlow <- sum(Allv2$FBS == "Low")
+FBSlow
+FBSmed <- sum(Allv2$FBS == "Med")
+FBSmed
+FBShigh <- sum(Allv2$FBS == "High")
+FBShigh
+FBScount <- sum(FBSlow+FBSmed+FBShigh)
+PRcount
+```
+
+```{r}
+max(Allv2$Cr)
+Allv2$Cr <- cut(Allv2$Cr, breaks = c(0,0.69,1.5,2.5), labels = c("Low", "Med", "High"))
+
+Crlow <- sum(Allv2$Cr == "Low")
+Crlow
+Crmed <- sum(Allv2$Cr == "Med")
+Crmed
+Crhigh <- sum(Allv2$Cr == "High")
+Crhigh
+CrCount <- sum(Crlow+Crmed+Crhigh)
+CrCount
+```
+# Discretizing the Triglyceride (TG) variable
+```{r}
+max(Allv2$TG)
+Allv2$TG <- cut(Allv2$TG, breaks = c(0,200,1100), labels = c("Med", "High"))
+
+TGmed <- sum(Allv2$TG == "Med")
+TGmed
+TGhigh <- sum(Allv2$TG == "High")
+TGhigh
+TGcount <- sum(TGmed+TGhigh)
+TGcount
+```
+# Discretizing Low Density Lipoprotein (LDL). It appears that the results of the cateorization of Triglycerides exactly matches that of LDL, hence, one of these two attributes can be removed.
+```{r}
+max(Allv2$LDL)
+Allv2$LDL <- cut(Allv2$LDL, breaks = c(0,130,250), labels = c("Med", "High"))
+
+LDLmed <- sum(Allv2$LDL == "Med")
+LDLmed
+LDLhigh <- sum(Allv2$LDL == "High")
+LDLhigh
+LDLcount <- sum(LDLmed+LDLhigh)
+LDLcount
+```
+# Discretizing High Density Lipoprotein (HDL).
+```{r}
+max(Allv2$HDL)
+Allv2$HDL <- cut(Allv2$HDL, breaks = c(0,34,120), labels = c("Low", "Med"))
+
+HDLlow <- sum(Allv2$HDL == "Low")
+HDLlow
+HDLmed <- sum(Allv2$HDL == "Med")
+HDLmed
+HDLcount <- sum(HDLlow+HDLmed)
+HDLcount
+```
+# Discretizing Blood Urea Nitrogen (BUN):
+```{r}
+max(Allv2$BUN)
+Allv2$BUN <- cut(Allv2$BUN, breaks = c(0,6,20,55), labels = c("Low", "Med", "High"))
+
+BUNlow <- sum(Allv2$BUN == "Low")
+BUNlow
+BUNmed <- sum(Allv2$BUN == "Med")
+BUNmed
+BUNhigh <- sum(Allv2$BUN == "High")
+BUNhigh
+BUNcount <- sum(BUNlow+BUNmed+BUNhigh)
+BUNcount
+```
+
+# Taking steps to discretize 'Erythrocyte Sedimentation Rate' (ESR). If male and ESR <= age/2 OR if female and ESR <= (age/2)+5 then ESR is considered "Mediium".  If male and ESR is > age/2 OR if female and ESR > (age/2)+5, then ESR is considered "High":
+```{r}
+tempAge <- data.frame(FullSetB4[,1:3, 44])
+tempAge
+
+tempAge$Age <- ifelse(tempAge$Sex == 'Male', tempAge$Age/2, tempAge$Age)
+tempAge2 <- tempAge
+
+tempAge2$Age <- ifelse(tempAge2$Sex == 'Fmale', (tempAge2$Age/2)+5, tempAge2$Age)
+tempAge2
+
+tempAge2$ESR <- FullSetB4$ESR
+tempAge2$Weight <- NULL
+tempAge3 <- tempAge2
+tempAge3
+
+tempAge3$ESR <- factor(ifelse(tempAge3$ESR <= tempAge3$Age & tempAge3$Sex == 'Male' | tempAge3$ESR <= tempAge3$Age & tempAge3$Sex == 'Fmale', "Med", "High"))
+str(tempAge3)
+
+Allv2$ESR <- tempAge3$ESR
+
+```
+
+# Discretizing Hemoglobin (Hb). If male & Hb < 14 or if female and Hb is < 12.5, then Hb is "Low". If male & Hb is >= 14 but <= 17 OR if female and Hb is >= 12 but <= 15, then Hb is "Medium". If male & Hb > 17 or if female and Hb is > 15, then Hb is "High".
+```{r}
+
+tempHb <- data.frame(Allv2[,3:44])
+tempHb[,2:41] <- NULL
+
+tempHb$Hb <- with(tempHb, ifelse(tempHb$Sex == 'Male' & tempHb$Hb < 14 | tempHb$Sex == 'Fmale' & tempHb$Hb < 12.5, "Low", ifelse(tempHb$Sex == 'Male' & tempHb$Hb > 17 | tempHb$Sex == 'Fmale' & tempHb$Hb > 15, "High", "Med")))
+
+Allv2$Hb <- as.factor(tempHb$Hb)
+str(Allv2)
+```
+
+# Discretizing Potassium (K):
+```{r}
+max(Allv2$K)
+Allv2$K <- cut(Allv2$K, breaks = c(0,3.7,5.6,6.8), labels = c("Low", "Med", "High"))
+
+Klow <- sum(Allv2$K == "Low")
+Klow
+Kmed <- sum(Allv2$K == "Med")
+Kmed
+Khigh <- sum(Allv2$K == "High")
+Khigh
+Kcount <- sum(Klow+Kmed+Khigh)
+Kcount
+```
+
+# Discretizing Sodium (Na):
+```{r}
+max(Allv2$Na)
+Allv2$Na <- cut(Allv2$Na, breaks = c(0,135,146,157), labels = c("Low", "Med", "High"))
+
+NaLow <- sum(Allv2$Na == "Low")
+NaLow
+NaMed <- sum(Allv2$Na == "Med")
+NaMed
+NaHigh <- sum(Allv2$Na == "High")
+NaHigh
+NaCount <- sum(NaLow+NaMed+NaHigh)
+NaCount
+```
+# Discretizing White Blood Cell (WBC) count:
+```{r}
+max(Allv2$WBC)
+Allv2$WBC <- cut(Allv2$WBC, breaks = c(0,3999,11000,19000), labels = c("Low", "Med", "High"))
+
+WBClow <- sum(Allv2$WBC == "Low")
+WBClow
+WBCmed <- sum(Allv2$WBC == "Med")
+WBCmed
+WBChigh <- sum(Allv2$WBC == "High")
+WBChigh
+WBCcount <- sum(WBClow+WBCmed+WBChigh)
+WBCcount
+```
+# Discretizing Lymphocyte (Lymph) percentage results (See reference 21 on Literature Review).  Spreading the results into 3 sections: 'Low', 'Med' and 'High'.
+```{r}
+max(Allv2$Lymph)
+Allv2$Lymph <- cut(Allv2$Lymph, breaks = c(0,17,45,65), labels = c("Low", "Med", "High"))
+
+LymphLow <- sum(Allv2$Lymph == "Low")
+LymphLow
+LymphMed <- sum(Allv2$Lymph == "Med")
+LymphMed
+LymphHigh <- sum(Allv2$Lymph == "High")
+LymphHigh
+LymphCount <- sum(LymphLow+LymphMed+LymphHigh)
+LymphCount
+```
+# Discretizing Neutrophil (Neut) percentage results (See reference 22 on Literature Review).  Spreading the results into 3 sections: 'Low', 'Med' and 'High'.
+```{r}
+max(Allv2$Neut)
+Allv2$Neut <- cut(Allv2$Neut, breaks = c(0,44,75,90), labels = c("Low", "Med", "High"))
+
+NeutLow <- sum(Allv2$Neut == "Low")
+NeutLow
+NeutMed <- sum(Allv2$Neut == "Med")
+NeutMed
+NeutHigh <- sum(Allv2$Neut == "High")
+NeutHigh
+NeutCount <- sum(NeutLow+NeutMed+NeutHigh)
+NeutCount
+```
+
+# Discretizing Platelet (PLT) count (Note: 96% of patients had 'Medium' counts)
+```{r}
+max(Allv2$PLT)
+Allv2$PLT <- cut(Allv2$PLT, breaks = c(0,149,450,750), labels = c("Low", "Med", "High"))
+
+PLTlow <- sum(Allv2$PLT == "Low")
+PLTlow
+PLTmed <- sum(Allv2$PLT == "Med")
+PLTmed
+PLThigh <- sum(Allv2$PLT == "High")
+PLThigh
+PLTcount <- sum(PLTlow+PLTmed+PLThigh)
+PLTcount
+```
+# Discretizing Platelet (PLT) count (Note: 96% of patients had 'Medium' counts)
+```{r}
+max(Allv2$EF)
+Allv2$EF <- cut(Allv2$EF, breaks = c(0,50,100), labels = c("Low", "Med"))
+
+EFlow <- sum(Allv2$EF == "Low")
+EFlow
+EFmed <- sum(Allv2$EF == "Med")
+EFmed
+EFcount <- sum(EFlow+EFmed)
+EFcount
+```
+# Discretizing Regional Wall Motion Abnormality (RWMA). RWMA = 0 is 'Med', RWMA != to 0 are 'High').  Found that 71.6% were found to be 'Medium'.
+```{r}
+sum(Allv2$RWMA == 0)
+Allv2$RWMA <- ifelse(Allv2$RWMA == 0, "Med", "High")
+
+RWMAmed <- sum(Allv2$RWMA == "Med")
+RWMAmed
+RWMAhigh <- sum(Allv2$RWMA == "High")
+RWMAhigh
+sum(RWMAmed+RWMAhigh)
+(RWMAmed/(RWMAmed+RWMAhigh))*100
+```
+# Taking the completed (and discretized) 'Allv2' data frame and saving it as 4 separate attribute groups (data frames); to be used for the rest of the predictions/modeling:
+```{r}
+Demo <- data.frame(Allv2[,1:16])
+Demo
+
+Symptom <- data.frame(Allv2[,17:29])
+Symptom
+
+ECG <- data.frame(Allv2[,30:36])
+ECG
+
+LAB <- data.frame(Allv2[,37:53])
+LAB
+```
+UNIVARIATE ANALYSIS:
+
+
+```{r}
+library(PerformanceAnalytics)
+
+LABb4 <- FullSetB4[38:53]
+LABb4Cor <- cor(LABb4)
+round(LABb4Cor, 2)
+
+```
+
+# Boxplot to show distribution of Age, Weight and BMI
+```{r}
+attach(FullSetB4)
+boxplot(Age, Weight, BMI, col = c("aquamarine","gray90","indianred1"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
+legend("topright", c("Age", "Weight", "BMI"),fill = c("aquamarine","gray90","indianred1"))
+```
+
+
+# Shapiro tests of normality (H0: Distribution is normal; Reject null if p-value is less than .05). Note: sensitive when n>80. This test shows that 'Age' is NOT normally distributed.
+```{r}
+library(psych)
+
+describe(FullSetB4$Age)
+AgeNorm <- shapiro.test((FullSetB4$Age))
+AgeNorm
+```
+
+
+# Hence, weight is also not normally distributed in this study.
+```{r}
+library(psych)
+
+describe(FullSetB4$Weight)
+WeightNorm <- shapiro.test((FullSetB4$Weight))
+WeightNorm
+```
+# And BMI is also not normally distributed.
+
+```{r}
+describe(FullSetB4$BMI)
+BMINorm <- shapiro.test((FullSetB4$BMI))
+BMINorm
+```
+
+# Can (carefully) use 'describe' for categorical variables too (since the psych package recodes categories as numbers):
+```{r}
+library(psych)
+describe(FullSetB4[1:15])
+
+```
+
+
+# Boxplot to show distribution of Blood Pressure and Pulse Rate
+```{r}
+boxplot(BP, PR, col = c("blue","indianred1"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
+legend("topright", c("Blood Pressure", "Pulse Rate"),fill = c("blue","indianred1"))
+```
+
+```{r}
+describe(FullSetB4$BP)
+BPNorm <- shapiro.test((FullSetB4$BP))
+BPNorm
+```
+
+```{r}
+describe(FullSetB4$PR)
+PRNorm <- shapiro.test((FullSetB4$PR))
+PRNorm
+```
+
+# Density Plot for all integer & numeric variables to be part of Lab Data Set.  Will break up and compare once correlation and association is completed.
+
+```{r}
+LabVarsB4 <- FullSetB4[38:52]
+LabVarsB4
+
+plot(density(LabVarsB4[,1]), type = "n")
+
+n = dim(LabVarsB4)[2]-1
+for(i in 1:n){
+lines(density(c(LabVarsB4[,i])))
+}
+```
+
+# Correlation of int/num variables (before the are discretized later)
+
+```{r}
+library(PerformanceAnalytics)
+
+LAB <- FullSetB4[38:52]
+LABCorr <- cor(LAB)
+round(LABCorr, 2)
+# chart.Correlation(LAB, histogram = TRUE, pch = 19)
+```
+
+# 
+```{r}
+library(PerformanceAnalytics)
+
+MiscInt <- FullSetB4[,c(1:2, 4, 17:18)]
+MICorr <- cor(MiscInt)
+chart.Correlation(MiscInt, histogram = TRUE, pch = 19)
+
+```
+
+# Will be completing a number of ASSOCIATIONS between many categorical variables, starting with a few straight forward investigation into commonly accepted 'associations':
+```{r}
+library(lsr)
+
+AllCatB4 <- FullSetB4[,c(3, 5:16, 20:23,25, 27:28, 30, 35:36)]
+cramersV(AllCatB4$DM, AllCatB4$HTN)
+```
+# Therefore, a 'weak'association
+```{r}
+cramersV(AllCatB4$ExSmoker,AllCatB4$Obesity)
+```
+# 
+```{r}
+cramersV(AllCatB4$DM,AllCatB4$Obesity)
+```
+# 
+```{r}
+cramersV(AllCatB4$HTN,AllCatB4$Smoker)
+```
+# Potentially 'moderate' association
+# 
+```{r}
+cramersV(AllCatB4$HTN,AllCatB4$CVA)
+```
+# Another 'weak' association
+
+# A completely non-existant association (see below)
+```{r}
+cramersV(AllCatB4$CHF,AllCatB4$Obesity)
+```
+
+# Determining whether there is any significant variation in the 'ECP' column (noticed it is a factor data type with only 1 level):
+```{r}
+sum(FullSetB4$ECP == 'N')
+```
+# Therefore, will likely delete this 'ECP' attribute
+
+# Determining whether there is any significant variation in the 'NCP' column:
+```{r}
+NCPn <- sum(FullSetB4$NCP == 'N')
+NCPy <- sum(FullSetB4$NCP == 'Y')
+(NCPn/(NCPn+NCPy))*100
+```
+# Very low variation (94.7% of NCP entries are 'No')
+
+# Determining whether there is any significant variation in the 'ACP' column:
+```{r}
+ACPn <- sum(FullSetB4$ACP == 'N')
+ACPy <- sum(FullSetB4$ACP == 'Y')
+(ACPn/(ACPn+ACPy))*100
+```
+# 69.3% of these 'ACP' entries are 'No'
+
+
+# Barplot of BBB attribute
+```{r}
+#barplot(prop.table(table(FullSetB4$BBB)))
+```
+
+# Barplot of VHD attribute
+```{r}
+#barplot(prop.table(table(FullSetB4$VHD)))
+```
+
+
+```{r}
+
+```
+
+# Will be looking into additional associations and specific correlations (as well as better visualizations for these, esp correlation).
+
+# Will be putting more emphasis into such correlations and associations from WITHIN the four attribute groups.  Not only to assist with dimension reduction, but also to learn more about the data sets themselves.
+
+# I will then reorganize the univariate results and their associated visualizations so that the story flows more cohesively - and is thereby easier to interpret.
+
+# Many of the variables will need to have their data types changed (esp to factor). There are also some categorical variables with > than 2 levels that need to be set up.  Finally, many of the variables need to be DISCRETIZED per Table 5 on the Literature Review.
+
+# AFTER the necessary data type updates and discretizations - I will store them in a final 'full' data set.  From there I will create the 4 attribute groups for further analysis and modeling.
