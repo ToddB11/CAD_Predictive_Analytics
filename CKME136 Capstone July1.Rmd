@@ -15,6 +15,8 @@ install.packages("gmodels")
 install.packages("corrplot")
 install.packages("RCurl")
 install.packages("GGally")
+install.packages("FSelector")
+install.packages("FSelectorRcpp")
 library(GGally)
 library(knitr)
 library(RCurl)
@@ -26,6 +28,8 @@ library(dplyr)
 library(class)
 library(gmodels)
 library(corrplot)
+library(GGally)
+library(FSelectorRcpp)
 ---
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(knitr)
@@ -40,6 +44,7 @@ library(class)
 library(gmodels)
 library(corrplot)
 library(GGally)
+library(FSelectorRcpp)
 ```
 
 
@@ -689,7 +694,105 @@ barplot(prop.table(table(FullSetB42$BBB)))
 barplot(prop.table(table(FullSetB42$VHD)))
 ```
 
+# Feature selection on all the attributes combined, as well as on the 4 individual attribute groups - using the FSelector package:
+
+# Starting with the full data set - selected: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + NCP + DM + Tinv + VHD
 ```{r}
+library(FSelector)
+
+AllWeights <- chi.squared(CAD~.,Allv2)
+print(AllWeights)
+subset <- cutoff.k(AllWeights, 10)
+FSall <- as.simple.formula(subset, "CAD")
+print(FSall)
+```
+
+# Next, using the 'Demo' (Demographic) attribute data set - results:  CAD ~ Age + HTN + DM + CRF + AD
+```{r}
+DemoWeights <- chi.squared(CAD~.,Demo)
+print(DemoWeights)
+subset <- cutoff.k(DemoWeights, 5)
+FSdemo <- as.simple.formula(subset, "CAD")
+print(FSdemo)
+```
+
+# Next, using the 'Symptom' (Symptom & Examination) attribute data set - results:  CAD ~ TCP + ACP + NCP + DiaM + BP
+```{r}
+SymWeights <- chi.squared(CAD~.,Symptom)
+print(SymWeights)
+subset <- cutoff.k(SymWeights, 5)
+FSsym <- as.simple.formula(subset, "CAD")
+print(FSsym)
+```
+
+# Next, using the 'ECG'attribute data set - results:  CAD ~ Tinv + QWave + STdep + STelev + PoorR
+```{r}
+ECGWeights <- chi.squared(CAD~.,ECG)
+print(ECGWeights)
+subset <- cutoff.k(ECGWeights, 5)
+FSecg <- as.simple.formula(subset, "CAD")
+print(FSecg)
+```
+
+# Lastly, using the 'LAB' (Laboratory and Echocardiographic) attribute data set - results:  CAD ~ RWMA + EF + VHD + FBS + Lymph 
+```{r}
+LABWeights <- chi.squared(CAD~.,LAB)
+print(LABWeights)
+subset <- cutoff.k(LABWeights, 5)
+FSlab <- as.simple.formula(subset, "CAD")
+print(FSlab)
+```
+
+# Now, comparing these discretized results with those from before discretization:
+
+# Starting with the full data set - results: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + *BP* + NCP + DM + *FBS* (while the discretized results were: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + NCP + DM + Tinv + VHD).  NOTE: The top 6 were the same for both data sets (and 8 of the top 10 were shared across both data sets)
+```{r}
+AllB4Weights <- chi.squared(CAD~.,FullSetB42)
+print(AllB4Weights)
+subset <- cutoff.k(AllB4Weights, 10)
+FSB4all <- as.simple.formula(subset, "CAD")
+print(FSB4all)
+```
+
+# Comparing the discretized feature selection results found using the 'FSelector' package with the results using the 'FSelectorRcpp' package - results: CAD ~ TCP + ACP + RWMA + EF + HTN + Age + DM + NCP + Tinv + FBS
+```{r}
+library(FSelectorRcpp)
+library(tidyverse)
+
+FS2all <- information_gain(
+  formula = CAD~.,
+  data = Allv2,
+  type = "infogain",
+  threads = 2
+) %>%
+cut_attrs(
+  k = 10
+) %>%
+to_formula(
+  attrs = .,
+  class = "CAD"
+)
+print(FS2all)
 
 ```
+
+# Lastly, comparing the output of the FSelectorRcpp package using the data set that was not discretized yet (FullSetB42 data set) - result:  CAD ~ TCP + ACP + RWMA + Age + EF + HTN + DM + BP + NCP + Tinv
+```{r}
+FS2B4all <- information_gain(
+  formula = CAD~.,
+  data = FullSetB42,
+  type = "infogain",
+  threads = 2
+) %>%
+cut_attrs(
+  k = 10
+) %>%
+to_formula(
+  attrs = .,
+  class = "CAD"
+)
+print(FS2B4all)
+```
+
+
 
