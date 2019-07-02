@@ -1,7 +1,7 @@
 ---
 title: "CKME 136 Capstone"
 author: "TODD BETHELL"
-date: "June 24, 2019"
+date: "July 1, 2019"
 output:
   word_document: default
 ---
@@ -14,6 +14,8 @@ install.packages("class")
 install.packages("gmodels")
 install.packages("corrplot")
 install.packages("RCurl")
+install.packages("GGally")
+library(GGally)
 library(knitr)
 library(RCurl)
 library(caret)
@@ -33,9 +35,11 @@ library(PerformanceAnalytics)
 library(lsr)
 library(tidyverse)
 library(dplyr)
+library(plyr)
 library(class)
 library(gmodels)
 library(corrplot)
+library(GGally)
 ```
 
 
@@ -52,13 +56,9 @@ str(FullSetB4)
 
 # Fixing 'Age' column header (not displaying correctly):
 ```{r}
-
-FullSetB4 <- FullSetB4%>%
-rename(Age = 1)
-colnames(FullSetB4)[1]
+names(FullSetB4)[1] <- "Age"
 ```
-
-# Remove 'Length' attribute - since not used in final study; and captured via BMI:
+# Remove 'Length' attribute - since not used in final study; and captured via BMI (and 'Obesity' uses 'BMI'):
 ```{r}
 FullSetB4 <- FullSetB4[-3]
 dim(FullSetB4)
@@ -84,7 +84,7 @@ sum(is.na(FullSetB4))
 
 # Double checking whether all observations are complete (no missing data):  No incomplete cases found, but I am commenting this out for the html output - since the output is very long.
 ```{r}
-# FullSetB4[complete.cases(FullSetB4),]
+#FullSetB4[complete.cases(FullSetB4),]
 ```
 
 # Checking for errors, starting with 'Sex' attribute (column 3):
@@ -107,7 +107,6 @@ Bins1 <- FullSetB4%>%
   tally(value == 1)
  (Bins0 + Bins1)/11
 ```
-
 # Checking for errors in columns 10:16, 20:23, 25, 27:28, 30, 35:36  (must be 'Y' or 'N')
 ```{r}
 
@@ -119,7 +118,6 @@ BinsN <- FullSetB4%>%
   tally(value == 'N')
  (BinsY + BinsN)/17
 ```
-
 # Checking for errors in the 'BBB'(Bundle Branch Block) attribute (column 37):
 ```{r}
 nBBB <- sum(FullSetB4$BBB == 'N')
@@ -127,7 +125,6 @@ LBBB <- sum(FullSetB4$BBB == 'LBBB')
 RBBB <- sum(FullSetB4$BBB == 'RBBB')
 sum(nBBB+LBBB+RBBB)
 ```
-
 # Checking for errors in the 'VHD'(Valvular Heart Disease) attribute (column 54):
 ```{r}
 Vmild <- sum(FullSetB4$VHD == 'mild')
@@ -167,7 +164,12 @@ HighAge <- sum(Allv1$Age == 'High')
 sum(MedAge+HighAge)
 (MedAge/(MedAge+HighAge))*100
 ```
+# Discretize Weight for males vs females. These discretized ranges were not specified in the original study, so I am using the mean and the factoring into 'below'("Ave") or 'above' ("High") the group average:
+```{r}
+tapply(Allv1$Weight, Allv1$Sex, mean)
 
+Allv1$Weight <- factor(ifelse(Allv1$Weight <= 76.2 & Allv1$Sex == 'Male' | Allv1$Weight <= 70.5 & Allv1$Sex == 'Fmale', "Ave", "High"))
+```
 # Discretize Blood Pressure (BP):
 ```{r}
 max(Allv1$BP)
@@ -182,12 +184,10 @@ BPhigh
 BPcount <- sum(BPlow+BPmed+BPhigh)
 BPcount
 ```
-
 # Note that no patients had a 'low' blood pressure. Check the proportion of medium to high blood pressure results:
 ```{r}
 (BPmed/(BPmed+BPhigh))*100
 ```
-
 # Discretize PUlse Rate (PR). Note: Very low variation in pulse rate (98.3% was categorized with a 'medium' heart rate). THis would make the 'Pulse rate' attribute a good candidate for removal.
 ```{r}
 max(Allv1$PR)
@@ -213,9 +213,7 @@ FChigh <- sum(Allv1$Fclass == "High")
 FChigh
 sum(FCmed+FChigh)
 (FCmed/(FCmed+FChigh))*100
-
 ```
-
 # Count the levels and results of the 'Exertional Chest Pain' (ECP) attribute (yes/no entries).  
 ```{r}
 nlevels(Allv1$ECP)
@@ -236,7 +234,7 @@ sum(Allv2$BBB == 'RBBB')
 
 ```
 
-#
+# Discretizing the 'Fasting Blood Sugar' attribute into 'low', 'med' and 'high':
 ```{r}
 max(Allv2$FBS)
 Allv2$FBS <- cut(Allv2$FBS, breaks = c(0,69,105,500), labels = c("Low", "Med", "High"))
@@ -248,9 +246,9 @@ FBSmed
 FBShigh <- sum(Allv2$FBS == "High")
 FBShigh
 FBScount <- sum(FBSlow+FBSmed+FBShigh)
-PRcount
+FBScount
 ```
-
+# Discretizing the 'Creatine' attribute into 'low', 'med' and 'high':
 ```{r}
 max(Allv2$Cr)
 Allv2$Cr <- cut(Allv2$Cr, breaks = c(0,0.69,1.5,2.5), labels = c("Low", "Med", "High"))
@@ -264,7 +262,7 @@ Crhigh
 CrCount <- sum(Crlow+Crmed+Crhigh)
 CrCount
 ```
-# Discretizing the Triglyceride (TG) variable
+# Discretizing the Triglyceride (TG) variable into 'med' and 'high':
 ```{r}
 max(Allv2$TG)
 Allv2$TG <- cut(Allv2$TG, breaks = c(0,200,1100), labels = c("Med", "High"))
@@ -332,12 +330,10 @@ tempAge3$ESR <- factor(ifelse(tempAge3$ESR <= tempAge3$Age & tempAge3$Sex == 'Ma
 str(tempAge3)
 
 Allv2$ESR <- tempAge3$ESR
-
 ```
 
 # Discretizing Hemoglobin (Hb). If male & Hb < 14 or if female and Hb is < 12.5, then Hb is "Low". If male & Hb is >= 14 but <= 17 OR if female and Hb is >= 12 but <= 15, then Hb is "Medium". If male & Hb > 17 or if female and Hb is > 15, then Hb is "High".
 ```{r}
-
 tempHb <- data.frame(Allv2[,3:44])
 tempHb[,2:41] <- NULL
 
@@ -418,7 +414,18 @@ NeutHigh
 NeutCount <- sum(NeutLow+NeutMed+NeutHigh)
 NeutCount
 ```
+# Discretizing Ejection Fraction (EF):
+```{r}
+max(Allv2$EF)
+Allv2$EF <- cut(Allv2$EF, breaks = c(0,50,120), labels = c("Low", "Med"))
 
+EFlow <- sum(Allv2$EF == "Low")
+EFlow
+EFmed <- sum(Allv2$EF == "Med")
+EFmed
+EFcount <- sum(EFlow+EFmed)
+EFcount
+```
 # Discretizing Platelet (PLT) count (Note: 96% of patients had 'Medium' counts)
 ```{r}
 max(Allv2$PLT)
@@ -433,18 +440,6 @@ PLThigh
 PLTcount <- sum(PLTlow+PLTmed+PLThigh)
 PLTcount
 ```
-# Discretizing Platelet (PLT) count (Note: 96% of patients had 'Medium' counts)
-```{r}
-max(Allv2$EF)
-Allv2$EF <- cut(Allv2$EF, breaks = c(0,50,100), labels = c("Low", "Med"))
-
-EFlow <- sum(Allv2$EF == "Low")
-EFlow
-EFmed <- sum(Allv2$EF == "Med")
-EFmed
-EFcount <- sum(EFlow+EFmed)
-EFcount
-```
 # Discretizing Regional Wall Motion Abnormality (RWMA). RWMA = 0 is 'Med', RWMA != to 0 are 'High').  Found that 71.6% were found to be 'Medium'.
 ```{r}
 sum(Allv2$RWMA == 0)
@@ -457,200 +452,244 @@ RWMAhigh
 sum(RWMAmed+RWMAhigh)
 (RWMAmed/(RWMAmed+RWMAhigh))*100
 ```
-# Taking the completed (and discretized) 'Allv2' data frame and saving it as 4 separate attribute groups (data frames); to be used for the rest of the predictions/modeling:
+# Removing the 'BMI' attribute since this is captured in the 'Obesity' attribute (given that a BMI result that is over 25 is considered 'Obese'). Matching the removed attributes for the 'before' and 'after' (discretization) data sets:
 ```{r}
-Demo <- data.frame(Allv2[,1:16])
+Allv2$BMI <- NULL
 
-Symptom <- data.frame(Allv2[,17:29])
-
-ECG <- data.frame(Allv2[,30:36])
-
-LAB <- data.frame(Allv2[,37:53])
+FullSetB4$BMI <- NULL
+FullSetB4$ECP <- NULL
 ```
+
+# Taking the completed (and discretized) 'Allv2' data frame and saving it as 4 separate attribute groups (data frames); to be used for the rest of the predictions/modeling.  Keeping the dependent result (CAD) at this stage:
+```{r}
+Demo <- data.frame(Allv2[,1:15])
+Demo$CAD <- Allv2$CAD
+
+Symptom <- data.frame(Allv2[,16:28])
+Symptom$CAD <- Allv2$CAD
+
+ECG <- data.frame(Allv2[,29:35])
+ECG$CAD <- Allv2$CAD
+
+LAB <- data.frame(Allv2[,36:52])
+LAB$CAD <- Allv2$CAD
+```
+
+# Taking the data set before discretizing and factoring (FullSetB4) and saving it as 4 separate attribute groups (data frames); to be used for analysis. First removing the 'ECP' and 'BMI' attributes (to match the discretized data set):
+```{r}
+FullSetB42 <- FullSetB4
+
+DemoB4 <- data.frame(FullSetB42[,1:15])
+DemoB4$CAD <- FullSetB42$CAD
+
+SymptomB4 <- data.frame(FullSetB42[,16:28])
+SymptomB4$CAD <- FullSetB42$CAD
+
+ECGB4 <- data.frame(FullSetB42[,29:35])
+ECGB4$CAD <- FullSetB42$CAD
+
+LABB4 <- data.frame(FullSetB42[,36:52])
+LABB4$CAD <- FullSetB42$CAD
+```
+
 UNIVARIATE ANALYSIS:
 
-
+#  Correlation coefficients for the 'LAB' results show no correlation (other than the negative correlation between Lymphocyte and Neutrophil results). With regards to this inverse relationship, an abnormal increase in one kind of white blood cell can cause a decrease in another kind. Both abnormal results can be due to the same underlying condition.
 ```{r}
-library(PerformanceAnalytics)
+library(GGally)
 
-LABb4 <- FullSetB4[38:53]
-LABb4Cor <- cor(LABb4)
-round(LABb4Cor, 2)
+LABcor3 <- ggcorr(LABB4[1:15], palette = "RdY1Gn", label = TRUE)
+LABcor3
+```
+# Looking into the Neutrophil to Lymphocyte relationship further.  Calculating the NLR (neutrophil-lymphocyte ratio) below. Reference # 24 shows that they have identified that the normal NLR values in an adult, non-geriatric, population in good health are between 0.78 and 3.53. 
+```{r}
+NLR <- data.frame(FullSetB42[48:47])
+NLR$Ratio <- NLR$Neut/NLR$Lymph
 
+min(NLR$Ratio)
+max(NLR$Ratio)
+mean(NLR$Ratio)
+
+NLR$Result <- cut(NLR$Ratio, breaks = c(0,0.77,3.53,12.5), labels = c("Low", "Med", "High"))
+
+NLR$CAD <- FullSetB42$CAD
+
+NLRlow <- sum(NLR$Result == "Low")
+NLRlow
+NLRmed <- sum(NLR$Result == "Med")
+NLRmed
+NLRhigh <- sum(NLR$Result == "High")
+NLRhigh
+NLRcount <- sum(NLRlow+NLRmed+NLRhigh)
+NLRcount
 ```
 
-# Boxplot to show distribution of Age, Weight and BMI
+# Include remaining numeric attributes for further correlation overview: Shows no significant correlation results, other than what was already found:
 ```{r}
-attach(FullSetB4)
-boxplot(Age, Weight, BMI, col = c("aquamarine","gray90","indianred1"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
-legend("topright", c("Age", "Weight", "BMI"),fill = c("aquamarine","gray90","indianred1"))
+library(GGally)
+
+Allints1 <- ggcorr(FullSetB42[,c(1:2, 16:17, 36:50)], palette = "RdY1Gn", label = TRUE)
+Allints1
 ```
-
-
+# Boxplot of Low Density Lipoprotein (LDL), High Density Lipoprotein (HDL), Blood Urea Nitrogen (BUN), and Erythrocyte Sedimentation Rate (ESR):
+```{r}
+attach(LABB4)
+boxplot(LDL, HDL, BUN, ESR, col = c("cadetblue1", "antiquewhite", "chartreuse", "darkseagreen1"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
+legend("topright", c("LDL", "HDL", "BUN", "ESR"),fill = c("cadetblue1", "antiquewhite", "chartreuse", "darkseagreen1"))
+```
+# Boxplot of Sodium (Na), Lymphocyte % (Lymph), Neutrophil % (Neut), and Ejection Fraction % (EF):
+```{r}
+boxplot(Na, Lymph, Neut, EF, col = c("indianred1", "antiquewhite", "chartreuse", "gold"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
+legend("topright", c("Na", "Lymph", "Neut", "EF"),fill = c("indianred1", "antiquewhite", "chartreuse", "gold"))
+```
+# Boxplot of Triglyceride (TG), Platelet (PLT), and Fasting Blood Sugar (FBS):
+```{r}
+boxplot(TG, PLT, FBS, col = c("aquamarine","indianred1", "gray90"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
+legend("topright", c("TG", "PLT", "FBS"),fill = c("aquamarine","indianred1", "gray90"))
+```
+# Boxplot of Hemoglobin (Hb), Potassium (K), and Creatine (Cr):
+```{r}
+boxplot(Hb, K, Cr, col = c("aquamarine","indianred1", "gray90"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
+legend("topright", c("Hb", "K", "Cr"),fill = c("aquamarine","indianred1", "gray90"))
+```
+# Boxplot of White Blood Cell (WBC) count:
+```{r}
+boxplot(WBC, col = c("antiquewhite"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
+legend("topright", c("WBC"),fill = c("antiquewhite"))
+```
+# Boxplot to show distribution of Age and Weight:
+```{r}
+attach(DemoB4)
+boxplot(Age, Weight, col = c("aquamarine","gray90"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
+legend("topright", c("Age", "Weight"),fill = c("aquamarine","gray90"))
+```
 # Shapiro tests of normality (H0: Distribution is normal; Reject null if p-value is less than .05). Note: sensitive when n>80. This test shows that 'Age' is NOT normally distributed.
 ```{r}
 library(psych)
 
-describe(FullSetB4$Age)
-AgeNorm <- shapiro.test((FullSetB4$Age))
+describe(DemoB4$Age)
+AgeNorm <- shapiro.test((DemoB4$Age))
 AgeNorm
 ```
-
-
 # Hence, weight is also not normally distributed in this study.
 ```{r}
 library(psych)
 
-describe(FullSetB4$Weight)
-WeightNorm <- shapiro.test((FullSetB4$Weight))
+describe(DemoB4$Weight)
+WeightNorm <- shapiro.test((DemoB4$Weight))
 WeightNorm
 ```
 # And BMI is also not normally distributed.
-
 ```{r}
-describe(FullSetB4$BMI)
-BMINorm <- shapiro.test((FullSetB4$BMI))
+describe(Allv1$BMI)
+BMINorm <- shapiro.test((Allv1$BMI))
 BMINorm
 ```
-
 # Can (carefully) use 'describe' for categorical variables too (since the psych package recodes categories as numbers):
 ```{r}
 library(psych)
-describe(FullSetB4[1:15])
-
+describe(FullSetB42[1:17])
 ```
-
-
 # Boxplot to show distribution of Blood Pressure and Pulse Rate
 ```{r}
+attach(SymptomB4)
 boxplot(BP, PR, col = c("blue","indianred1"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
 legend("topright", c("Blood Pressure", "Pulse Rate"),fill = c("blue","indianred1"))
 ```
-
+# Blood Pressure (BP) is not normally distributed:
 ```{r}
-describe(FullSetB4$BP)
-BPNorm <- shapiro.test((FullSetB4$BP))
+describe(SymptomB4$BP)
+BPNorm <- shapiro.test((SymptomB4$BP))
 BPNorm
 ```
-
+# Pulse Rate is not normally distributed:
 ```{r}
-describe(FullSetB4$PR)
-PRNorm <- shapiro.test((FullSetB4$PR))
+describe(SymptomB4$PR)
+PRNorm <- shapiro.test((SymptomB4$PR))
 PRNorm
 ```
-
-# Density Plot for all integer & numeric variables to be part of Lab Data Set.  Will break up and compare once correlation and association is completed.
-
+# Density plot of weight and sex (before discretization):
 ```{r}
-LabVarsB4 <- FullSetB4[38:52]
+library(ggplot2)
+library(dplyr)
+library(plyr)
 
-plot(density(LabVarsB4[,1]), type = "n")
+WeightMu <- ddply(DemoB4, "Sex", summarise, grp.mean=mean(Weight))
+head(WeightMu)
 
-n = dim(LabVarsB4)[2]-1
-for(i in 1:n){
-lines(density(c(LabVarsB4[,i])))
-}
+DDen1 <- ggplot(DemoB4, aes(x = Weight, fill = Sex)) +
+  geom_density(alpha = 0.2)+
+  geom_vline(data = WeightMu, aes(xintercept=grp.mean, colour = Sex),
+             linetype = "dashed")
+DDen1
 ```
-
-# Correlation of int/num variables (before the are discretized later)
-
+# Density plot of BMI and sex (before discretization):
 ```{r}
-library(PerformanceAnalytics)
+BMIMu <- ddply(Allv1, "Sex", summarise, grp.mean=mean(BMI))
+head(BMIMu)
 
-LAB <- FullSetB4[38:52]
-LABCorr <- cor(LAB)
-round(LABCorr, 2)
-# chart.Correlation(LAB, histogram = TRUE, pch = 19)
+BMIden <- ggplot(Allv1, aes(x = BMI, fill = Sex)) +
+  geom_density(alpha = 0.2)+
+  geom_vline(data = BMIMu, aes(xintercept=grp.mean, colour = Sex),
+             linetype = "dashed")
+BMIden
 ```
+# Will be completing a number of ASSOCIATIONS between many categorical variables, starting with a few straight forward investigation into commonly accepted 'associations'. Interpretation of results when K = 2:  SMALL Association: 0.10 - < 0.30; MEDIUM Association: 0.30 - < 0.50; LARGE Association: ??? 0.50
 
-# 
-```{r}
-library(PerformanceAnalytics)
-
-MiscInt <- FullSetB4[,c(1:2, 4, 17:18)]
-MICorr <- cor(MiscInt)
-chart.Correlation(MiscInt, histogram = TRUE, pch = 19)
-
-```
-
-# Will be completing a number of ASSOCIATIONS between many categorical variables, starting with a few straight forward investigation into commonly accepted 'associations':
+# Starting with Diabetes (DM) and Hypertension (HTN): Shows small association
 ```{r}
 library(lsr)
 
-AllCatB4 <- FullSetB4[,c(3, 5:16, 20:23,25, 27:28, 30, 35:36)]
+AllCatB4 <- Allv2[,c(3:15, 18:24,26:35)]
 cramersV(AllCatB4$DM, AllCatB4$HTN)
 ```
-
-# Therefore, a 'weak'association
+# Ex-Smoker and Obesity shows no association:
 ```{r}
 cramersV(AllCatB4$ExSmoker,AllCatB4$Obesity)
 ```
-
-# 
+# Ex-Smoker and Obesity shows no association:
 ```{r}
 cramersV(AllCatB4$DM,AllCatB4$Obesity)
 ```
 
-# 
+# Hypertensin and current smoker has a small association:
 ```{r}
 cramersV(AllCatB4$HTN,AllCatB4$Smoker)
 ```
 
-# Potentially 'moderate' association
+# Hypertension and Stroke (CVA) has no association:
 ```{r}
 cramersV(AllCatB4$HTN,AllCatB4$CVA)
 ```
-# Another 'weak' association
-
-# A completely non-existant association (see below)
+# Congestive Heart Failure (CHF) and Obsesity has no association (see below):
 ```{r}
 cramersV(AllCatB4$CHF,AllCatB4$Obesity)
 ```
 
-# Determining whether there is any significant variation in the 'ECP' column (noticed it is a factor data type with only 1 level):
+# Determining whether there is any significant variation in the 'NCP' column: Very low variation (94.7% of NCP entries are 'No')
 ```{r}
-sum(FullSetB4$ECP == 'N')
-```
-# Therefore, will likely delete this 'ECP' attribute
-
-# Determining whether there is any significant variation in the 'NCP' column:
-```{r}
-NCPn <- sum(FullSetB4$NCP == 'N')
-NCPy <- sum(FullSetB4$NCP == 'Y')
+NCPn <- sum(FullSetB42$NCP == 'N')
+NCPy <- sum(FullSetB42$NCP == 'Y')
 (NCPn/(NCPn+NCPy))*100
 ```
-# Very low variation (94.7% of NCP entries are 'No')
 
-# Determining whether there is any significant variation in the 'ACP' column:
+# Determining whether there is any significant variation in the 'ACP' column: 69.3% of these 'ACP' entries are 'No'
 ```{r}
-ACPn <- sum(FullSetB4$ACP == 'N')
-ACPy <- sum(FullSetB4$ACP == 'Y')
+ACPn <- sum(FullSetB42$ACP == 'N')
+ACPy <- sum(FullSetB42$ACP == 'Y')
 (ACPn/(ACPn+ACPy))*100
 ```
-# 69.3% of these 'ACP' entries are 'No'
-
 
 # Barplot of BBB attribute
 ```{r}
-#barplot(prop.table(table(FullSetB4$BBB)))
+barplot(prop.table(table(FullSetB42$BBB)))
 ```
-
 # Barplot of VHD attribute
 ```{r}
-#barplot(prop.table(table(FullSetB4$VHD)))
+barplot(prop.table(table(FullSetB42$VHD)))
 ```
-
 
 ```{r}
 
 ```
 
-# Will be looking into additional associations and specific correlations (as well as better visualizations for these, esp correlation).
-
-# Will be putting more emphasis into such correlations and associations from WITHIN the four attribute groups.  Not only to assist with dimension reduction, but also to learn more about the data sets themselves.
-
-# I will then reorganize the univariate results and their associated visualizations so that the story flows more cohesively - and is thereby easier to interpret.
-
-# Many of the variables will need to have their data types changed (esp to factor). There are also some categorical variables with > than 2 levels that need to be set up.  Finally, many of the variables need to be DISCRETIZED per Table 5 on the Literature Review.
-
-# AFTER the necessary data type updates and discretizations - I will store them in a final 'full' data set.  From there I will create the 4 attribute groups for further analysis and modeling.
