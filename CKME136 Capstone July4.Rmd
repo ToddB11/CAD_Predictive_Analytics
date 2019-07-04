@@ -1,11 +1,13 @@
 ---
 title: "CKME 136 Capstone"
 author: "TODD BETHELL"
-date: "July 1, 2019"
+date: "July 4, 2019"
 output:
   word_document: default
 ---
-install.packages("caret")
+# !!NOTE!! This will install ALL of the caret package - which will take several minutes - so comment the install out if you do not want to install the full caret package.
+
+install.packages("caret", dependencies = c("Depends", "Suggests"))
 install.packages("PerformanceAnalytics")
 install.packages("lsr")
 install.packages("tidyverse")
@@ -17,6 +19,7 @@ install.packages("RCurl")
 install.packages("GGally")
 install.packages("FSelector")
 install.packages("FSelectorRcpp")
+install.packages("mlbench")
 library(GGally)
 library(knitr)
 library(RCurl)
@@ -68,17 +71,6 @@ names(FullSetB4)[1] <- "Age"
 FullSetB4 <- FullSetB4[-3]
 dim(FullSetB4)
 ```
-
-#create an ID field for possible merging later:
-```{r}
-# FullB4wID <- FullSetB4
-
-# FullB4wID$ID <- seq(dim(FullB4wID)[1])
-
-# FullB4wID <- FullB4wID[,c(55, 1:54)]
-# FullB4wID
-
-```
 # CHECKING FOR MISSING DATA & ERRORS:
 
 # Check number of observations and whether there is any missing data:
@@ -89,7 +81,7 @@ sum(is.na(FullSetB4))
 
 # Double checking whether all observations are complete (no missing data):  No incomplete cases found, but I am commenting this out for the html output - since the output is very long.
 ```{r}
-#FullSetB4[complete.cases(FullSetB4),]
+# FullSetB4[complete.cases(FullSetB4),]
 ```
 
 # Checking for errors, starting with 'Sex' attribute (column 3):
@@ -210,7 +202,7 @@ PRcount
 # Discretize Heart Rate Functional Class (Fclass): Class 0 equals 'Med' and classes 1, 2, and 3 equal 'High'.  Note that 69.6% of the patients were evaluated to have a "Medium" Heart Failure Functional Class.
 ```{r}
 sum(Allv1$Fclass == 0)
-Allv1$Fclass <- ifelse(Allv1$Fclass == 0, "Med", "High")
+Allv1$Fclass <- factor(ifelse(Allv1$Fclass == 0, "Med", "High"))
 
 FCmed <- sum(Allv1$Fclass == "Med")
 FCmed
@@ -345,7 +337,7 @@ tempHb[,2:41] <- NULL
 tempHb$Hb <- with(tempHb, ifelse(tempHb$Sex == 'Male' & tempHb$Hb < 14 | tempHb$Sex == 'Fmale' & tempHb$Hb < 12.5, "Low", ifelse(tempHb$Sex == 'Male' & tempHb$Hb > 17 | tempHb$Sex == 'Fmale' & tempHb$Hb > 15, "High", "Med")))
 
 Allv2$Hb <- as.factor(tempHb$Hb)
-str(Allv2)
+#str(Allv2)
 ```
 
 # Discretizing Potassium (K):
@@ -448,7 +440,7 @@ PLTcount
 # Discretizing Regional Wall Motion Abnormality (RWMA). RWMA = 0 is 'Med', RWMA != to 0 are 'High').  Found that 71.6% were found to be 'Medium'.
 ```{r}
 sum(Allv2$RWMA == 0)
-Allv2$RWMA <- ifelse(Allv2$RWMA == 0, "Med", "High")
+Allv2$RWMA <- factor(ifelse(Allv2$RWMA == 0, "Med", "High"))
 
 RWMAmed <- sum(Allv2$RWMA == "Med")
 RWMAmed
@@ -463,6 +455,16 @@ Allv2$BMI <- NULL
 
 FullSetB4$BMI <- NULL
 FullSetB4$ECP <- NULL
+```
+
+```{r}
+#str(Allv2)
+```
+
+
+```{r}
+AllvFinal <- Allv2
+str(AllvFinal)
 ```
 
 # Taking the completed (and discretized) 'Allv2' data frame and saving it as 4 separate attribute groups (data frames); to be used for the rest of the predictions/modeling.  Keeping the dependent result (CAD) at this stage:
@@ -700,7 +702,7 @@ barplot(prop.table(table(FullSetB42$VHD)))
 ```{r}
 library(FSelector)
 
-AllWeights <- chi.squared(CAD~.,Allv2)
+AllWeights <- chi.squared(CAD~.,AllvFinal)
 print(AllWeights)
 subset <- cutoff.k(AllWeights, 10)
 FSall <- as.simple.formula(subset, "CAD")
@@ -745,7 +747,7 @@ print(FSlab)
 
 # Now, comparing these discretized results with those from before discretization:
 
-# Starting with the full data set - results: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + *BP* + NCP + DM + *FBS* (while the discretized results were: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + NCP + DM + Tinv + VHD).  NOTE: The top 6 were the same for both data sets (and 8 of the top 10 were shared across both data sets)
+# Using the full data set (FullSetB42) - results: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + *BP* + NCP + DM + *FBS* (while the discretized results were: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + NCP + DM + Tinv + VHD).  NOTE: The top 6 were the same for both data sets (and 8 of the top 10 were shared across both data sets)
 ```{r}
 AllB4Weights <- chi.squared(CAD~.,FullSetB42)
 print(AllB4Weights)
@@ -761,7 +763,7 @@ library(tidyverse)
 
 FS2all <- information_gain(
   formula = CAD~.,
-  data = Allv2,
+  data = AllvFinal,
   type = "infogain",
   threads = 2
 ) %>%
@@ -793,6 +795,106 @@ to_formula(
 )
 print(FS2B4all)
 ```
+# Checking on strength of associations between top 12 attributes and the dependent variable, ranked in descending order:
+```{r}
+library(lsr)
+
+cramersV(AllvFinal$TCP, AllvFinal$CAD)
+cramersV(AllvFinal$ACP, AllvFinal$CAD)
+cramersV(AllvFinal$RWMA, AllvFinal$CAD)
+cramersV(AllvFinal$EF, AllvFinal$CAD)
+cramersV(AllvFinal$Age, AllvFinal$CAD)
+cramersV(AllvFinal$HTN, AllvFinal$CAD)
+cramersV(AllvFinal$NCP, AllvFinal$CAD)
+cramersV(AllvFinal$DM, AllvFinal$CAD)
+cramersV(AllvFinal$VHD, AllvFinal$CAD)
+cramersV(AllvFinal$FBS, AllvFinal$CAD)
+cramersV(AllvFinal$Tinv, AllvFinal$CAD)
+cramersV(AllvFinal$BP, AllvFinal$CAD)
+```
+
+# Checking on the strength of associations between the top 12 attributes and each other:
+```{r}
+cramersV(AllvFinal$TCP, AllvFinal$ACP)
+cramersV(AllvFinal$HTN, AllvFinal$BP)
+cramersV(AllvFinal$RWMA, AllvFinal$EF)
+cramersV(AllvFinal$TCP, AllvFinal$NCP)
+cramersV(AllvFinal$HTN, AllvFinal$DM)
+cramersV(AllvFinal$VHD, AllvFinal$Age)
+cramersV(AllvFinal$RWMA, AllvFinal$TCP)
+cramersV(AllvFinal$HTN, AllvFinal$VHD)
+cramersV(AllvFinal$Tinv, AllvFinal$EF)
+cramersV(AllvFinal$TCP, AllvFinal$Age)
+cramersV(AllvFinal$RWMA, AllvFinal$Age)
+cramersV(AllvFinal$HTN, AllvFinal$Age)
+
+```
+# Creating the final variable data set using the FSelector package:
+```{r}
+TenVars <- AllvFinal[, c("TCP", "ACP", "RWMA", "EF", "Age", "HTN", "NCP", "DM", "Tinv", "VHD", "CAD")]
+#TenVars
+```
+
+# Creating a second final variable data set using the FSelectorRcpp package:
+```{r}
+TenVars2 <- AllvFinal[, c("TCP", "ACP", "RWMA", "EF", "HTN", "Age", "DM", "NCP", "Tinv", "FBS", "CAD")]
+#TenVars2
+```
+# Using createDataPartition() to split data into training and test sets (75% and 25%). Since the outcome variable (CAD) is categorical, this function will make sure that the distribution of outcome variable classes will be similar in both of the sets.
+```{r}
+library(caret)
+
+index <- createDataPartition(AllvFinal$CAD, p = 0.75, list = FALSE)
+AllvFtrain <- AllvFinal[ index,]
+AllvFtest <- AllvFinal[-index,]
+```
+
+```{r}
+#str(AllvFtrain)
+```
+
+# Using 'Recursive Feature Elimination' to find the best subset of atttributes to use for modeling. 
+```{r}
+library(plyr)
+
+control <- rfeControl(functions = rfFuncs,
+                   method = "repeatedcv",
+                   repeats = 3,
+                   verbose = FALSE)
+outcomeName <- 'CAD'
+predictors <- names(AllvFtrain)[!names(AllvFtrain) %in% outcomeName]
+CAD_Profile <- rfe(AllvFtrain[,predictors], AllvFtrain[,outcomeName],
+                   rfeControl = control)
+
+CAD_Profile
+
+```
+
+# Taking the top 5 predictors:
+```{r}
+predictors <-c("TCP", "ACP", "RWMA", "Age", "EF")
+```
+
+# Random Forest Training
+```{r}
+fitCntrl <- trainControl(method = "repeatedcv", number = 5, repeats = 3)
+rfFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'rf')
+rfFit
+plot(rfFit)
+
+varImp(object = rfFit)
+plot(varImp(object = rfFit),main="Random Forest - Variable Importance")
+```
+# Random Forest Predictions:
+```{r}
+RFpredictions <- predict.train(object = rfFit, AllvFtest[,predictors], type = "raw")
+table(RFpredictions)
+
+confusionMatrix(RFpredictions, AllvFtest[,outcomeName])
+
+
+```
+
 
 
 
