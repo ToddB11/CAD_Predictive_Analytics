@@ -1,7 +1,7 @@
 ---
 title: "CKME 136 Capstone"
 author: "TODD BETHELL"
-date: "July 4, 2019"
+date: "July 5, 2019"
 output:
   word_document: default
 ---
@@ -20,6 +20,7 @@ install.packages("GGally")
 install.packages("FSelector")
 install.packages("FSelectorRcpp")
 install.packages("mlbench")
+install.packages("caretEnsemble")
 library(GGally)
 library(knitr)
 library(RCurl)
@@ -33,6 +34,7 @@ library(gmodels)
 library(corrplot)
 library(GGally)
 library(FSelectorRcpp)
+library(caretEnsemble)
 ---
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(knitr)
@@ -48,6 +50,7 @@ library(gmodels)
 library(corrplot)
 library(GGally)
 library(FSelectorRcpp)
+library(caretEnsemble)
 ```
 
 
@@ -867,34 +870,111 @@ CAD_Profile <- rfe(AllvFtrain[,predictors], AllvFtrain[,outcomeName],
                    rfeControl = control)
 
 CAD_Profile
+CAD_Profile$optVariables[1:8]
 
 ```
 
 # Taking the top 5 predictors:
 ```{r}
-predictors <-c("TCP", "ACP", "RWMA", "Age", "EF")
+predictors <-c("TCP", "ACP", "RWMA", "EF", "NCP", "Age", "HTN", "DM")
 ```
 
 # Random Forest Training
 ```{r}
-fitCntrl <- trainControl(method = "repeatedcv", number = 5, repeats = 3)
-rfFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'rf')
+
+fitCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote")
+rfFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'rf', returnResamp = "final")
 rfFit
 plot(rfFit)
 
 varImp(object = rfFit)
 plot(varImp(object = rfFit),main="Random Forest - Variable Importance")
 ```
-# Random Forest Predictions:
+# Random Forest Predictions
 ```{r}
 RFpredictions <- predict.train(object = rfFit, AllvFtest[,predictors], type = "raw")
 table(RFpredictions)
 
 confusionMatrix(RFpredictions, AllvFtest[,outcomeName])
+```
+# Training for Naive Bayes:
+```{r}
+library(klaR)
 
+NBfitCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote")
+NBfit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'nb', trControl= NBfitCntrl, returnResamp = "final")
+NBfit
+
+varImp(object = NBfit)
+plot(varImp(object = NBfit),main="Naive Bayes - Variable Importance")
+```
+
+# Naive Bayes Predictions:
+```{r}
+NBpredictions <- predict.train(object = NBfit, AllvFtest[,predictors])
+table(NBpredictions)
+
+confusionMatrix(NBpredictions, AllvFtest[,outcomeName])
+```
+
+# Training for Logistic Regression:
+```{r}
+
+LRfitCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote")
+LRFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'glm', family = "binomial", trControl= LRfitCntrl)
+LRFit
+
+varImp(object = LRFit)
+plot(varImp(object = LRFit), main="Logistic Regression - Variable Importance")
+```
+
+# Logistic Regression Predictions:
+```{r}
+library(tidyverse)
+
+LRpredictions <- predict.train(object = LRFit, AllvFtest[,predictors])
+table(LRpredictions)
+
+confusionMatrix(LRpredictions, AllvFtest[,outcomeName])
+
+LRcm <- confusionMatrix(LRpredictions, AllvFtest[,outcomeName])
+
+LRcm$table %>%
+  data.frame() %>% 
+  mutate(Prediction = factor(Prediction, levels = c("Cad", "Normal"))) %>%
+  group_by(Reference) %>% 
+  mutate(total = sum(Freq)) %>% 
+  ungroup() %>% 
+  ggplot(aes(Reference, Prediction, fill = Freq)) +
+  geom_tile() +
+  geom_text(aes(label = Freq), size = 8) +
+  scale_fill_gradient(low = "white", high = "palegreen4") +
+  scale_x_discrete(position = "top") +
+  geom_tile(color = "black", fill = "black", alpha = 0)
+```
+
+# Ensamble evaluation:
+```{r}
+library(caretEnsemble)
+
+ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, search = "grid", savePredictions = "final", sampling = "smote")
+
+ENFit <- caretList(AllvFtrain[,predictors], AllvFtrain[,outcomeName], trControl= ENCntrl, methodList = c("rf", "nb", "glm"))
+ENFit
+
+ENres <- resamples(ENFit)
+summary(ENFit)
 
 ```
 
+
+# Model comparisons:
+```{r}
+
+#ModelCompare <- resamples(list(RF = rfFit, NB = NBfit, LR = LRFit))
+#ModelCompare$values
+#summary(ModelCompare)
+```
 
 
 
