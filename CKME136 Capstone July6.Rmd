@@ -1,7 +1,7 @@
 ---
 title: "CKME 136 Capstone"
 author: "TODD BETHELL"
-date: "July 5, 2019"
+date: "July 6, 2019"
 output:
   word_document: default
 ---
@@ -975,6 +975,52 @@ summary(ENFit)
 #ModelCompare$values
 #summary(ModelCompare)
 ```
+
+# Checking on the direction of log odds for a one unit increase in the selected features (using logistic regression) to confirm the relationship between the independent variables and the dependent variable (CAD or Normal):
+```{r warning=FALSE}
+logiTrain <- data.frame(AllvFtrain[,c(23,26,51,50,27,1,5,4,53)])
+
+logiTrain$RWMA <- factor(logiTrain$RWMA, levels = c("Med", "High"), ordered = TRUE)
+logiTrain$Age <- factor(logiTrain$Age, levels = c("Med", "High"), ordered = TRUE)
+logiTrain$EF <- factor(logiTrain$EF, levels = c("Low", "Med"), ordered = TRUE)
+
+logiTrain$CAD <- relevel(logiTrain$CAD, ref = "Normal")
+str(logiTrain)
+
+LRlogit <- glm(CAD~.,logiTrain, family = "binomial")
+summary(LRlogit)
+```
+# Explanatin of the order of factor variables for the logistic regression output in R:  R will use the alphabetical order of the variable results - and choose the letter that is higher in the alphabet as the reference variable (which is typically coded automatically with a '1', versus '0' - or a '2' vs '1' on the str() output). As such, 'Normal' would be the reference variable (equal to '2' on the str() output.).  However, 'CAD' should be the reference variable and so I have 're-leveled' that attribute so that 'CAD' is used as the reference (and as such, is showing as a '2' on the str() output).
+
+# Other variables explained for the glm output:
+# TCP: 'Yes', or '1', is base case (hence shows '2' on str() output.
+# ACP: Same base case behaviour as TCP.  This happens automatically because 'Y' comes after 'N' in the alphabet. 'Y' is showing with a '2' on the str() output.
+# RWMA: 'High' is the base case and is the '2' on str() output. This factor has been 'ordered' so that even though the 'H' in 'High' comes before the 'M' in 'Med', High is treated as the base case (and is assigned the '2' on the str() output.
+# EF is also an 'ordered factor', and so it has 'Med' as the base case (and is the '2' on the str() output).
+# NCP:  Is the same as ACP (for 'Y' and 'N', and 'Y' being the base case)
+# Age:  Is treated the same as RWMA - so, 'High' is the base case.
+# HTN: Is treated the same as TCP
+# DM: Is treated the same as TCP
+# CAD: Releveled so that CAD is the reference (base case); as such the str() output shows 'CAD' as '2', even though 'C' comes before 'N' (for 'Normal') in the alphabet.
+
+
+# GLM Output interpretation:
+
+# Note: The ACP result is not connected to the dependent variable in a  statistically significant way. (This needs more investigation.)
+
+# TCP: For a one unit increase in TCP, the log odds of being diagnosed with Coronary Artery Disease increases by 3.5489
+# ACP: For a one unit increase in ACP, the log odds of being diagnosed with Coronary Artery Disease increases by 0.2876
+# RWMA: For a one unit increase in RWMA, the log odds of being diagnosed with Coronary Artery Disease increases by 2.0681
+# EF: For a one unit increase in EF, the log odds of being diagnosed with Coronary Artery Disease DECREASES by 1.0245
+# NCP: For a one unit increase in NCP, the log odds of being diagnosed with Coronary Artery Disease DECREASES by 2.6333
+# Age: For a one unit increase in Age, the log odds of being diagnosed with Coronary Artery Disease increases by 1.2347
+# HTN: For a one unit increase in HTN, the log odds of being diagnosed with Coronary Artery Disease increases by 1.5145
+# DM: For a one unit increase in DM, the log odds of being diagnosed with Coronary Artery Disease increases by 1.8319
+
+```{r}
+
+```
+
 
 
 
