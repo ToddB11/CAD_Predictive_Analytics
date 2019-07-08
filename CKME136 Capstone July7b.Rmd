@@ -1,7 +1,7 @@
 ---
 title: "CKME 136 Capstone"
 author: "TODD BETHELL"
-date: "July 6, 2019"
+date: "July 7, 2019"
 output:
   word_document: default
 ---
@@ -125,6 +125,7 @@ LBBB <- sum(FullSetB4$BBB == 'LBBB')
 RBBB <- sum(FullSetB4$BBB == 'RBBB')
 sum(nBBB+LBBB+RBBB)
 ```
+
 # Checking for errors in the 'VHD'(Valvular Heart Disease) attribute (column 54):
 ```{r}
 Vmild <- sum(FullSetB4$VHD == 'mild')
@@ -155,7 +156,7 @@ Allv1$Tinv <- as.factor(Allv1$Tinv)
 # Change age attribute to factor: If male and age is <= to 45, OR if female and age is <= 55; categorize as "med" (for 'medium').  If male and age is > 45 or female and age is > 55, categorize as "high".
 ```{r}
 Allv1$Age <- factor(ifelse(Allv1$Age <= 45 & Allv1$Sex == 'Male' | Allv1$Age <= 55 & Allv1$Sex == 'Fmale', "Med", "High"))
-#str(Allv1)
+str(Allv1)
 ```
 # Checking for any errors in Age factor values, and the proportion of 'medium' to 'high' ages (after being discretized):
 ```{r}
@@ -467,6 +468,29 @@ FullSetB4$ECP <- NULL
 
 ```{r}
 AllvFinal <- Allv2
+AllvFinal$Age <- factor(AllvFinal$Age, levels = c("Med", "High"), ordered = TRUE)
+AllvFinal$Weight <- factor(AllvFinal$Weight, levels = c("Ave", "High"), ordered = TRUE)
+AllvFinal$BP <- factor(AllvFinal$BP, levels = c("Low", "Med", "High"), ordered = TRUE)
+AllvFinal$PR <- factor(AllvFinal$PR, levels = c("Low", "Med", "High"), ordered = TRUE)
+AllvFinal$Fclass <- factor(AllvFinal$Fclass, levels = c("Med", "High"), ordered = TRUE)
+AllvFinal$FBS <- factor(AllvFinal$FBS, levels = c("Low", "Med", "High"), ordered = TRUE)
+AllvFinal$Cr <- factor(AllvFinal$Cr, levels = c("Low", "Med", "High"), ordered = TRUE)
+AllvFinal$TG <- factor(AllvFinal$TG, levels = c("Med", "High"), ordered = TRUE)
+AllvFinal$LDL <- factor(AllvFinal$LDL, levels = c("Med", "High"), ordered = TRUE)
+AllvFinal$HDL <- factor(AllvFinal$HDL, levels = c("Low", "Med"), ordered = TRUE)
+AllvFinal$BUN <- factor(AllvFinal$BUN, levels = c("Low", "Med", "High"), ordered = TRUE)
+AllvFinal$ESR <- factor(AllvFinal$ESR, levels = c("Med", "High"), ordered = TRUE)
+AllvFinal$Hb <- factor(AllvFinal$Hb, levels = c("Low", "Med", "High"), ordered = TRUE)
+AllvFinal$K <- factor(AllvFinal$K, levels = c("Low", "Med", "High"), ordered = TRUE)
+AllvFinal$Na <- factor(AllvFinal$Na, levels = c("Low", "Med", "High"), ordered = TRUE)
+AllvFinal$WBC <- factor(AllvFinal$WBC, levels = c("Low", "Med", "High"), ordered = TRUE)
+AllvFinal$Lymph <- factor(AllvFinal$Lymph, levels = c("Low", "Med", "High"), ordered = TRUE)
+AllvFinal$Neut <- factor(AllvFinal$Neut, levels = c("Low", "Med", "High"), ordered = TRUE)
+AllvFinal$PLT <- factor(AllvFinal$PLT, levels = c("Low", "Med", "High"), ordered = TRUE)
+AllvFinal$EF <- factor(AllvFinal$EF, levels = c("Low", "Med"), ordered = TRUE)
+AllvFinal$RWMA <- factor(AllvFinal$RWMA, levels = c("Med", "High"), ordered = TRUE)
+AllvFinal$VHD <- factor(AllvFinal$VHD, levels = c("N", "mild", "Moderate", "Severe"), ordered = TRUE)
+
 str(AllvFinal)
 ```
 
@@ -874,13 +898,13 @@ CAD_Profile$optVariables[1:8]
 
 ```
 
-# Taking the top 5 predictors:
+# Taking the top 8 predictors:
 ```{r}
-predictors <-c("TCP", "ACP", "RWMA", "EF", "NCP", "Age", "HTN", "DM")
+predictors <-c("TCP", "EF", "RWMA", "NCP", "ACP", "HTN", "Age", "DM")
 ```
 
 # Random Forest Training
-```{r}
+```{r results='hide', message=FALSE, warning=FALSE}
 
 fitCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote")
 rfFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'rf', returnResamp = "final")
@@ -890,6 +914,7 @@ plot(rfFit)
 varImp(object = rfFit)
 plot(varImp(object = rfFit),main="Random Forest - Variable Importance")
 ```
+
 # Random Forest Predictions
 ```{r}
 RFpredictions <- predict.train(object = rfFit, AllvFtest[,predictors], type = "raw")
@@ -897,8 +922,10 @@ table(RFpredictions)
 
 confusionMatrix(RFpredictions, AllvFtest[,outcomeName])
 ```
+
 # Training for Naive Bayes:
-```{r}
+```{r results='hide', message=FALSE, warning=FALSE}
+
 library(klaR)
 
 NBfitCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote")
@@ -918,7 +945,7 @@ confusionMatrix(NBpredictions, AllvFtest[,outcomeName])
 ```
 
 # Training for Logistic Regression:
-```{r}
+```{r results='hide', message=FALSE, warning=FALSE}
 
 LRfitCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote")
 LRFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'glm', family = "binomial", trControl= LRfitCntrl)
@@ -954,16 +981,16 @@ LRcm$table %>%
 ```
 
 # Ensamble evaluation:
-```{r}
-library(caretEnsemble)
+```{r results='hide', message=FALSE, warning=FALSE}
+#library(caretEnsemble)
 
-ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, search = "grid", savePredictions = "final", sampling = "smote")
+#ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, search = "grid", savePredictions = "final", sampling = "smote")
 
-ENFit <- caretList(AllvFtrain[,predictors], AllvFtrain[,outcomeName], trControl= ENCntrl, methodList = c("rf", "nb", "glm"))
-ENFit
+#ENFit <- caretList(AllvFtrain[,predictors], AllvFtrain[,outcomeName], trControl= ENCntrl, methodList = c("rf", "nb", "glm"))
+#ENFit
 
-ENres <- resamples(ENFit)
-summary(ENFit)
+#ENres <- resamples(ENFit)
+#summary(ENFit)
 
 ```
 
@@ -978,11 +1005,7 @@ summary(ENFit)
 
 # Checking on the direction of log odds for a one unit increase in the selected features (using logistic regression) to confirm the relationship between the independent variables and the dependent variable (CAD or Normal):
 ```{r warning=FALSE}
-logiTrain <- data.frame(AllvFtrain[,c(23,26,51,50,27,1,5,4,53)])
-
-logiTrain$RWMA <- factor(logiTrain$RWMA, levels = c("Med", "High"), ordered = TRUE)
-logiTrain$Age <- factor(logiTrain$Age, levels = c("Med", "High"), ordered = TRUE)
-logiTrain$EF <- factor(logiTrain$EF, levels = c("Low", "Med"), ordered = TRUE)
+logiTrain <- data.frame(AllvFtrain[,c(23,51,27,26,50,1,5,4,53)])
 
 logiTrain$CAD <- relevel(logiTrain$CAD, ref = "Normal")
 str(logiTrain)
@@ -1017,10 +1040,115 @@ summary(LRlogit)
 # HTN: For a one unit increase in HTN, the log odds of being diagnosed with Coronary Artery Disease increases by 1.5145
 # DM: For a one unit increase in DM, the log odds of being diagnosed with Coronary Artery Disease increases by 1.8319
 
-```{r}
 
+# Documenting and plotting the stability of the algorithms using different numbers of 'folds' during cross validation - starting with the Random Forest algorithm:
+```{r}
+RFstability <- data.frame(Accuracy=c(0.8800, 0.8800, 0.8667, 0.8800, 0.8800, 0.8933, 0.8800), Sensitivity=rep(0.9630, 7), Specificity=c(0.6667, 0.6667, 0.6190, 0.6667, 0.6667, 0.7143, 0.6667))
+rownames(RFstability) <- c(3,5,7,10,15,20,25)
+RFstability
+
+cols <- c("darkseagreen","cornflowerblue","gray48")
+pch <- c(17,18,15)
+xmax <- nrow(RFstability) + 2.5
+par(mar=c(4,4,1,1))
+plot(1:nrow(RFstability), 1:nrow(RFstability), pch="", 
+		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(.6,1), bty="n", xlim=c(1,xmax), main="Random Forest Stability Results")
+for (i in seq(.6,1,by=.025)) {
+	lines(1:nrow(RFstability), rep(i,nrow(RFstability)), col="gray69")
+}
+for (i in 1:ncol(RFstability)) {
+
+	points(1:nrow(RFstability), RFstability[,i], pch=pch[i], 
+		col=cols[i], cex=1.2)
+
+	lines(1:nrow(RFstability), RFstability[,i], col=cols[i], 
+		lwd=2)
+}
+axis(side=1, at=1:nrow(RFstability), tick=FALSE, 
+		labels=rownames(RFstability))
+
+axis(side=1, at=seq(-0.5,8.5,by=1), 
+		tick=FALSE, labels=NA)
+
+axis(side=2, at=seq(.6,1,by=.025), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.6,1,by=.025)))
+
+legend('bottomright',legend=colnames(RFstability), pch=pch, 
+		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
 ```
 
+# Next, plotting the stability of the Naive Bayes algorithm:
+```{r}
+RFstability <- data.frame(Accuracy=c(0.8533, 0.8800, 0.8800, 0.8800, 0.8533, 0.8533, 0.8800), Sensitivity=c(0.8519, 0.8889, 0.8889, 0.8889, 0.8519, 0.8519, 0.8889 ), Specificity=rep(0.8571, 7))
+rownames(RFstability) <- c(3,5,7,10,15,20,25)
+RFstability
 
+cols <- c("darkseagreen","cornflowerblue","gray48")
+pch <- c(17,18,15)
+xmax <- nrow(RFstability) + 2.5
+par(mar=c(4,4,1,1))
+plot(1:nrow(RFstability), 1:nrow(RFstability), pch="", 
+		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(.8,1), bty="n", xlim=c(1,xmax), main="Naive Bayes Stability Results")
+for (i in seq(.8,1,by=.02)) {
+	lines(1:nrow(RFstability), rep(i,nrow(RFstability)), col="gray69")
+}
+for (i in 1:ncol(RFstability)) {
 
+	points(1:nrow(RFstability), RFstability[,i], pch=pch[i], 
+		col=cols[i], cex=1.2)
+
+	lines(1:nrow(RFstability), RFstability[,i], col=cols[i], 
+		lwd=2)
+}
+axis(side=1, at=1:nrow(RFstability), tick=FALSE, 
+		labels=rownames(RFstability))
+
+axis(side=1, at=seq(-0.5,8.5,by=1), 
+		tick=FALSE, labels=NA)
+
+axis(side=2, at=seq(.8,1,by=.02), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.8,1,by=.02)))
+
+legend('bottomright',legend=colnames(RFstability), pch=pch, 
+		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
+```
+
+# Lastly, plotting the stability of the Logistic Regression algorithm:
+```{r}
+RFstability <- data.frame(Accuracy=c(0.8533, 0.8533, 0.8533, 0.8533, 0.8800, 0.8667, 0.8800), Sensitivity=c(0.9444, 0.9630, 0.9444, 0.9630, 0.9444, 0.9630, 0.9444), Specificity=c(0.6190, 0.5714, 0.6190, 0.5714, 0.7143, 0.6190, 0.7143))
+rownames(RFstability) <- c(3,5,7,10,15,20,25)
+RFstability
+
+cols <- c("darkseagreen","cornflowerblue","gray48")
+pch <- c(17,18,15)
+xmax <- nrow(RFstability) + 2.5
+par(mar=c(4,4,1,1))
+plot(1:nrow(RFstability), 1:nrow(RFstability), pch="", 
+		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(.5,1), bty="n", xlim=c(1,xmax), main="Logistic Regression Stability Results")
+for (i in seq(.5,1,by=.025)) {
+	lines(1:nrow(RFstability), rep(i,nrow(RFstability)), col="gray69")
+}
+for (i in 1:ncol(RFstability)) {
+
+	points(1:nrow(RFstability), RFstability[,i], pch=pch[i], 
+		col=cols[i], cex=1.2)
+
+	lines(1:nrow(RFstability), RFstability[,i], col=cols[i], 
+		lwd=2)
+}
+axis(side=1, at=1:nrow(RFstability), tick=FALSE, 
+		labels=rownames(RFstability))
+
+axis(side=1, at=seq(-0.5,8.5,by=1), 
+		tick=FALSE, labels=NA)
+
+axis(side=2, at=seq(.5,1,by=.025), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.5,1,by=.025)))
+
+legend('bottomright',legend=colnames(RFstability), pch=pch, 
+		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
+```
 
