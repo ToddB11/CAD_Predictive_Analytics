@@ -856,6 +856,26 @@ cramersV(AllvFinal$RWMA, AllvFinal$Age)
 cramersV(AllvFinal$HTN, AllvFinal$Age)
 
 ```
+# Checking associations between the final variables that do not have a statistically significant relationship with the dependent variable (per the logistic regression results later).  That is, checkint ACP and NCP against each other, and the other variables, including TCP, EF, RWMA, HTN, Age and DM (as well as the dependent variable).  NOTE: When DF=1, the interpretation of the Cramer's V results (effect) would be as follows: (0.10 = small effect) (0.30 = medium effect) (0.50=large effect)
+```{r}
+library(lsr)
+
+cramersV(AllvFinal$ACP, AllvFinal$TCP)
+cramersV(AllvFinal$ACP, AllvFinal$EF)
+cramersV(AllvFinal$ACP, AllvFinal$RWMA)
+cramersV(AllvFinal$ACP, AllvFinal$HTN)
+cramersV(AllvFinal$ACP, AllvFinal$Age)
+cramersV(AllvFinal$ACP, AllvFinal$DM)
+cramersV(AllvFinal$ACP, AllvFinal$CAD)
+
+cramersV(AllvFinal$NCP, AllvFinal$TCP)
+cramersV(AllvFinal$NCP, AllvFinal$EF)
+cramersV(AllvFinal$NCP, AllvFinal$RWMA)
+cramersV(AllvFinal$NCP, AllvFinal$HTN)
+cramersV(AllvFinal$NCP, AllvFinal$Age)
+cramersV(AllvFinal$NCP, AllvFinal$DM)
+cramersV(AllvFinal$NCP, AllvFinal$CAD)
+```
 # Creating the final variable data set using the FSelector package:
 ```{r}
 TenVars <- AllvFinal[, c("TCP", "ACP", "RWMA", "EF", "Age", "HTN", "NCP", "DM", "Tinv", "VHD", "CAD")]
@@ -886,7 +906,7 @@ library(plyr)
 
 control <- rfeControl(functions = rfFuncs,
                    method = "repeatedcv",
-                   repeats = 3,
+                   repeats = 10,
                    verbose = FALSE)
 outcomeName <- 'CAD'
 predictors <- names(AllvFtrain)[!names(AllvFtrain) %in% outcomeName]
@@ -921,6 +941,21 @@ RFpredictions <- predict.train(object = rfFit, AllvFtest[,predictors], type = "r
 table(RFpredictions)
 
 confusionMatrix(RFpredictions, AllvFtest[,outcomeName])
+
+RFcm <- confusionMatrix(RFpredictions, AllvFtest[,outcomeName])
+
+RFcm$table %>%
+  data.frame() %>% 
+  mutate(Prediction = factor(Prediction, levels = c("Cad", "Normal"))) %>%
+  group_by(Reference) %>% 
+  mutate(total = sum(Freq)) %>% 
+  ungroup() %>% 
+  ggplot(aes(Reference, Prediction, fill = Freq)) +
+  geom_tile() +
+  geom_text(aes(label = Freq), size = 8) +
+  scale_fill_gradient(low = "white", high = "palegreen4") +
+  scale_x_discrete(position = "top") +
+  geom_tile(color = "black", fill = "black", alpha = 0)
 ```
 
 # Training for Naive Bayes:
@@ -942,6 +977,21 @@ NBpredictions <- predict.train(object = NBfit, AllvFtest[,predictors])
 table(NBpredictions)
 
 confusionMatrix(NBpredictions, AllvFtest[,outcomeName])
+
+NBcm <- confusionMatrix(NBpredictions, AllvFtest[,outcomeName])
+
+NBcm$table %>%
+  data.frame() %>% 
+  mutate(Prediction = factor(Prediction, levels = c("Cad", "Normal"))) %>%
+  group_by(Reference) %>% 
+  mutate(total = sum(Freq)) %>% 
+  ungroup() %>% 
+  ggplot(aes(Reference, Prediction, fill = Freq)) +
+  geom_tile() +
+  geom_text(aes(label = Freq), size = 8) +
+  scale_fill_gradient(low = "white", high = "palegreen4") +
+  scale_x_discrete(position = "top") +
+  geom_tile(color = "black", fill = "black", alpha = 0)
 ```
 
 # Training for Logistic Regression:
@@ -979,6 +1029,12 @@ LRcm$table %>%
   scale_x_discrete(position = "top") +
   geom_tile(color = "black", fill = "black", alpha = 0)
 ```
+# Brier Score for Logistic Regression model:
+```{r}
+
+
+```
+
 
 # Ensamble evaluation:
 ```{r results='hide', message=FALSE, warning=FALSE}
@@ -1031,19 +1087,19 @@ summary(LRlogit)
 
 # Note: The ACP result is not connected to the dependent variable in a  statistically significant way. (This needs more investigation.)
 
-# TCP: For a one unit increase in TCP, the log odds of being diagnosed with Coronary Artery Disease increases by 3.5489
-# ACP: For a one unit increase in ACP, the log odds of being diagnosed with Coronary Artery Disease increases by 0.2876
-# RWMA: For a one unit increase in RWMA, the log odds of being diagnosed with Coronary Artery Disease increases by 2.0681
-# EF: For a one unit increase in EF, the log odds of being diagnosed with Coronary Artery Disease DECREASES by 1.0245
-# NCP: For a one unit increase in NCP, the log odds of being diagnosed with Coronary Artery Disease DECREASES by 2.6333
-# Age: For a one unit increase in Age, the log odds of being diagnosed with Coronary Artery Disease increases by 1.2347
-# HTN: For a one unit increase in HTN, the log odds of being diagnosed with Coronary Artery Disease increases by 1.5145
-# DM: For a one unit increase in DM, the log odds of being diagnosed with Coronary Artery Disease increases by 1.8319
+# TCP: For a one unit increase in TCP, the log odds of being diagnosed with Coronary Artery Disease increases by 3.30238
+# ACP: For a one unit increase in ACP, the log odds of being diagnosed with Coronary Artery Disease increases by 0.05199 (*Note: Not statistically significant relationship, per the p-value)
+# RWMA: For a one unit increase in RWMA, the log odds of being diagnosed with Coronary Artery Disease increases by 1.67934
+# EF: For a one unit increase in EF, the log odds of being diagnosed with Coronary Artery Disease DECREASES by 1.02024
+# NCP: For a one unit increase in NCP, the log odds of being diagnosed with Coronary Artery Disease DECREASES by 1.78913 (*Note: not statistically significant, just outside of significance range per the p-value)
+# Age: For a one unit increase in Age, the log odds of being diagnosed with Coronary Artery Disease increases by 1.38648
+# HTN: For a one unit increase in HTN, the log odds of being diagnosed with Coronary Artery Disease increases by 1.22778
+# DM: For a one unit increase in DM, the log odds of being diagnosed with Coronary Artery Disease increases by 1.54412
 
 
 # Documenting and plotting the stability of the algorithms using different numbers of 'folds' during cross validation - starting with the Random Forest algorithm:
 ```{r}
-RFstability <- data.frame(Accuracy=c(0.8800, 0.8800, 0.8667, 0.8800, 0.8800, 0.8933, 0.8800), Sensitivity=rep(0.9630, 7), Specificity=c(0.6667, 0.6667, 0.6190, 0.6667, 0.6667, 0.7143, 0.6667))
+RFstability <- data.frame(Accuracy=rep(0.9067,7), Sensitivity=rep(0.9259, 7), Specificity=rep(0.8571,7))
 rownames(RFstability) <- c(3,5,7,10,15,20,25)
 RFstability
 
@@ -1053,8 +1109,8 @@ xmax <- nrow(RFstability) + 2.5
 par(mar=c(4,4,1,1))
 plot(1:nrow(RFstability), 1:nrow(RFstability), pch="", 
 		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
-		ylim=c(.6,1), bty="n", xlim=c(1,xmax), main="Random Forest Stability Results")
-for (i in seq(.6,1,by=.025)) {
+		ylim=c(.8,.95), bty="n", xlim=c(1,xmax), main="Random Forest Stability Results")
+for (i in seq(.8,.95,by=.025)) {
 	lines(1:nrow(RFstability), rep(i,nrow(RFstability)), col="gray69")
 }
 for (i in 1:ncol(RFstability)) {
@@ -1071,8 +1127,8 @@ axis(side=1, at=1:nrow(RFstability), tick=FALSE,
 axis(side=1, at=seq(-0.5,8.5,by=1), 
 		tick=FALSE, labels=NA)
 
-axis(side=2, at=seq(.6,1,by=.025), tick=TRUE, 
-		las=TRUE, labels=paste(seq(.6,1,by=.025)))
+axis(side=2, at=seq(.8,.95,by=.025), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.8,.95,by=.025)))
 
 legend('bottomright',legend=colnames(RFstability), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
@@ -1080,7 +1136,7 @@ legend('bottomright',legend=colnames(RFstability), pch=pch,
 
 # Next, plotting the stability of the Naive Bayes algorithm:
 ```{r}
-RFstability <- data.frame(Accuracy=c(0.8533, 0.8800, 0.8800, 0.8800, 0.8533, 0.8533, 0.8800), Sensitivity=c(0.8519, 0.8889, 0.8889, 0.8889, 0.8519, 0.8519, 0.8889 ), Specificity=rep(0.8571, 7))
+RFstability <- data.frame(Accuracy=c(0.8533, 0.8667, 0.8667, 0.8667, 0.8533, 0.8533, 0.8533 ), Sensitivity=c(0.8333, 0.8519, 0.8519, 0.8519, 0.8333, 0.8333, 0.8333 ), Specificity=rep(0.9048, 7))
 rownames(RFstability) <- c(3,5,7,10,15,20,25)
 RFstability
 
@@ -1090,8 +1146,8 @@ xmax <- nrow(RFstability) + 2.5
 par(mar=c(4,4,1,1))
 plot(1:nrow(RFstability), 1:nrow(RFstability), pch="", 
 		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
-		ylim=c(.8,1), bty="n", xlim=c(1,xmax), main="Naive Bayes Stability Results")
-for (i in seq(.8,1,by=.02)) {
+		ylim=c(.8,.95), bty="n", xlim=c(1,xmax), main="Naive Bayes Stability Results")
+for (i in seq(.8,.95,by=.025)) {
 	lines(1:nrow(RFstability), rep(i,nrow(RFstability)), col="gray69")
 }
 for (i in 1:ncol(RFstability)) {
@@ -1108,8 +1164,8 @@ axis(side=1, at=1:nrow(RFstability), tick=FALSE,
 axis(side=1, at=seq(-0.5,8.5,by=1), 
 		tick=FALSE, labels=NA)
 
-axis(side=2, at=seq(.8,1,by=.02), tick=TRUE, 
-		las=TRUE, labels=paste(seq(.8,1,by=.02)))
+axis(side=2, at=seq(.8,.95,by=.025), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.8,.95,by=.025)))
 
 legend('bottomright',legend=colnames(RFstability), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
@@ -1117,7 +1173,7 @@ legend('bottomright',legend=colnames(RFstability), pch=pch,
 
 # Lastly, plotting the stability of the Logistic Regression algorithm:
 ```{r}
-RFstability <- data.frame(Accuracy=c(0.8533, 0.8533, 0.8533, 0.8533, 0.8800, 0.8667, 0.8800), Sensitivity=c(0.9444, 0.9630, 0.9444, 0.9630, 0.9444, 0.9630, 0.9444), Specificity=c(0.6190, 0.5714, 0.6190, 0.5714, 0.7143, 0.6190, 0.7143))
+RFstability <- data.frame(Accuracy=c(0.8533, 0.8800, 0.8933, 0.8933, 0.9067, 0.8933, 0.8533), Sensitivity=c(0.9074, 0.9074, 0.9074, 0.9074, 0.9259, 0.9259, 0.9074), Specificity=c(0.7143, 0.8059, 0.8571, 0.8571, 0.8571, 0.8095, 0.7143))
 rownames(RFstability) <- c(3,5,7,10,15,20,25)
 RFstability
 
@@ -1127,8 +1183,8 @@ xmax <- nrow(RFstability) + 2.5
 par(mar=c(4,4,1,1))
 plot(1:nrow(RFstability), 1:nrow(RFstability), pch="", 
 		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
-		ylim=c(.5,1), bty="n", xlim=c(1,xmax), main="Logistic Regression Stability Results")
-for (i in seq(.5,1,by=.025)) {
+		ylim=c(.7,.95), bty="n", xlim=c(1,xmax), main="Logistic Regression Stability Results")
+for (i in seq(.5,.95,by=.025)) {
 	lines(1:nrow(RFstability), rep(i,nrow(RFstability)), col="gray69")
 }
 for (i in 1:ncol(RFstability)) {
@@ -1145,8 +1201,8 @@ axis(side=1, at=1:nrow(RFstability), tick=FALSE,
 axis(side=1, at=seq(-0.5,8.5,by=1), 
 		tick=FALSE, labels=NA)
 
-axis(side=2, at=seq(.5,1,by=.025), tick=TRUE, 
-		las=TRUE, labels=paste(seq(.5,1,by=.025)))
+axis(side=2, at=seq(.7,.95,by=.025), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.7,.95,by=.025)))
 
 legend('bottomright',legend=colnames(RFstability), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
