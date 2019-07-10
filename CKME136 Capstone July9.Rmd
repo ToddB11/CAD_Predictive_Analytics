@@ -1,11 +1,13 @@
 ---
 title: "CKME 136 Capstone"
 author: "TODD BETHELL"
-date: "July 7, 2019"
+date: "July 9, 2019"
 output:
-  word_document: default
+  html_document:
+    highlight: haddock
+    theme: readable
 ---
-# !!NOTE!! This will install ALL of the caret package - which will take several minutes - so comment the install out if you do not want to install the full caret package.
+#### !!NOTE!! This will install ALL of the caret package - which will take several minutes - so comment the install out if you do not want to install the full caret package.
 
 install.packages("caret", dependencies = c("Depends", "Suggests"))
 install.packages("PerformanceAnalytics")
@@ -21,6 +23,7 @@ install.packages("FSelector")
 install.packages("FSelectorRcpp")
 install.packages("mlbench")
 install.packages("caretEnsemble")
+install.packages("skimr")
 library(GGally)
 library(knitr)
 library(RCurl)
@@ -35,6 +38,7 @@ library(corrplot)
 library(GGally)
 library(FSelectorRcpp)
 library(caretEnsemble)
+library(skimr)
 ---
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(knitr)
@@ -51,6 +55,7 @@ library(corrplot)
 library(GGally)
 library(FSelectorRcpp)
 library(caretEnsemble)
+library(skimr)
 ```
 
 
@@ -58,43 +63,59 @@ library(caretEnsemble)
 FullSetB4<-read.csv(file="https://raw.githubusercontent.com/ToddB11/TB136capstone/master/ZAlizadeh_dataset.csv",header=T,sep=",")
 ```
 
-# Review Data Set
+#### Review Data Set
 ```{r}
 head(FullSetB4)
 tail(FullSetB4)
 str(FullSetB4)
 ```
 
-# Fixing 'Age' column header (not displaying correctly):
+#### Fixing 'Age' column header (not displaying correctly):
 ```{r}
 names(FullSetB4)[1] <- "Age"
 ```
-# Remove 'Length' attribute - since not used in final study; and captured via BMI (and 'Obesity' uses 'BMI'):
+#### Remove 'Length' attribute - since not used in final study; and captured via BMI (and 'Obesity' uses 'BMI'):
 ```{r}
 FullSetB4 <- FullSetB4[-3]
 dim(FullSetB4)
 ```
-# CHECKING FOR MISSING DATA & ERRORS:
+### CHECKING FOR MISSING DATA & ERRORS:
 
-# Check number of observations and whether there is any missing data:
+#### Step one, review all integer and numeric variables statisitics (note: 'inline histogram' not displaying correctly on output, due to Windows UTF8 limitations):
+```{r}
+library(skimr)
+library(knitr)
+library(tidyverse)
+
+skim1 <- FullSetB4[,c(1:2,16:17,36:50)]
+skimr::skim(skim1) %>%
+  filter(stat == "hist") %>%
+  print.listof(locale = locale(encoding = "UTF-8"))
+
+skim2 <- skim_to_wide(skim1)
+kable(skim2)
+
+```
+
+#### Check number of observations and whether there is any missing data:
 ```{r}
 nrow(FullSetB4)
 sum(is.na(FullSetB4))
 ```
 
-# Double checking whether all observations are complete (no missing data):  No incomplete cases found, but I am commenting this out for the html output - since the output is very long.
+#### Double checking whether all observations are complete (no missing data):  No incomplete cases found, but I am commenting this out for the html output - since the output is very long.
 ```{r}
 # FullSetB4[complete.cases(FullSetB4),]
 ```
 
-# Checking for errors, starting with 'Sex' attribute (column 3):
+#### Checking for errors, starting with 'Sex' attribute (column 3):
 ```{r}
 SexF <- sum(FullSetB4$Sex == 'Fmale')
 SexM <- sum(FullSetB4$Sex == 'Male')
 sum(SexF + SexM)
 ```
 
-# Checking for errors in columns 5:9, 19, 24, 31:34 (must be '0' or '1')
+#### Checking for errors in columns 5:9, 19, 24, 31:34 (must be '0' or '1')
 ```{r}
 #library(tidyverse)
 #library(dbplyr)
@@ -107,7 +128,7 @@ Bins1 <- FullSetB4%>%
   tally(value == 1)
  (Bins0 + Bins1)/11
 ```
-# Checking for errors in columns 10:16, 20:23, 25, 27:28, 30, 35:36  (must be 'Y' or 'N')
+#### Checking for errors in columns 10:16, 20:23, 25, 27:28, 30, 35:36  (must be 'Y' or 'N')
 ```{r}
 
 BinsY <- FullSetB4%>%
@@ -118,7 +139,7 @@ BinsN <- FullSetB4%>%
   tally(value == 'N')
  (BinsY + BinsN)/17
 ```
-# Checking for errors in the 'BBB'(Bundle Branch Block) attribute (column 37):
+#### Checking for errors in the 'BBB'(Bundle Branch Block) attribute (column 37):
 ```{r}
 nBBB <- sum(FullSetB4$BBB == 'N')
 LBBB <- sum(FullSetB4$BBB == 'LBBB')
@@ -126,7 +147,7 @@ RBBB <- sum(FullSetB4$BBB == 'RBBB')
 sum(nBBB+LBBB+RBBB)
 ```
 
-# Checking for errors in the 'VHD'(Valvular Heart Disease) attribute (column 54):
+#### Checking for errors in the 'VHD'(Valvular Heart Disease) attribute (column 54):
 ```{r}
 Vmild <- sum(FullSetB4$VHD == 'mild')
 VMod <- sum(FullSetB4$VHD == 'Moderate')
@@ -135,7 +156,7 @@ VSev <- sum(FullSetB4$VHD == 'Severe')
 sum(Vmild+VMod+VN+VSev)
 ```
 
-# Converting int types to factor, where appropriate:
+#### Converting int types to factor, where appropriate:
 ```{r}
 Allv1 <- FullSetB4
 Allv1$DM <- as.factor(Allv1$DM)
@@ -151,27 +172,27 @@ Allv1$STdep <- as.factor(Allv1$STdep)
 Allv1$Tinv <- as.factor(Allv1$Tinv)
 #str(Allv1)
 ```
-# DISCRETIZING:
+### DISCRETIZING:
 
-# Change age attribute to factor: If male and age is <= to 45, OR if female and age is <= 55; categorize as "med" (for 'medium').  If male and age is > 45 or female and age is > 55, categorize as "high".
+#### Change age attribute to factor: If male and age is <= to 45, OR if female and age is <= 55; categorize as "med" (for 'medium').  If male and age is > 45 or female and age is > 55, categorize as "high".
 ```{r}
 Allv1$Age <- factor(ifelse(Allv1$Age <= 45 & Allv1$Sex == 'Male' | Allv1$Age <= 55 & Allv1$Sex == 'Fmale', "Med", "High"))
 str(Allv1)
 ```
-# Checking for any errors in Age factor values, and the proportion of 'medium' to 'high' ages (after being discretized):
+#### Checking for any errors in Age factor values, and the proportion of 'medium' to 'high' ages (after being discretized):
 ```{r}
 MedAge <- sum(Allv1$Age == 'Med')
 HighAge <- sum(Allv1$Age == 'High')
 sum(MedAge+HighAge)
 (MedAge/(MedAge+HighAge))*100
 ```
-# Discretize Weight for males vs females. These discretized ranges were not specified in the original study, so I am using the mean and the factoring into 'below'("Ave") or 'above' ("High") the group average:
+#### Discretize Weight for males vs females. These discretized ranges were not specified in the original study, so I am using the mean and the factoring into 'below'("Ave") or 'above' ("High") the group average:
 ```{r}
 tapply(Allv1$Weight, Allv1$Sex, mean)
 
 Allv1$Weight <- factor(ifelse(Allv1$Weight <= 76.2 & Allv1$Sex == 'Male' | Allv1$Weight <= 70.5 & Allv1$Sex == 'Fmale', "Ave", "High"))
 ```
-# Discretize Blood Pressure (BP):
+#### Discretize Blood Pressure (BP):
 ```{r}
 max(Allv1$BP)
 Allv1$BP <- cut(Allv1$BP, breaks = c(0,89,140,200), labels = c("Low", "Med", "High"))
@@ -185,11 +206,11 @@ BPhigh
 BPcount <- sum(BPlow+BPmed+BPhigh)
 BPcount
 ```
-# Note that no patients had a 'low' blood pressure. Check the proportion of medium to high blood pressure results:
+#### Note that no patients had a 'low' blood pressure. Check the proportion of medium to high blood pressure results:
 ```{r}
 (BPmed/(BPmed+BPhigh))*100
 ```
-# Discretize PUlse Rate (PR). Note: Very low variation in pulse rate (98.3% was categorized with a 'medium' heart rate). THis would make the 'Pulse rate' attribute a good candidate for removal.
+#### Discretize PUlse Rate (PR). Note: Very low variation in pulse rate (98.3% was categorized with a 'medium' heart rate). THis would make the 'Pulse rate' attribute a good candidate for removal.
 ```{r}
 max(Allv1$PR)
 Allv1$PR <- cut(Allv1$PR, breaks = c(0,59,100,200), labels = c("Low", "Med", "High"))
@@ -203,7 +224,7 @@ PRhigh
 PRcount <- sum(PRlow+PRmed+PRhigh)
 PRcount
 ```
-# Discretize Heart Rate Functional Class (Fclass): Class 0 equals 'Med' and classes 1, 2, and 3 equal 'High'.  Note that 69.6% of the patients were evaluated to have a "Medium" Heart Failure Functional Class.
+#### Discretize Heart Rate Functional Class (Fclass): Class 0 equals 'Med' and classes 1, 2, and 3 equal 'High'.  Note that 69.6% of the patients were evaluated to have a "Medium" Heart Failure Functional Class.
 ```{r}
 sum(Allv1$Fclass == 0)
 Allv1$Fclass <- factor(ifelse(Allv1$Fclass == 0, "Med", "High"))
@@ -215,19 +236,19 @@ FChigh
 sum(FCmed+FChigh)
 (FCmed/(FCmed+FChigh))*100
 ```
-# Count the levels and results of the 'Exertional Chest Pain' (ECP) attribute (yes/no entries).  
+#### Count the levels and results of the 'Exertional Chest Pain' (ECP) attribute (yes/no entries).  
 ```{r}
 nlevels(Allv1$ECP)
 sum(Allv1$ECP == 'N')
 ```
-# Deleting this attribute given that there is no variation in the results, and as such, does not improve predictive effectiveness:
+#### Deleting this attribute given that there is no variation in the results, and as such, does not improve predictive effectiveness:
 ```{r}
 Allv1$ECP <- NULL
 Allv2 <- Allv1
 ```
 
 
-# Checking 'Bundle Branch Block' (BBB) for the numbers of LBBB and RBBB results there are in the total (93% of patients had no BBB).
+#### Checking 'Bundle Branch Block' (BBB) for the numbers of LBBB and RBBB results there are in the total (93% of patients had no BBB).
 ```{r}
 sum(Allv2$BBB == 'N')
 sum(Allv2$BBB == 'LBBB')
@@ -235,7 +256,7 @@ sum(Allv2$BBB == 'RBBB')
 
 ```
 
-# Discretizing the 'Fasting Blood Sugar' attribute into 'low', 'med' and 'high':
+#### Discretizing the 'Fasting Blood Sugar' attribute into 'low', 'med' and 'high':
 ```{r}
 max(Allv2$FBS)
 Allv2$FBS <- cut(Allv2$FBS, breaks = c(0,69,105,500), labels = c("Low", "Med", "High"))
@@ -249,7 +270,7 @@ FBShigh
 FBScount <- sum(FBSlow+FBSmed+FBShigh)
 FBScount
 ```
-# Discretizing the 'Creatine' attribute into 'low', 'med' and 'high':
+#### Discretizing the 'Creatine' attribute into 'low', 'med' and 'high':
 ```{r}
 max(Allv2$Cr)
 Allv2$Cr <- cut(Allv2$Cr, breaks = c(0,0.69,1.5,2.5), labels = c("Low", "Med", "High"))
@@ -263,7 +284,7 @@ Crhigh
 CrCount <- sum(Crlow+Crmed+Crhigh)
 CrCount
 ```
-# Discretizing the Triglyceride (TG) variable into 'med' and 'high':
+#### Discretizing the Triglyceride (TG) variable into 'med' and 'high':
 ```{r}
 max(Allv2$TG)
 Allv2$TG <- cut(Allv2$TG, breaks = c(0,200,1100), labels = c("Med", "High"))
@@ -275,7 +296,7 @@ TGhigh
 TGcount <- sum(TGmed+TGhigh)
 TGcount
 ```
-# Discretizing Low Density Lipoprotein (LDL). It appears that the results of the cateorization of Triglycerides exactly matches that of LDL, hence, one of these two attributes can be removed.
+#### Discretizing Low Density Lipoprotein (LDL). It appears that the results of the cateorization of Triglycerides exactly matches that of LDL, hence, one of these two attributes can be removed.
 ```{r}
 max(Allv2$LDL)
 Allv2$LDL <- cut(Allv2$LDL, breaks = c(0,130,250), labels = c("Med", "High"))
@@ -287,7 +308,7 @@ LDLhigh
 LDLcount <- sum(LDLmed+LDLhigh)
 LDLcount
 ```
-# Discretizing High Density Lipoprotein (HDL).
+#### Discretizing High Density Lipoprotein (HDL).
 ```{r}
 max(Allv2$HDL)
 Allv2$HDL <- cut(Allv2$HDL, breaks = c(0,34,120), labels = c("Low", "Med"))
@@ -299,7 +320,7 @@ HDLmed
 HDLcount <- sum(HDLlow+HDLmed)
 HDLcount
 ```
-# Discretizing Blood Urea Nitrogen (BUN):
+#### Discretizing Blood Urea Nitrogen (BUN):
 ```{r}
 max(Allv2$BUN)
 Allv2$BUN <- cut(Allv2$BUN, breaks = c(0,6,20,55), labels = c("Low", "Med", "High"))
@@ -314,7 +335,7 @@ BUNcount <- sum(BUNlow+BUNmed+BUNhigh)
 BUNcount
 ```
 
-# Taking steps to discretize 'Erythrocyte Sedimentation Rate' (ESR). If male and ESR <= age/2 OR if female and ESR <= (age/2)+5 then ESR is considered "Mediium".  If male and ESR is > age/2 OR if female and ESR > (age/2)+5, then ESR is considered "High":
+#### Taking steps to discretize 'Erythrocyte Sedimentation Rate' (ESR). If male and ESR <= age/2 OR if female and ESR <= (age/2)+5 then ESR is considered "Mediium".  If male and ESR is > age/2 OR if female and ESR > (age/2)+5, then ESR is considered "High":
 ```{r}
 tempAge <- data.frame(FullSetB4[,1:3, 44])
 
@@ -333,7 +354,7 @@ str(tempAge3)
 Allv2$ESR <- tempAge3$ESR
 ```
 
-# Discretizing Hemoglobin (Hb). If male & Hb < 14 or if female and Hb is < 12.5, then Hb is "Low". If male & Hb is >= 14 but <= 17 OR if female and Hb is >= 12 but <= 15, then Hb is "Medium". If male & Hb > 17 or if female and Hb is > 15, then Hb is "High".
+#### Discretizing Hemoglobin (Hb). If male & Hb < 14 or if female and Hb is < 12.5, then Hb is "Low". If male & Hb is >= 14 but <= 17 OR if female and Hb is >= 12 but <= 15, then Hb is "Medium". If male & Hb > 17 or if female and Hb is > 15, then Hb is "High".
 ```{r}
 tempHb <- data.frame(Allv2[,3:44])
 tempHb[,2:41] <- NULL
@@ -344,7 +365,7 @@ Allv2$Hb <- as.factor(tempHb$Hb)
 #str(Allv2)
 ```
 
-# Discretizing Potassium (K):
+#### Discretizing Potassium (K):
 ```{r}
 max(Allv2$K)
 Allv2$K <- cut(Allv2$K, breaks = c(0,3.7,5.6,6.8), labels = c("Low", "Med", "High"))
@@ -359,7 +380,7 @@ Kcount <- sum(Klow+Kmed+Khigh)
 Kcount
 ```
 
-# Discretizing Sodium (Na):
+#### Discretizing Sodium (Na):
 ```{r}
 max(Allv2$Na)
 Allv2$Na <- cut(Allv2$Na, breaks = c(0,135,146,157), labels = c("Low", "Med", "High"))
@@ -373,7 +394,7 @@ NaHigh
 NaCount <- sum(NaLow+NaMed+NaHigh)
 NaCount
 ```
-# Discretizing White Blood Cell (WBC) count:
+#### Discretizing White Blood Cell (WBC) count:
 ```{r}
 max(Allv2$WBC)
 Allv2$WBC <- cut(Allv2$WBC, breaks = c(0,3999,11000,19000), labels = c("Low", "Med", "High"))
@@ -387,7 +408,7 @@ WBChigh
 WBCcount <- sum(WBClow+WBCmed+WBChigh)
 WBCcount
 ```
-# Discretizing Lymphocyte (Lymph) percentage results (See reference 21 on Literature Review).  Spreading the results into 3 sections: 'Low', 'Med' and 'High'.
+#### Discretizing Lymphocyte (Lymph) percentage results (See reference 21 on Literature Review).  Spreading the results into 3 sections: 'Low', 'Med' and 'High'.
 ```{r}
 max(Allv2$Lymph)
 Allv2$Lymph <- cut(Allv2$Lymph, breaks = c(0,17,45,65), labels = c("Low", "Med", "High"))
@@ -401,7 +422,7 @@ LymphHigh
 LymphCount <- sum(LymphLow+LymphMed+LymphHigh)
 LymphCount
 ```
-# Discretizing Neutrophil (Neut) percentage results (See reference 22 on Literature Review).  Spreading the results into 3 sections: 'Low', 'Med' and 'High'.
+#### Discretizing Neutrophil (Neut) percentage results (See reference 22 on Literature Review).  Spreading the results into 3 sections: 'Low', 'Med' and 'High'.
 ```{r}
 max(Allv2$Neut)
 Allv2$Neut <- cut(Allv2$Neut, breaks = c(0,44,75,90), labels = c("Low", "Med", "High"))
@@ -415,7 +436,7 @@ NeutHigh
 NeutCount <- sum(NeutLow+NeutMed+NeutHigh)
 NeutCount
 ```
-# Discretizing Ejection Fraction (EF):
+#### Discretizing Ejection Fraction (EF):
 ```{r}
 max(Allv2$EF)
 Allv2$EF <- cut(Allv2$EF, breaks = c(0,50,120), labels = c("Low", "Med"))
@@ -427,7 +448,7 @@ EFmed
 EFcount <- sum(EFlow+EFmed)
 EFcount
 ```
-# Discretizing Platelet (PLT) count (Note: 96% of patients had 'Medium' counts)
+#### Discretizing Platelet (PLT) count (Note: 96% of patients had 'Medium' counts)
 ```{r}
 max(Allv2$PLT)
 Allv2$PLT <- cut(Allv2$PLT, breaks = c(0,149,450,750), labels = c("Low", "Med", "High"))
@@ -441,7 +462,7 @@ PLThigh
 PLTcount <- sum(PLTlow+PLTmed+PLThigh)
 PLTcount
 ```
-# Discretizing Regional Wall Motion Abnormality (RWMA). RWMA = 0 is 'Med', RWMA != to 0 are 'High').  Found that 71.6% were found to be 'Medium'.
+#### Discretizing Regional Wall Motion Abnormality (RWMA). RWMA = 0 is 'Med', RWMA != to 0 are 'High').  Found that 71.6% were found to be 'Medium'.
 ```{r}
 sum(Allv2$RWMA == 0)
 Allv2$RWMA <- factor(ifelse(Allv2$RWMA == 0, "Med", "High"))
@@ -453,7 +474,7 @@ RWMAhigh
 sum(RWMAmed+RWMAhigh)
 (RWMAmed/(RWMAmed+RWMAhigh))*100
 ```
-# Removing the 'BMI' attribute since this is captured in the 'Obesity' attribute (given that a BMI result that is over 25 is considered 'Obese'). Matching the removed attributes for the 'before' and 'after' (discretization) data sets:
+#### Removing the 'BMI' attribute since this is captured in the 'Obesity' attribute (given that a BMI result that is over 25 is considered 'Obese'). Matching the removed attributes for the 'before' and 'after' (discretization) data sets:
 ```{r}
 Allv2$BMI <- NULL
 
@@ -464,7 +485,6 @@ FullSetB4$ECP <- NULL
 ```{r}
 #str(Allv2)
 ```
-
 
 ```{r}
 AllvFinal <- Allv2
@@ -494,7 +514,7 @@ AllvFinal$VHD <- factor(AllvFinal$VHD, levels = c("N", "mild", "Moderate", "Seve
 str(AllvFinal)
 ```
 
-# Taking the completed (and discretized) 'Allv2' data frame and saving it as 4 separate attribute groups (data frames); to be used for the rest of the predictions/modeling.  Keeping the dependent result (CAD) at this stage:
+#### Taking the completed (and discretized) 'Allv2' data frame and saving it as 4 separate attribute groups (data frames); to be used for the rest of the predictions/modeling.  Keeping the dependent result (CAD) at this stage:
 ```{r}
 Demo <- data.frame(Allv2[,1:15])
 Demo$CAD <- Allv2$CAD
@@ -509,7 +529,7 @@ LAB <- data.frame(Allv2[,36:52])
 LAB$CAD <- Allv2$CAD
 ```
 
-# Taking the data set before discretizing and factoring (FullSetB4) and saving it as 4 separate attribute groups (data frames); to be used for analysis. First removing the 'ECP' and 'BMI' attributes (to match the discretized data set):
+#### Taking the data set before discretizing and factoring (FullSetB4) and saving it as 4 separate attribute groups (data frames); to be used for analysis. First removing the 'ECP' and 'BMI' attributes (to match the discretized data set):
 ```{r}
 FullSetB42 <- FullSetB4
 
@@ -526,16 +546,16 @@ LABB4 <- data.frame(FullSetB42[,36:52])
 LABB4$CAD <- FullSetB42$CAD
 ```
 
-UNIVARIATE ANALYSIS:
+### UNIVARIATE ANALYSIS:
 
-#  Correlation coefficients for the 'LAB' results show no correlation (other than the negative correlation between Lymphocyte and Neutrophil results). With regards to this inverse relationship, an abnormal increase in one kind of white blood cell can cause a decrease in another kind. Both abnormal results can be due to the same underlying condition.
+####  Correlation coefficients for the 'LAB' results show no correlation (other than the negative correlation between Lymphocyte and Neutrophil results). With regards to this inverse relationship, an abnormal increase in one kind of white blood cell can cause a decrease in another kind. Both abnormal results can be due to the same underlying condition.
 ```{r}
 library(GGally)
 
 LABcor3 <- ggcorr(LABB4[1:15], palette = "RdY1Gn", label = TRUE)
 LABcor3
 ```
-# Looking into the Neutrophil to Lymphocyte relationship further.  Calculating the NLR (neutrophil-lymphocyte ratio) below. Reference # 24 shows that they have identified that the normal NLR values in an adult, non-geriatric, population in good health are between 0.78 and 3.53. 
+#### Looking into the Neutrophil to Lymphocyte relationship further.  Calculating the NLR (neutrophil-lymphocyte ratio) below. Reference # 24 shows that they have identified that the normal NLR values in an adult, non-geriatric, population in good health are between 0.78 and 3.53. 
 ```{r}
 NLR <- data.frame(FullSetB42[48:47])
 NLR$Ratio <- NLR$Neut/NLR$Lymph
@@ -558,46 +578,46 @@ NLRcount <- sum(NLRlow+NLRmed+NLRhigh)
 NLRcount
 ```
 
-# Include remaining numeric attributes for further correlation overview: Shows no significant correlation results, other than what was already found:
+#### Include remaining numeric attributes for further correlation overview: Shows no significant correlation results, other than what was already found:
 ```{r}
 library(GGally)
 
 Allints1 <- ggcorr(FullSetB42[,c(1:2, 16:17, 36:50)], palette = "RdY1Gn", label = TRUE)
 Allints1
 ```
-# Boxplot of Low Density Lipoprotein (LDL), High Density Lipoprotein (HDL), Blood Urea Nitrogen (BUN), and Erythrocyte Sedimentation Rate (ESR):
+#### Boxplot of Low Density Lipoprotein (LDL), High Density Lipoprotein (HDL), Blood Urea Nitrogen (BUN), and Erythrocyte Sedimentation Rate (ESR):
 ```{r}
 attach(LABB4)
 boxplot(LDL, HDL, BUN, ESR, col = c("cadetblue1", "antiquewhite", "chartreuse", "darkseagreen1"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
 legend("topright", c("LDL", "HDL", "BUN", "ESR"),fill = c("cadetblue1", "antiquewhite", "chartreuse", "darkseagreen1"))
 ```
-# Boxplot of Sodium (Na), Lymphocyte % (Lymph), Neutrophil % (Neut), and Ejection Fraction % (EF):
+#### Boxplot of Sodium (Na), Lymphocyte % (Lymph), Neutrophil % (Neut), and Ejection Fraction % (EF):
 ```{r}
 boxplot(Na, Lymph, Neut, EF, col = c("indianred1", "antiquewhite", "chartreuse", "gold"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
 legend("topright", c("Na", "Lymph", "Neut", "EF"),fill = c("indianred1", "antiquewhite", "chartreuse", "gold"))
 ```
-# Boxplot of Triglyceride (TG), Platelet (PLT), and Fasting Blood Sugar (FBS):
+#### Boxplot of Triglyceride (TG), Platelet (PLT), and Fasting Blood Sugar (FBS):
 ```{r}
 boxplot(TG, PLT, FBS, col = c("aquamarine","indianred1", "gray90"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
 legend("topright", c("TG", "PLT", "FBS"),fill = c("aquamarine","indianred1", "gray90"))
 ```
-# Boxplot of Hemoglobin (Hb), Potassium (K), and Creatine (Cr):
+#### Boxplot of Hemoglobin (Hb), Potassium (K), and Creatine (Cr):
 ```{r}
 boxplot(Hb, K, Cr, col = c("aquamarine","indianred1", "gray90"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
 legend("topright", c("Hb", "K", "Cr"),fill = c("aquamarine","indianred1", "gray90"))
 ```
-# Boxplot of White Blood Cell (WBC) count:
+#### Boxplot of White Blood Cell (WBC) count:
 ```{r}
 boxplot(WBC, col = c("antiquewhite"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
 legend("topright", c("WBC"),fill = c("antiquewhite"))
 ```
-# Boxplot to show distribution of Age and Weight:
+#### Boxplot to show distribution of Age and Weight:
 ```{r}
 attach(DemoB4)
 boxplot(Age, Weight, col = c("aquamarine","gray90"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
 legend("topright", c("Age", "Weight"),fill = c("aquamarine","gray90"))
 ```
-# Shapiro tests of normality (H0: Distribution is normal; Reject null if p-value is less than .05). Note: sensitive when n>80. This test shows that 'Age' is NOT normally distributed.
+#### Shapiro tests of normality (H0: Distribution is normal; Reject null if p-value is less than .05). Note: sensitive when n>80. This test shows that 'Age' is NOT normally distributed.
 ```{r}
 library(psych)
 
@@ -605,7 +625,7 @@ describe(DemoB4$Age)
 AgeNorm <- shapiro.test((DemoB4$Age))
 AgeNorm
 ```
-# Hence, weight is also not normally distributed in this study.
+#### Hence, weight is also not normally distributed in this study.
 ```{r}
 library(psych)
 
@@ -613,36 +633,36 @@ describe(DemoB4$Weight)
 WeightNorm <- shapiro.test((DemoB4$Weight))
 WeightNorm
 ```
-# And BMI is also not normally distributed.
+#### And BMI is also not normally distributed.
 ```{r}
 describe(Allv1$BMI)
 BMINorm <- shapiro.test((Allv1$BMI))
 BMINorm
 ```
-# Can (carefully) use 'describe' for categorical variables too (since the psych package recodes categories as numbers):
+#### Can (carefully) use 'describe' for categorical variables too (since the psych package recodes categories as numbers):
 ```{r}
 library(psych)
 describe(FullSetB42[1:17])
 ```
-# Boxplot to show distribution of Blood Pressure and Pulse Rate
+#### Boxplot to show distribution of Blood Pressure and Pulse Rate
 ```{r}
 attach(SymptomB4)
 boxplot(BP, PR, col = c("blue","indianred1"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
 legend("topright", c("Blood Pressure", "Pulse Rate"),fill = c("blue","indianred1"))
 ```
-# Blood Pressure (BP) is not normally distributed:
+#### Blood Pressure (BP) is not normally distributed:
 ```{r}
 describe(SymptomB4$BP)
 BPNorm <- shapiro.test((SymptomB4$BP))
 BPNorm
 ```
-# Pulse Rate is not normally distributed:
+#### Pulse Rate is not normally distributed:
 ```{r}
 describe(SymptomB4$PR)
 PRNorm <- shapiro.test((SymptomB4$PR))
 PRNorm
 ```
-# Density plot of weight and sex (before discretization):
+#### Density plot of weight and sex (before discretization):
 ```{r}
 library(ggplot2)
 library(dplyr)
@@ -657,7 +677,7 @@ DDen1 <- ggplot(DemoB4, aes(x = Weight, fill = Sex)) +
              linetype = "dashed")
 DDen1
 ```
-# Density plot of BMI and sex (before discretization):
+#### Density plot of BMI and sex (before discretization):
 ```{r}
 BMIMu <- ddply(Allv1, "Sex", summarise, grp.mean=mean(BMI))
 head(BMIMu)
@@ -668,64 +688,64 @@ BMIden <- ggplot(Allv1, aes(x = BMI, fill = Sex)) +
              linetype = "dashed")
 BMIden
 ```
-# Will be completing a number of ASSOCIATIONS between many categorical variables, starting with a few straight forward investigation into commonly accepted 'associations'. Interpretation of results when K = 2:  SMALL Association: 0.10 - < 0.30; MEDIUM Association: 0.30 - < 0.50; LARGE Association: ??? 0.50
+#### Will be completing a number of ASSOCIATIONS between many categorical variables, starting with a few straight forward investigation into commonly accepted 'associations'. Interpretation of results when K = 2:  SMALL Association: 0.10 - < 0.30; MEDIUM Association: 0.30 - < 0.50; LARGE Association: ??? 0.50
 
-# Starting with Diabetes (DM) and Hypertension (HTN): Shows small association
+#### Starting with Diabetes (DM) and Hypertension (HTN): Shows small association
 ```{r}
 library(lsr)
 
 AllCatB4 <- Allv2[,c(3:15, 18:24,26:35)]
 cramersV(AllCatB4$DM, AllCatB4$HTN)
 ```
-# Ex-Smoker and Obesity shows no association:
+#### Ex-Smoker and Obesity shows no association:
 ```{r}
 cramersV(AllCatB4$ExSmoker,AllCatB4$Obesity)
 ```
-# Ex-Smoker and Obesity shows no association:
+#### Ex-Smoker and Obesity shows no association:
 ```{r}
 cramersV(AllCatB4$DM,AllCatB4$Obesity)
 ```
 
-# Hypertensin and current smoker has a small association:
+#### Hypertensin and current smoker has a small association:
 ```{r}
 cramersV(AllCatB4$HTN,AllCatB4$Smoker)
 ```
 
-# Hypertension and Stroke (CVA) has no association:
+#### Hypertension and Stroke (CVA) has no association:
 ```{r}
 cramersV(AllCatB4$HTN,AllCatB4$CVA)
 ```
-# Congestive Heart Failure (CHF) and Obsesity has no association (see below):
+#### Congestive Heart Failure (CHF) and Obsesity has no association (see below):
 ```{r}
 cramersV(AllCatB4$CHF,AllCatB4$Obesity)
 ```
 
-# Determining whether there is any significant variation in the 'NCP' column: Very low variation (94.7% of NCP entries are 'No')
+#### Determining whether there is any significant variation in the 'NCP' column: Very low variation (94.7% of NCP entries are 'No')
 ```{r}
 NCPn <- sum(FullSetB42$NCP == 'N')
 NCPy <- sum(FullSetB42$NCP == 'Y')
 (NCPn/(NCPn+NCPy))*100
 ```
 
-# Determining whether there is any significant variation in the 'ACP' column: 69.3% of these 'ACP' entries are 'No'
+#### Determining whether there is any significant variation in the 'ACP' column: 69.3% of these 'ACP' entries are 'No'
 ```{r}
 ACPn <- sum(FullSetB42$ACP == 'N')
 ACPy <- sum(FullSetB42$ACP == 'Y')
 (ACPn/(ACPn+ACPy))*100
 ```
 
-# Barplot of BBB attribute
+#### Barplot of BBB attribute
 ```{r}
 barplot(prop.table(table(FullSetB42$BBB)))
 ```
-# Barplot of VHD attribute
+#### Barplot of VHD attribute
 ```{r}
 barplot(prop.table(table(FullSetB42$VHD)))
 ```
 
-# Feature selection on all the attributes combined, as well as on the 4 individual attribute groups - using the FSelector package:
+### Feature selection on all the attributes combined, as well as on the 4 individual attribute groups - using the FSelector package:
 
-# Starting with the full data set - selected: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + NCP + DM + Tinv + VHD
+#### Starting with the full data set - selected: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + NCP + DM + Tinv + VHD
 ```{r}
 library(FSelector)
 
@@ -736,7 +756,7 @@ FSall <- as.simple.formula(subset, "CAD")
 print(FSall)
 ```
 
-# Next, using the 'Demo' (Demographic) attribute data set - results:  CAD ~ Age + HTN + DM + CRF + AD
+#### Next, using the 'Demo' (Demographic) attribute data set - results:  CAD ~ Age + HTN + DM + CRF + AD
 ```{r}
 DemoWeights <- chi.squared(CAD~.,Demo)
 print(DemoWeights)
@@ -745,7 +765,7 @@ FSdemo <- as.simple.formula(subset, "CAD")
 print(FSdemo)
 ```
 
-# Next, using the 'Symptom' (Symptom & Examination) attribute data set - results:  CAD ~ TCP + ACP + NCP + DiaM + BP
+#### Next, using the 'Symptom' (Symptom & Examination) attribute data set - results:  CAD ~ TCP + ACP + NCP + DiaM + BP
 ```{r}
 SymWeights <- chi.squared(CAD~.,Symptom)
 print(SymWeights)
@@ -754,7 +774,7 @@ FSsym <- as.simple.formula(subset, "CAD")
 print(FSsym)
 ```
 
-# Next, using the 'ECG'attribute data set - results:  CAD ~ Tinv + QWave + STdep + STelev + PoorR
+#### Next, using the 'ECG'attribute data set - results:  CAD ~ Tinv + QWave + STdep + STelev + PoorR
 ```{r}
 ECGWeights <- chi.squared(CAD~.,ECG)
 print(ECGWeights)
@@ -763,7 +783,7 @@ FSecg <- as.simple.formula(subset, "CAD")
 print(FSecg)
 ```
 
-# Lastly, using the 'LAB' (Laboratory and Echocardiographic) attribute data set - results:  CAD ~ RWMA + EF + VHD + FBS + Lymph 
+#### Lastly, using the 'LAB' (Laboratory and Echocardiographic) attribute data set - results:  CAD ~ RWMA + EF + VHD + FBS + Lymph 
 ```{r}
 LABWeights <- chi.squared(CAD~.,LAB)
 print(LABWeights)
@@ -772,9 +792,9 @@ FSlab <- as.simple.formula(subset, "CAD")
 print(FSlab)
 ```
 
-# Now, comparing these discretized results with those from before discretization:
+### Now, comparing these discretized results with those from before discretization:
 
-# Using the full data set (FullSetB42) - results: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + *BP* + NCP + DM + *FBS* (while the discretized results were: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + NCP + DM + Tinv + VHD).  NOTE: The top 6 were the same for both data sets (and 8 of the top 10 were shared across both data sets)
+#### Using the full data set (FullSetB42) - results: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + *BP* + NCP + DM + *FBS* (while the discretized results were: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + NCP + DM + Tinv + VHD).  NOTE: The top 6 were the same for both data sets (and 8 of the top 10 were shared across both data sets)
 ```{r}
 AllB4Weights <- chi.squared(CAD~.,FullSetB42)
 print(AllB4Weights)
@@ -783,7 +803,7 @@ FSB4all <- as.simple.formula(subset, "CAD")
 print(FSB4all)
 ```
 
-# Comparing the discretized feature selection results found using the 'FSelector' package with the results using the 'FSelectorRcpp' package - results: CAD ~ TCP + ACP + RWMA + EF + HTN + Age + DM + NCP + Tinv + FBS
+#### Comparing the discretized feature selection results found using the 'FSelector' package with the results using the 'FSelectorRcpp' package - results: CAD ~ TCP + ACP + RWMA + EF + HTN + Age + DM + NCP + Tinv + FBS
 ```{r}
 library(FSelectorRcpp)
 library(tidyverse)
@@ -805,7 +825,7 @@ print(FS2all)
 
 ```
 
-# Lastly, comparing the output of the FSelectorRcpp package using the data set that was not discretized yet (FullSetB42 data set) - result:  CAD ~ TCP + ACP + RWMA + Age + EF + HTN + DM + BP + NCP + Tinv
+#### Lastly, comparing the output of the FSelectorRcpp package using the data set that was not discretized yet (FullSetB42 data set) - result:  CAD ~ TCP + ACP + RWMA + Age + EF + HTN + DM + BP + NCP + Tinv
 ```{r}
 FS2B4all <- information_gain(
   formula = CAD~.,
@@ -822,7 +842,7 @@ to_formula(
 )
 print(FS2B4all)
 ```
-# Checking on strength of associations between top 12 attributes and the dependent variable, ranked in descending order:
+#### Checking on strength of associations between top 12 attributes and the dependent variable, ranked in descending order:
 ```{r}
 library(lsr)
 
@@ -840,7 +860,7 @@ cramersV(AllvFinal$Tinv, AllvFinal$CAD)
 cramersV(AllvFinal$BP, AllvFinal$CAD)
 ```
 
-# Checking on the strength of associations between the top 12 attributes and each other:
+#### Checking on the strength of associations between the top 12 attributes and each other:
 ```{r}
 cramersV(AllvFinal$TCP, AllvFinal$ACP)
 cramersV(AllvFinal$HTN, AllvFinal$BP)
@@ -856,7 +876,7 @@ cramersV(AllvFinal$RWMA, AllvFinal$Age)
 cramersV(AllvFinal$HTN, AllvFinal$Age)
 
 ```
-# Checking associations between the final variables that do not have a statistically significant relationship with the dependent variable (per the logistic regression results later).  That is, checkint ACP and NCP against each other, and the other variables, including TCP, EF, RWMA, HTN, Age and DM (as well as the dependent variable).  NOTE: When DF=1, the interpretation of the Cramer's V results (effect) would be as follows: (0.10 = small effect) (0.30 = medium effect) (0.50=large effect)
+#### Checking associations between the final variables that do not have a statistically significant relationship with the dependent variable (per the logistic regression results later).  That is, checkint ACP and NCP against each other, and the other variables, including TCP, EF, RWMA, HTN, Age and DM (as well as the dependent variable).  NOTE: When DF=1, the interpretation of the Cramer's V results (effect) would be as follows: (0.10 = small effect) (0.30 = medium effect) (0.50=large effect)
 ```{r}
 library(lsr)
 
@@ -876,18 +896,18 @@ cramersV(AllvFinal$NCP, AllvFinal$Age)
 cramersV(AllvFinal$NCP, AllvFinal$DM)
 cramersV(AllvFinal$NCP, AllvFinal$CAD)
 ```
-# Creating the final variable data set using the FSelector package:
+#### Creating the final variable data set using the FSelector package:
 ```{r}
 TenVars <- AllvFinal[, c("TCP", "ACP", "RWMA", "EF", "Age", "HTN", "NCP", "DM", "Tinv", "VHD", "CAD")]
 #TenVars
 ```
 
-# Creating a second final variable data set using the FSelectorRcpp package:
+#### Creating a second final variable data set using the FSelectorRcpp package:
 ```{r}
 TenVars2 <- AllvFinal[, c("TCP", "ACP", "RWMA", "EF", "HTN", "Age", "DM", "NCP", "Tinv", "FBS", "CAD")]
 #TenVars2
 ```
-# Using createDataPartition() to split data into training and test sets (75% and 25%). Since the outcome variable (CAD) is categorical, this function will make sure that the distribution of outcome variable classes will be similar in both of the sets.
+#### Using createDataPartition() to split data into training and test sets (75% and 25%). Since the outcome variable (CAD) is categorical, this function will make sure that the distribution of outcome variable classes will be similar in both of the sets.
 ```{r}
 library(caret)
 
@@ -900,7 +920,7 @@ AllvFtest <- AllvFinal[-index,]
 #str(AllvFtrain)
 ```
 
-# Using 'Recursive Feature Elimination' to find the best subset of atttributes to use for modeling. 
+#### Using 'Recursive Feature Elimination' to find the best subset of atttributes to use for modeling. 
 ```{r}
 library(plyr)
 
@@ -918,12 +938,12 @@ CAD_Profile$optVariables[1:8]
 
 ```
 
-# Taking the top 8 predictors:
+#### Taking the top 8 predictors:
 ```{r}
 predictors <-c("TCP", "EF", "RWMA", "NCP", "ACP", "HTN", "Age", "DM")
 ```
 
-# Random Forest Training
+### Random Forest Training
 ```{r results='hide', message=FALSE, warning=FALSE}
 
 fitCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote")
@@ -935,14 +955,14 @@ varImp(object = rfFit)
 plot(varImp(object = rfFit),main="Random Forest - Variable Importance")
 ```
 
-# Random Forest Predictions
+#### Random Forest Predictions
 ```{r}
 RFpredictions <- predict.train(object = rfFit, AllvFtest[,predictors], type = "raw")
 table(RFpredictions)
 
 confusionMatrix(RFpredictions, AllvFtest[,outcomeName])
 
-RFcm <- confusionMatrix(RFpredictions, AllvFtest[,outcomeName])
+RFcm <- confusionMatrix(RFpredictions, AllvFtest[,outcomeName], mode = 'everything')
 
 RFcm$table %>%
   data.frame() %>% 
@@ -958,7 +978,7 @@ RFcm$table %>%
   geom_tile(color = "black", fill = "black", alpha = 0)
 ```
 
-# Training for Naive Bayes:
+### Training for Naive Bayes:
 ```{r results='hide', message=FALSE, warning=FALSE}
 
 library(klaR)
@@ -971,12 +991,12 @@ varImp(object = NBfit)
 plot(varImp(object = NBfit),main="Naive Bayes - Variable Importance")
 ```
 
-# Naive Bayes Predictions:
+#### Naive Bayes Predictions:
 ```{r}
 NBpredictions <- predict.train(object = NBfit, AllvFtest[,predictors])
 table(NBpredictions)
 
-confusionMatrix(NBpredictions, AllvFtest[,outcomeName])
+confusionMatrix(NBpredictions, AllvFtest[,outcomeName], mode = 'everything')
 
 NBcm <- confusionMatrix(NBpredictions, AllvFtest[,outcomeName])
 
@@ -994,7 +1014,7 @@ NBcm$table %>%
   geom_tile(color = "black", fill = "black", alpha = 0)
 ```
 
-# Training for Logistic Regression:
+### Training for Logistic Regression:
 ```{r results='hide', message=FALSE, warning=FALSE}
 
 LRfitCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote")
@@ -1005,7 +1025,7 @@ varImp(object = LRFit)
 plot(varImp(object = LRFit), main="Logistic Regression - Variable Importance")
 ```
 
-# Logistic Regression Predictions:
+#### Logistic Regression Predictions:
 ```{r}
 library(tidyverse)
 
@@ -1014,7 +1034,7 @@ table(LRpredictions)
 
 confusionMatrix(LRpredictions, AllvFtest[,outcomeName])
 
-LRcm <- confusionMatrix(LRpredictions, AllvFtest[,outcomeName])
+LRcm <- confusionMatrix(LRpredictions, AllvFtest[,outcomeName], mode = 'everything')
 
 LRcm$table %>%
   data.frame() %>% 
@@ -1029,14 +1049,14 @@ LRcm$table %>%
   scale_x_discrete(position = "top") +
   geom_tile(color = "black", fill = "black", alpha = 0)
 ```
-# Brier Score for Logistic Regression model:
+#### Brier Score for Logistic Regression model:
 ```{r}
 
 
 ```
 
 
-# Ensamble evaluation:
+#### Ensamble evaluation:
 ```{r results='hide', message=FALSE, warning=FALSE}
 #library(caretEnsemble)
 
@@ -1051,7 +1071,7 @@ LRcm$table %>%
 ```
 
 
-# Model comparisons:
+#### Model comparisons:
 ```{r}
 
 #ModelCompare <- resamples(list(RF = rfFit, NB = NBfit, LR = LRFit))
@@ -1059,7 +1079,7 @@ LRcm$table %>%
 #summary(ModelCompare)
 ```
 
-# Checking on the direction of log odds for a one unit increase in the selected features (using logistic regression) to confirm the relationship between the independent variables and the dependent variable (CAD or Normal):
+#### Checking on the direction of log odds for a one unit increase in the selected features (using logistic regression) to confirm the relationship between the independent variables and the dependent variable (CAD or Normal):
 ```{r warning=FALSE}
 logiTrain <- data.frame(AllvFtrain[,c(23,51,27,26,50,1,5,4,53)])
 
@@ -1069,35 +1089,36 @@ str(logiTrain)
 LRlogit <- glm(CAD~.,logiTrain, family = "binomial")
 summary(LRlogit)
 ```
-# Explanatin of the order of factor variables for the logistic regression output in R:  R will use the alphabetical order of the variable results - and choose the letter that is higher in the alphabet as the reference variable (which is typically coded automatically with a '1', versus '0' - or a '2' vs '1' on the str() output). As such, 'Normal' would be the reference variable (equal to '2' on the str() output.).  However, 'CAD' should be the reference variable and so I have 're-leveled' that attribute so that 'CAD' is used as the reference (and as such, is showing as a '2' on the str() output).
+#### Explanation of the order of factor variables for the logistic regression output in R:  R will use the alphabetical order of the variable results - and choose the letter that is higher in the alphabet as the reference variable (which is typically coded automatically with a '1', versus '0' - or a '2' vs '1' on the str() output). As such, 'Normal' would be the reference variable (equal to '2' on the str() output.).  However, 'CAD' should be the reference variable and so I have 're-leveled' that attribute so that 'CAD' is used as the reference (and as such, is showing as a '2' on the str() output).
 
-# Other variables explained for the glm output:
-# TCP: 'Yes', or '1', is base case (hence shows '2' on str() output.
-# ACP: Same base case behaviour as TCP.  This happens automatically because 'Y' comes after 'N' in the alphabet. 'Y' is showing with a '2' on the str() output.
-# RWMA: 'High' is the base case and is the '2' on str() output. This factor has been 'ordered' so that even though the 'H' in 'High' comes before the 'M' in 'Med', High is treated as the base case (and is assigned the '2' on the str() output.
-# EF is also an 'ordered factor', and so it has 'Med' as the base case (and is the '2' on the str() output).
-# NCP:  Is the same as ACP (for 'Y' and 'N', and 'Y' being the base case)
-# Age:  Is treated the same as RWMA - so, 'High' is the base case.
-# HTN: Is treated the same as TCP
-# DM: Is treated the same as TCP
-# CAD: Releveled so that CAD is the reference (base case); as such the str() output shows 'CAD' as '2', even though 'C' comes before 'N' (for 'Normal') in the alphabet.
+#### Other variables explained for the glm output:
 
-
-# GLM Output interpretation:
-
-# Note: The ACP result is not connected to the dependent variable in a  statistically significant way. (This needs more investigation.)
-
-# TCP: For a one unit increase in TCP, the log odds of being diagnosed with Coronary Artery Disease increases by 3.30238
-# ACP: For a one unit increase in ACP, the log odds of being diagnosed with Coronary Artery Disease increases by 0.05199 (*Note: Not statistically significant relationship, per the p-value)
-# RWMA: For a one unit increase in RWMA, the log odds of being diagnosed with Coronary Artery Disease increases by 1.67934
-# EF: For a one unit increase in EF, the log odds of being diagnosed with Coronary Artery Disease DECREASES by 1.02024
-# NCP: For a one unit increase in NCP, the log odds of being diagnosed with Coronary Artery Disease DECREASES by 1.78913 (*Note: not statistically significant, just outside of significance range per the p-value)
-# Age: For a one unit increase in Age, the log odds of being diagnosed with Coronary Artery Disease increases by 1.38648
-# HTN: For a one unit increase in HTN, the log odds of being diagnosed with Coronary Artery Disease increases by 1.22778
-# DM: For a one unit increase in DM, the log odds of being diagnosed with Coronary Artery Disease increases by 1.54412
+#### TCP: 'Yes', or '1', is base case (hence shows '2' on str() output.
+#### ACP: Same base case behaviour as TCP.  This happens automatically because 'Y' comes after 'N' in the alphabet. 'Y' is showing with a '2' on the str() output.
+#### RWMA: 'High' is the base case and is the '2' on str() output. This factor has been 'ordered' so that even though the 'H' in 'High' comes before the 'M' in 'Med', High is treated as the base case (and is assigned the '2' on the str() output.
+#### EF is also an 'ordered factor', and so it has 'Med' as the base case (and is the '2' on the str() output).
+#### NCP:  Is the same as ACP (for 'Y' and 'N', and 'Y' being the base case)
+#### Age:  Is treated the same as RWMA - so, 'High' is the base case.
+#### HTN: Is treated the same as TCP
+#### DM: Is treated the same as TCP
+#### CAD: Releveled so that CAD is the reference (base case); as such the str() output shows 'CAD' as '2', even though 'C' comes before 'N' (for 'Normal') in the alphabet.
 
 
-# Documenting and plotting the stability of the algorithms using different numbers of 'folds' during cross validation - starting with the Random Forest algorithm:
+### GLM Output interpretation:
+
+#### Note: The ACP result is not connected to the dependent variable in a  statistically significant way. (This needs more investigation.)
+
+#### TCP: For a one unit increase in TCP, the log odds of being diagnosed with Coronary Artery Disease increases by 3.30238
+#### ACP: For a one unit increase in ACP, the log odds of being diagnosed with Coronary Artery Disease increases by 0.05199 (*Note: Not statistically significant relationship, per the p-value)
+#### RWMA: For a one unit increase in RWMA, the log odds of being diagnosed with Coronary Artery Disease increases by 1.67934
+#### EF: For a one unit increase in EF, the log odds of being diagnosed with Coronary Artery Disease DECREASES by 1.02024
+#### NCP: For a one unit increase in NCP, the log odds of being diagnosed with Coronary Artery Disease DECREASES by 1.78913 (*Note: not statistically significant, just outside of significance range per the p-value)
+#### Age: For a one unit increase in Age, the log odds of being diagnosed with Coronary Artery Disease increases by 1.38648
+#### HTN: For a one unit increase in HTN, the log odds of being diagnosed with Coronary Artery Disease increases by 1.22778
+#### DM: For a one unit increase in DM, the log odds of being diagnosed with Coronary Artery Disease increases by 1.54412
+
+
+### Documenting and plotting the stability of the algorithms using different numbers of 'folds' during cross validation - starting with the Random Forest algorithm:
 ```{r}
 RFstability <- data.frame(Accuracy=rep(0.9067,7), Sensitivity=rep(0.9259, 7), Specificity=rep(0.8571,7))
 rownames(RFstability) <- c(3,5,7,10,15,20,25)
@@ -1134,7 +1155,7 @@ legend('bottomright',legend=colnames(RFstability), pch=pch,
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
 ```
 
-# Next, plotting the stability of the Naive Bayes algorithm:
+#### Next, plotting the stability of the Naive Bayes algorithm:
 ```{r}
 RFstability <- data.frame(Accuracy=c(0.8533, 0.8667, 0.8667, 0.8667, 0.8533, 0.8533, 0.8533 ), Sensitivity=c(0.8333, 0.8519, 0.8519, 0.8519, 0.8333, 0.8333, 0.8333 ), Specificity=rep(0.9048, 7))
 rownames(RFstability) <- c(3,5,7,10,15,20,25)
@@ -1171,7 +1192,7 @@ legend('bottomright',legend=colnames(RFstability), pch=pch,
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
 ```
 
-# Lastly, plotting the stability of the Logistic Regression algorithm:
+#### Lastly, plotting the stability of the Logistic Regression algorithm:
 ```{r}
 RFstability <- data.frame(Accuracy=c(0.8533, 0.8800, 0.8933, 0.8933, 0.9067, 0.8933, 0.8533), Sensitivity=c(0.9074, 0.9074, 0.9074, 0.9074, 0.9259, 0.9259, 0.9074), Specificity=c(0.7143, 0.8059, 0.8571, 0.8571, 0.8571, 0.8095, 0.7143))
 rownames(RFstability) <- c(3,5,7,10,15,20,25)
