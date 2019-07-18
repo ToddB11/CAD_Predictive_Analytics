@@ -1,7 +1,7 @@
 ---
 title: "CKME 136 Capstone"
 author: "TODD BETHELL"
-date: "July 9, 2019"
+date: "July 17, 2019"
 output:
   html_document:
     highlight: haddock
@@ -25,6 +25,8 @@ install.packages("mlbench")
 install.packages("caretEnsemble")
 install.packages("skimr")
 install.packages("tictoc")
+install.packages("effsize")
+install.packages("pscl")
 library(GGally)
 library(knitr)
 library(RCurl)
@@ -41,6 +43,8 @@ library(FSelectorRcpp)
 library(caretEnsemble)
 library(skimr)
 library(tictoc)
+library(effsize)
+library(pscl)
 ---
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(knitr)
@@ -59,6 +63,8 @@ library(FSelectorRcpp)
 library(caretEnsemble)
 library(skimr)
 library(tictoc)
+library(effsize)
+library(pscl)
 ```
 
 
@@ -1072,21 +1078,45 @@ toc()
 
 ```
 
-
-#### Ensamble evaluation:
+# Ensemble evaluation - work in progress
 ```{r results='hide', message=FALSE, warning=FALSE}
-#library(caretEnsemble)
+library(caretEnsemble)
 
-#ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, search = "grid", savePredictions = "final", sampling = "smote")
+# Defining the training control:
 
-#ENFit <- caretList(AllvFtrain[,predictors], AllvFtrain[,outcomeName], trControl= ENCntrl, methodList = c("rf", "nb", "glm"))
-#ENFit
+ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, search = "grid", savePredictions = "final", sampling = "smote", classProbs = TRUE)
 
-#ENres <- resamples(ENFit)
-#summary(ENFit)
+# Training the 3 models:
+
+RFmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='rf',trControl = ENCntrl,tuneLength = 3)
+
+NBmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='nb',trControl = ENCntrl,tuneLength = 3)
+
+LRmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='glm',trControl = ENCntrl,tuneLength = 3)
+
+RF_pred <- predict(object = RFmodel, AllvFtest[,predictors], type = 'raw')
+NB_pred <- predict(object = NBmodel, AllvFtest[,predictors], type = 'raw')
+LR_pred <- predict(object = LRmodel, AllvFtest[,predictors], type = 'raw')
+
+confusionMatrix(RF_pred, AllvFtest[,outcomeName], mode = 'everything')
+confusionMatrix(NB_pred, AllvFtest[,outcomeName], mode = 'everything')
+confusionMatrix(LR_pred, AllvFtest[,outcomeName], mode = 'everything')
+
 
 ```
 
+#### Ensamble evaluation:
+```{r results='hide', message=FALSE, warning=FALSE}
+library(caretEnsemble)
+
+ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, search = "grid", savePredictions = "final", sampling = "smote")
+
+ENFit <- caretList(AllvFtrain[,predictors], AllvFtrain[,outcomeName], trControl= ENCntrl, methodList = c("rf", "nb", "glm"))
+ENFit
+
+ENres <- resamples(ENFit)
+summary(ENFit)
+```
 
 #### Model comparisons:
 ```{r}
@@ -1106,6 +1136,76 @@ str(logiTrain)
 LRlogit <- glm(CAD~.,logiTrain, family = "binomial")
 summary(LRlogit)
 ```
+#### Logistic regression coefficients with exponentiated coefficients:
+```{r}
+exp(coef(LRlogit))
+
+```
+#### Converting to log odds into percentages to assist with interpretation of impact of each independent variable used in the logistic regression:
+```{r}
+# The predicted value for TCP: the intercept, plus the dummy coefficient for TCP
+
+TCP1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["TCP"]
+
+# Converting the predicted value from log odds into percentage:
+
+TCPpresent <-exp(TCP1)/(1 + exp(TCP1))
+
+# Now for RWMA:
+RWMA1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["RWMAMed"]
+RWMAnormal <- exp(RWMA1)/(1 + exp(RWMA1))
+
+# Now for NCP: (Note: not statistically signficant):
+NCP1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["NCPY"]
+NCPpresent <- exp(NCP1)/(1 + exp(NCP1))
+
+# Now for ACP: (Note: also not statistically signficant):
+ACP1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["ACPY"]
+ACPpresent <- exp(ACP1)/(1 + exp(ACP1))
+
+# Now for EF:
+EF1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["EFMed"]
+EFnormal <- exp(EF1)/(1 + exp(EF1))
+
+# Now for Age:
+Age1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["AgeMed"]
+AgeMedium <- exp(Age1)/(1 + exp(Age1))
+
+# Now for HTN:
+HTN1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["HTN"]
+HTNpresent <- exp(HTN1)/(1 + exp(HTN1))
+
+# Now for DM:
+DM1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["DM"]
+DMpresent <- exp(DM1)/(1 + exp(DM1))
+
+LRPredPerc <- data.frame(TCPpresent, RWMAnormal, NCPpresent, ACPpresent, EFnormal, AgeMedium, HTNpresent, DMpresent)
+t(LRPredPerc)
+```
+
+#### Running avova() function on the model to analyze the table of deviance.  Shows that there is a significant gap between the null model (with only the intercept) and the residual deviance (after adding each variable). Adding 'TCP' and 'RWMA' significantly reduces the residual deviance. (The large p-value for 'ACP' indicates that the model without this variable explains 'approximately' the same amount of variation - that is, it has little impact). 
+```{r}
+anova(LRlogit, test = "Chisq")
+```
+#### Using the McFadden R Squared Index to assess the model fit. Also checking (very rough) approximate percentage of those predicted to be 'Normal' versus those with 'CAD' using logistic regression results.  Compared against the study, where 28.7% were found to be 'normal' (87/303), using a subset of this data set with 228 observations shows a prediction of 36.5% being 'normal'.
+```{r}
+library(pscl)
+
+pR2(LRlogit)
+
+plot(residuals(LRlogit) ~ fitted(LRlogit))
+
+coef(LRlogit)
+
+LRPred <- data.frame(predict(LRlogit, type = "response"))
+names(LRPred)[1]<-"Predict"
+
+N <- sum(LRPred$Predict < 0.50)
+C <- sum(LRPred$Predict >= 0.50)
+(N/C)*100
+```
+
+
 #### Explanation of the order of factor variables for the logistic regression output in R:  R will use the alphabetical order of the variable results - and choose the letter that is higher in the alphabet as the reference variable (which is typically coded automatically with a '1', versus '0' - or a '2' vs '1' on the str() output). As such, 'Normal' would be the reference variable (equal to '2' on the str() output.).  However, 'CAD' should be the reference variable and so I have 're-leveled' that attribute so that 'CAD' is used as the reference (and as such, is showing as a '2' on the str() output).
 
 #### Other variables explained for the glm output:
@@ -1174,30 +1274,30 @@ legend('bottomright',legend=colnames(RFstability), pch=pch,
 
 #### Next, plotting the stability of the Naive Bayes algorithm:
 ```{r}
-RFstability <- data.frame(Accuracy=c(0.9200, 0.9200, 0.9333, 0.9067, 0.9067, 0.9200, 0.9200), Sensitivity=c(0.8889, 0.8889, 0.9074, 0.8704, 0.8889, 0.8889, 0.8889), Specificity=rep(1.0, 1.0, 1.0, 1.0, 0.9524, 1.0, 1.0))
-rownames(RFstability) <- c(3,5,7,10,15,20,25)
-RFstability
+NBstability <- data.frame(Accuracy=c(0.9200, 0.9200, 0.9333, 0.9067, 0.9067, 0.9200, 0.9200), Sensitivity=c(0.8889, 0.8889, 0.9074, 0.8704, 0.8889, 0.8889, 0.8889), Specificity=c(1.0, 1.0, 1.0, 1.0, 0.9524, 1.0, 1.0))
+rownames(NBstability) <- c(3,5,7,10,15,20,25)
+NBstability
 
 cols <- c("darkseagreen","cornflowerblue","gray48")
 pch <- c(17,18,15)
-xmax <- nrow(RFstability) + 2.5
+xmax <- nrow(NBstability) + 2.5
 par(mar=c(4,4,1,1))
-plot(1:nrow(RFstability), 1:nrow(RFstability), pch="", 
+plot(1:nrow(NBstability), 1:nrow(NBstability), pch="", 
 		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
 		ylim=c(.85,1.0), bty="n", xlim=c(1,xmax), main="Naive Bayes Stability Results")
 for (i in seq(.85,1.0,by=.05)) {
-	lines(1:nrow(RFstability), rep(i,nrow(RFstability)), col="gray69")
+	lines(1:nrow(NBstability), rep(i,nrow(NBstability)), col="gray69")
 }
 for (i in 1:ncol(RFstability)) {
 
-	points(1:nrow(RFstability), RFstability[,i], pch=pch[i], 
+	points(1:nrow(NBstability), NBstability[,i], pch=pch[i], 
 		col=cols[i], cex=1.2)
 
-	lines(1:nrow(RFstability), RFstability[,i], col=cols[i], 
+	lines(1:nrow(NBstability), NBstability[,i], col=cols[i], 
 		lwd=2)
 }
-axis(side=1, at=1:nrow(RFstability), tick=FALSE, 
-		labels=rownames(RFstability))
+axis(side=1, at=1:nrow(NBstability), tick=FALSE, 
+		labels=rownames(NBstability))
 
 axis(side=1, at=seq(-0.5,8.5,by=1), 
 		tick=FALSE, labels=NA)
@@ -1205,35 +1305,35 @@ axis(side=1, at=seq(-0.5,8.5,by=1),
 axis(side=2, at=seq(.85,1.0,by=.05), tick=TRUE, 
 		las=TRUE, labels=paste(seq(.85,1.0,by=.05)))
 
-legend('bottomright',legend=colnames(RFstability), pch=pch, 
+legend('bottomright',legend=colnames(NBstability), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
 ```
 
 #### Lastly, plotting the stability of the Logistic Regression algorithm:
 ```{r}
-RFstability <- data.frame(Accuracy=rep(0.9333,7), Sensitivity=rep(0.9630,7), Specificity=rep(0.8571,7))
-rownames(RFstability) <- c(3,5,7,10,15,20,25)
+LRstability <- data.frame(Accuracy=rep(0.9333,7), Sensitivity=rep(0.9630,7), Specificity=rep(0.8571,7))
+rownames(LRstability) <- c(3,5,7,10,15,20,25)
 RFstability
 
 cols <- c("darkseagreen","cornflowerblue","gray48")
 pch <- c(17,18,15)
-xmax <- nrow(RFstability) + 2.5
+xmax <- nrow(LRstability) + 2.5
 par(mar=c(4,4,1,1))
-plot(1:nrow(RFstability), 1:nrow(RFstability), pch="", 
+plot(1:nrow(LRstability), 1:nrow(LRstability), pch="", 
 		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
 		ylim=c(.85,.975), bty="n", xlim=c(1,xmax), main="Logistic Regression Stability Results")
 for (i in seq(.85,.975,by=.025)) {
-	lines(1:nrow(RFstability), rep(i,nrow(RFstability)), col="gray69")
+	lines(1:nrow(LRstability), rep(i,nrow(LRstability)), col="gray69")
 }
-for (i in 1:ncol(RFstability)) {
+for (i in 1:ncol(LRstability)) {
 
-	points(1:nrow(RFstability), RFstability[,i], pch=pch[i], 
+	points(1:nrow(LRstability), LRstability[,i], pch=pch[i], 
 		col=cols[i], cex=1.2)
 
-	lines(1:nrow(RFstability), RFstability[,i], col=cols[i], 
+	lines(1:nrow(LRstability), LRstability[,i], col=cols[i], 
 		lwd=2)
 }
-axis(side=1, at=1:nrow(RFstability), tick=FALSE, 
+axis(side=1, at=1:nrow(LRstability), tick=FALSE, 
 		labels=rownames(RFstability))
 
 axis(side=1, at=seq(-0.5,8.5,by=1), 
@@ -1242,7 +1342,7 @@ axis(side=1, at=seq(-0.5,8.5,by=1),
 axis(side=2, at=seq(.85,.975,by=.025), tick=TRUE, 
 		las=TRUE, labels=paste(seq(.85,.975,by=.025)))
 
-legend('bottomright',legend=colnames(RFstability), pch=pch, 
+legend('bottomright',legend=colnames(LRstability), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
 ```
 
@@ -1281,4 +1381,43 @@ axis(side=2, at=seq(2,20,by=2), tick=TRUE,
 
 legend('bottomright',legend=colnames(Duration), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
+```
+#### Computing the Cliff's Delta effect size (for ordinal variables):
+
+```{r}
+library(effsize)
+
+RFacc <- rep(0.9467,7)
+RFsens <- rep(0.9630, 7)
+RFspec <- rep(0.9048,7)
+
+NBacc <- c(0.9200, 0.9200, 0.9333, 0.9067, 0.9067, 0.9200, 0.9200)
+NBsens <- c(0.8889, 0.8889, 0.9074, 0.8704, 0.8889, 0.8889, 0.8889)
+NBspec <- c(1.0, 1.0, 1.0, 1.0, 0.9524, 1.0, 1.0)
+
+LRacc <- rep(0.9333,7)
+LRsens <- rep(0.9630,7)
+LRspec <- rep(0.8571,7)
+
+RFNBaccDelta <- cliff.delta(RFacc, NBacc)
+RFNBaccDelta
+RFLRaccDelta <- cliff.delta(RFacc, LRacc)
+RFLRaccDelta
+LRNBaccDelta <- cliff.delta(LRacc, NBacc)
+LRNBaccDelta
+
+RFNBsensDelta <- cliff.delta(RFsens, NBsens)
+RFNBsensDelta
+RFLRsensDelta <- cliff.delta(RFsens, LRsens)
+RFLRsensDelta
+LRNBsensDelta <- cliff.delta(LRsens, NBsens)
+LRNBsensDelta
+
+RFNBspecDelta <- cliff.delta(RFspec, NBspec)
+RFNBspecDelta
+RFLRspecDelta <- cliff.delta(RFspec, LRspec)
+RFLRspecDelta
+LRNBspecDelta <- cliff.delta(LRspec, NBspec)
+LRNBspecDelta
+
 ```
