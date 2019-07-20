@@ -4,6 +4,7 @@ author: "TODD BETHELL"
 date: "July 19, 2019"
 output:
   html_document:
+    self_contained: FALSE
     highlight: haddock
     theme: readable
 ---
@@ -105,7 +106,7 @@ library(skimr)
 library(knitr)
 library(tidyverse)
 
-skim1 <- FullSetB4[,c(1:2,16:17,36:50)]
+skim1 <- FullSetB4[,c(1,2,16,17,36:50)]
 skimr::skim(skim1) %>%
   filter(stat == "hist") %>%
   print.listof(locale = locale(encoding = "UTF-8"))
@@ -926,16 +927,26 @@ TenVars2 <- AllvFinal[, c("TCP", "ACP", "RWMA", "EF", "HTN", "Age", "DM", "NCP",
 #TenVars2
 ```
 
-#### Using createDataPartition() to split data into training and test sets (75% and 25%). Since the outcome variable (CAD) is categorical, this function will make sure that the distribution of outcome variable classes will be similar in both of the sets.
+#### Using createDataPartition() to split data into training and test sets (75% and 25%). Since the outcome variable (CAD) is categorical, this function will make sure that the distribution of outcome variable classes will be similar in both of the sets. Can use the same split for training/testing by commenting out this chunk:
 ```{r}
 library(caret)
 
-#index <- createDataPartition(AllvFinal$CAD, p = 0.75, list = FALSE)
-#AllvFtrain <- AllvFinal[ index,]
-#AllvFtest <- AllvFinal[-index,]
+# index <- createDataPartition(AllvFinal$CAD, p = 0.75, list = FALSE)
+# AllvFtrain <- AllvFinal[ index,]
+# AllvFtest <- AllvFinal[-index,]
+```
+#### Included the following chunk to create a repeatable 75/25 split for evaluation of training/testing results (that is, for running and capturing multiple runs, with different folds, etc ):
+```{r}
+
+#AllvFtrainCopy2 <- AllvFtrain
+#AllvFtestCopy2 <- AllvFtest
+
+#write.csv(AllvFtrainCopy2,'C:\\Users\\TGB\\Documents\\Ryerson\\CKME 136\\RMD Versions\\AllvFtrainCopy2.csv')
+
+#write.csv(AllvFtestCopy2,'C:\\Users\\TGB\\Documents\\Ryerson\\CKME 136\\RMD Versions\\AllvFtestCopy2.csv')
 ```
 
-#### Saved off resulting train and test files for retrieval for subsequent algorithms, etc. This is to ensure that the same training/test split files are used before the recursive feature elimination, cross validation, training and running of algorithms. 
+#### Saved off resulting train and test files for retrieval for subsequent algorithms, etc. This is to ensure that the same training/test split files are used before the recursive feature elimination, cross validation, training and running of algorithms. Comment this out to use a different 75/25 beginning split each time:
 ```{r}
 AllvFtrain<-read.csv(file="https://raw.githubusercontent.com/ToddB11/TB136capstone/master/AllvFtrainCopy.csv",header=T,sep=",")
 
@@ -943,7 +954,7 @@ AllvFtest<-read.csv(file="https://raw.githubusercontent.com/ToddB11/TB136capston
 
 ```
 
-#### Using 'Recursive Feature Elimination' to find the best subset of atttributes to use for modeling. 
+#### Using 'Recursive Feature Elimination' to find the best subset of atttributes to use for modeling (not needed for subsequent runs once the final set of predictors have been determined):
 ```{r}
 library(plyr)
 
@@ -965,8 +976,9 @@ CAD_Profile$optVariables[1:8]
 ```{r}
 predictors <-c("TCP", "EF", "RWMA", "NCP", "ACP", "HTN", "Age", "DM")
 ```
+returnResamp = "final", tuneLength = 5
 
-### Random Forest Training
+### Random Forest Training (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(tictoc)
 library(caret)
@@ -974,7 +986,7 @@ library(DMwR)
 
 tic("Random Forest Algorithm Timing")
 
-rfFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'rf', returnResamp = "final", tuneLength = 5, trControl = trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote", allowParallel=TRUE))
+rfFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'rf', returnResamp = "final", tuneLength = 5, trControl = trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote"))
 rfFit
 plot(rfFit)
 
@@ -1009,14 +1021,14 @@ RFcm$table %>%
 toc()
 ```
 
-### Training for Naive Bayes:
+### Training for Naive Bayes (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(klaR)
 library(caret)
 
 tic("Naive Bayes Algorithm Timing")
 
-NBfit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'nb', returnResamp = "final", tuneLength = 5, trControl = trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote", allowParallel=TRUE))
+NBfit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'nb', returnResamp = "final", tuneLength = 5, trControl = trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote"))
 NBfit
 
 varImp(object = NBfit)
@@ -1048,12 +1060,12 @@ NBcm$table %>%
 toc()
 ```
 
-### Training for Logistic Regression:
+### Training for Logistic Regression (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
 ```{r results='hide', message=FALSE, warning=FALSE}
 
 tic("Logistic Regression Algorithm Timing")
 
-LRFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'glm', family = "binomial", tuneLength = 5, trControl = trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote", allowParallel=TRUE))
+LRFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'glm', family = "binomial", trControl = trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote"))
 LRFit
 
 varImp(object = LRFit)
@@ -1098,15 +1110,15 @@ library(caretEnsemble)
 
 # Defining the training control:
 
-ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, search = "grid", savePredictions = "final", sampling = "smote", classProbs = TRUE)
+ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10, search = "grid", savePredictions = "final", sampling = "down")
 
 # Training the 3 models:
 
-RFmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='rf',tuneLength = 3, trControl = ENCntrl)
+RFmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='rf',tuneLength = 5, trControl = ENCntrl)
 
-NBmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='nb',tuneLength = 3, trControl = ENCntrl)
+NBmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='nb',tuneLength = 5, trControl = ENCntrl)
 
-LRmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='glm',tuneLength = 3, trControl = ENCntrl)
+LRmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='glm',tuneLength = 5, trControl = ENCntrl)
 
 RF_pred <- predict(object = RFmodel, AllvFtest[,predictors], type = 'raw')
 NB_pred <- predict(object = NBmodel, AllvFtest[,predictors], type = 'raw')
@@ -1123,7 +1135,7 @@ confusionMatrix(LR_pred, AllvFtest[,outcomeName], mode = 'everything')
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(caretEnsemble)
 
-ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, search = "grid", savePredictions = "final", sampling = "smote")
+ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10, search = "grid", savePredictions = "final", sampling = "down")
 
 ENFit <- caretList(AllvFtrain[,predictors], AllvFtrain[,outcomeName], methodList = c("rf", "nb", "glm"))
 ENFit
