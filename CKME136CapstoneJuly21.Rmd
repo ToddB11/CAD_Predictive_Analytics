@@ -976,17 +976,16 @@ CAD_Profile$optVariables[1:8]
 ```{r}
 predictors <-c("TCP", "EF", "RWMA", "NCP", "ACP", "HTN", "Age", "DM")
 ```
-returnResamp = "final", tuneLength = 5
 
 ### Random Forest Training (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
-```{r results='hide', message=FALSE, warning=FALSE}
+```{r eval=FALSE, results='hide', message=FALSE, warning=FALSE}
 library(tictoc)
 library(caret)
 library(DMwR)
 
 tic("Random Forest Algorithm Timing")
 
-rfFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'rf', returnResamp = "final", tuneLength = 5, trControl = trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote"))
+rfFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'rf', returnResamp = "final", trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "smote"))
 rfFit
 plot(rfFit)
 
@@ -995,7 +994,7 @@ plot(varImp(object = rfFit),main="Random Forest - Variable Importance")
 ```
 
 #### Random Forest Predictions
-```{r}
+```{r eval=FALSE}
 library(tidyverse)
 
 RFpredictions <- predict.train(object = rfFit, AllvFtest[,predictors], type = "raw")
@@ -1022,13 +1021,13 @@ toc()
 ```
 
 ### Training for Naive Bayes (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
-```{r results='hide', message=FALSE, warning=FALSE}
+```{r eval=FALSE, results='hide', message=FALSE, warning=FALSE}
 library(klaR)
 library(caret)
 
 tic("Naive Bayes Algorithm Timing")
 
-NBfit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'nb', returnResamp = "final", tuneLength = 5, trControl = trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote"))
+NBfit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'nb', returnResamp = "final", trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "smote"))
 NBfit
 
 varImp(object = NBfit)
@@ -1036,7 +1035,7 @@ plot(varImp(object = NBfit),main="Naive Bayes - Variable Importance")
 ```
 
 #### Naive Bayes Predictions:
-```{r}
+```{r eval=FALSE}
 NBpredictions <- predict.train(object = NBfit, AllvFtest[,predictors])
 table(NBpredictions)
 
@@ -1061,11 +1060,11 @@ toc()
 ```
 
 ### Training for Logistic Regression (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
-```{r results='hide', message=FALSE, warning=FALSE}
+```{r eval=FALSE, results='hide', message=FALSE, warning=FALSE}
 
 tic("Logistic Regression Algorithm Timing")
 
-LRFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'glm', family = "binomial", trControl = trainControl(method = "repeatedcv", number = 10, repeats = 10, sampling = "smote"))
+LRFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'glm', family = "binomial", trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "smote"))
 LRFit
 
 varImp(object = LRFit)
@@ -1073,7 +1072,7 @@ plot(varImp(object = LRFit), main="Logistic Regression - Variable Importance")
 ```
 
 #### Logistic Regression Predictions:
-```{r}
+```{r eval=FALSE}
 library(tidyverse)
 
 LRpredictions <- predict.train(object = LRFit, AllvFtest[,predictors])
@@ -1103,39 +1102,105 @@ toc()
 
 
 ```
+``{r results='hide', message=FALSE, warning=FALSE}
+#### Training and testing for all Three Algorithms Combined:
+```{r}
+library(tictoc)
+library(caret)
+library(DMwR)
+#library(caretEnsemble)
 
-#### Ensemble evaluation - work in progress
-```{r results='hide', message=FALSE, warning=FALSE}
-library(caretEnsemble)
+tic("Three Combined Algorithms Timing")
 
 # Defining the training control:
 
-ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10, search = "grid", savePredictions = "final", sampling = "down")
+ENCntrl <- trainControl(method = "LOOCV", number = 10, savePredictions = "all", search = "grid", sampling = "smote")
 
 # Training the 3 models:
 
-RFmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='rf',tuneLength = 5, trControl = ENCntrl)
+RFmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='rf', trControl = ENCntrl)
 
-NBmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='nb',tuneLength = 5, trControl = ENCntrl)
+NBmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='nb', trControl = ENCntrl)
 
-LRmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='glm',tuneLength = 5, trControl = ENCntrl)
+LRmodel <- train(AllvFtrain[,predictors],AllvFtrain[,outcomeName], method='glm', trControl = ENCntrl)
+
+# Predictions on the test data set:
 
 RF_pred <- predict(object = RFmodel, AllvFtest[,predictors], type = 'raw')
 NB_pred <- predict(object = NBmodel, AllvFtest[,predictors], type = 'raw')
 LR_pred <- predict(object = LRmodel, AllvFtest[,predictors], type = 'raw')
 
+toc()
+```
+#### Variable importance and confusion matrix for the Random Forest algorithm:
+```{r}
+library(tidyverse)
+
+varImp(object = RFmodel)
+plot(varImp(object = RFmodel), main="Random Forest - Variable Importance")
+
 confusionMatrix(RF_pred, AllvFtest[,outcomeName], mode = 'everything')
+RFcMatrix <- confusionMatrix(RF_pred, AllvFtest[,outcomeName], mode = 'everything')
+RFcMatrix$table %>%
+  data.frame() %>% 
+  mutate(Prediction = factor(Prediction, levels = c("Cad", "Normal"))) %>%
+  group_by(Reference) %>% 
+  mutate(total = sum(Freq)) %>% 
+  ungroup() %>% 
+  ggplot(aes(Reference, Prediction, fill = Freq)) +
+  geom_tile() +
+  geom_text(aes(label = Freq), size = 8) +
+  scale_fill_gradient(low = "white", high = "palegreen4") +
+  scale_x_discrete(position = "top") +
+  geom_tile(color = "black", fill = "black", alpha = 0)
+```
+#### Variable importance and confusion matrix for the Naive Bayes algorithm:
+```{r}
+varImp(object = NBmodel)
+plot(varImp(object = NBmodel), main="Naive Bayes - Variable Importance")
+
 confusionMatrix(NB_pred, AllvFtest[,outcomeName], mode = 'everything')
+NBcMatrix <- confusionMatrix(NB_pred, AllvFtest[,outcomeName], mode = 'everything')
+NBcMatrix$table %>%
+  data.frame() %>% 
+  mutate(Prediction = factor(Prediction, levels = c("Cad", "Normal"))) %>%
+  group_by(Reference) %>% 
+  mutate(total = sum(Freq)) %>% 
+  ungroup() %>% 
+  ggplot(aes(Reference, Prediction, fill = Freq)) +
+  geom_tile() +
+  geom_text(aes(label = Freq), size = 8) +
+  scale_fill_gradient(low = "white", high = "palegreen4") +
+  scale_x_discrete(position = "top") +
+  geom_tile(color = "black", fill = "black", alpha = 0)
+```
+
+#### Variable importance and confusion matrix for the Logistic Regression algorithm:
+```{r}
+varImp(object = LRmodel)
+plot(varImp(object = LRmodel), main="LogistiC Regression - Variable Importance")
+
 confusionMatrix(LR_pred, AllvFtest[,outcomeName], mode = 'everything')
-
-
+LRcMatrix <- confusionMatrix(LR_pred, AllvFtest[,outcomeName], mode = 'everything')
+LRcMatrix$table %>%
+  data.frame() %>% 
+  mutate(Prediction = factor(Prediction, levels = c("Cad", "Normal"))) %>%
+  group_by(Reference) %>% 
+  mutate(total = sum(Freq)) %>% 
+  ungroup() %>% 
+  ggplot(aes(Reference, Prediction, fill = Freq)) +
+  geom_tile() +
+  geom_text(aes(label = Freq), size = 8) +
+  scale_fill_gradient(low = "white", high = "palegreen4") +
+  scale_x_discrete(position = "top") +
+  geom_tile(color = "black", fill = "black", alpha = 0)
 ```
 
 #### Ensamble evaluation:
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(caretEnsemble)
 
-ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10, search = "grid", savePredictions = "final", sampling = "down")
+ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, search = "grid", savePredictions = "final", sampling = "smote")
 
 ENFit <- caretList(AllvFtrain[,predictors], AllvFtrain[,outcomeName], methodList = c("rf", "nb", "glm"))
 ENFit

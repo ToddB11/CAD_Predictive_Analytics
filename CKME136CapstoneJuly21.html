@@ -16,13 +16,13 @@
 
 <title>CKME 136 Capstone</title>
 
-<script src="CKME136CapstoneJuly20_files/jquery-1.11.3/jquery.min.js"></script>
+<script src="CKME136CapstoneJuly21_files/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="CKME136CapstoneJuly20_files/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
-<script src="CKME136CapstoneJuly20_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-<script src="CKME136CapstoneJuly20_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
-<script src="CKME136CapstoneJuly20_files/bootstrap-3.3.5/shim/respond.min.js"></script>
-<script src="CKME136CapstoneJuly20_files/navigation-1.1/tabsets.js"></script>
+<link href="CKME136CapstoneJuly21_files/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="CKME136CapstoneJuly21_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="CKME136CapstoneJuly21_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="CKME136CapstoneJuly21_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="CKME136CapstoneJuly21_files/navigation-1.1/tabsets.js"></script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -1464,7 +1464,7 @@ summary {
 <a class="sourceLine" id="cb225-2" title="2"></a>
 <a class="sourceLine" id="cb225-3" title="3">LABcor3 &lt;-<span class="st"> </span><span class="kw">ggcorr</span>(LABB4[<span class="dv">1</span><span class="op">:</span><span class="dv">15</span>], <span class="dt">palette =</span> <span class="st">&quot;RdY1Gn&quot;</span>, <span class="dt">label =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb225-4" title="4">LABcor3</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-46-1.png" width="672" /> #### Looking into the Neutrophil to Lymphocyte relationship further. Calculating the NLR (neutrophil-lymphocyte ratio) below. Reference # 24 shows that they have identified that the normal NLR values in an adult, non-geriatric, population in good health are between 0.78 and 3.53.</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-46-1.png" width="672" /> #### Looking into the Neutrophil to Lymphocyte relationship further. Calculating the NLR (neutrophil-lymphocyte ratio) below. Reference # 24 shows that they have identified that the normal NLR values in an adult, non-geriatric, population in good health are between 0.78 and 3.53.</p>
 <div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb226-1" title="1">NLR &lt;-<span class="st"> </span><span class="kw">data.frame</span>(FullSetB42[<span class="dv">48</span><span class="op">:</span><span class="dv">47</span>])</a>
 <a class="sourceLine" id="cb226-2" title="2">NLR<span class="op">$</span>Ratio &lt;-<span class="st"> </span>NLR<span class="op">$</span>Neut<span class="op">/</span>NLR<span class="op">$</span>Lymph</a>
 <a class="sourceLine" id="cb226-3" title="3"></a>
@@ -1497,30 +1497,30 @@ summary {
 <a class="sourceLine" id="cb240-2" title="2"></a>
 <a class="sourceLine" id="cb240-3" title="3">Allints1 &lt;-<span class="st"> </span><span class="kw">ggcorr</span>(FullSetB42[,<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dv">16</span><span class="op">:</span><span class="dv">17</span>, <span class="dv">36</span><span class="op">:</span><span class="dv">50</span>)], <span class="dt">palette =</span> <span class="st">&quot;RdY1Gn&quot;</span>, <span class="dt">label =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb240-4" title="4">Allints1</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-48-1.png" width="672" /> #### Boxplot of Low Density Lipoprotein (LDL), High Density Lipoprotein (HDL), Blood Urea Nitrogen (BUN), and Erythrocyte Sedimentation Rate (ESR):</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-48-1.png" width="672" /> #### Boxplot of Low Density Lipoprotein (LDL), High Density Lipoprotein (HDL), Blood Urea Nitrogen (BUN), and Erythrocyte Sedimentation Rate (ESR):</p>
 <div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb241-1" title="1"><span class="kw">attach</span>(LABB4)</a>
 <a class="sourceLine" id="cb241-2" title="2"><span class="kw">boxplot</span>(LDL, HDL, BUN, ESR, <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;cadetblue1&quot;</span>, <span class="st">&quot;antiquewhite&quot;</span>, <span class="st">&quot;chartreuse&quot;</span>, <span class="st">&quot;darkseagreen1&quot;</span>), <span class="dt">notch =</span> <span class="ot">TRUE</span>, <span class="dt">horizontal =</span> <span class="ot">FALSE</span>, <span class="dt">outline =</span> <span class="ot">TRUE</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb241-3" title="3"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;LDL&quot;</span>, <span class="st">&quot;HDL&quot;</span>, <span class="st">&quot;BUN&quot;</span>, <span class="st">&quot;ESR&quot;</span>),<span class="dt">fill =</span> <span class="kw">c</span>(<span class="st">&quot;cadetblue1&quot;</span>, <span class="st">&quot;antiquewhite&quot;</span>, <span class="st">&quot;chartreuse&quot;</span>, <span class="st">&quot;darkseagreen1&quot;</span>))</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-49-1.png" width="672" /> #### Boxplot of Sodium (Na), Lymphocyte % (Lymph), Neutrophil % (Neut), and Ejection Fraction % (EF):</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-49-1.png" width="672" /> #### Boxplot of Sodium (Na), Lymphocyte % (Lymph), Neutrophil % (Neut), and Ejection Fraction % (EF):</p>
 <div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb242-1" title="1"><span class="kw">boxplot</span>(Na, Lymph, Neut, EF, <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;indianred1&quot;</span>, <span class="st">&quot;antiquewhite&quot;</span>, <span class="st">&quot;chartreuse&quot;</span>, <span class="st">&quot;gold&quot;</span>), <span class="dt">notch =</span> <span class="ot">TRUE</span>, <span class="dt">horizontal =</span> <span class="ot">FALSE</span>, <span class="dt">outline =</span> <span class="ot">TRUE</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb242-2" title="2"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;Na&quot;</span>, <span class="st">&quot;Lymph&quot;</span>, <span class="st">&quot;Neut&quot;</span>, <span class="st">&quot;EF&quot;</span>),<span class="dt">fill =</span> <span class="kw">c</span>(<span class="st">&quot;indianred1&quot;</span>, <span class="st">&quot;antiquewhite&quot;</span>, <span class="st">&quot;chartreuse&quot;</span>, <span class="st">&quot;gold&quot;</span>))</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-50-1.png" width="672" /> #### Boxplot of Triglyceride (TG), Platelet (PLT), and Fasting Blood Sugar (FBS):</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-50-1.png" width="672" /> #### Boxplot of Triglyceride (TG), Platelet (PLT), and Fasting Blood Sugar (FBS):</p>
 <div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb243-1" title="1"><span class="kw">boxplot</span>(TG, PLT, FBS, <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;aquamarine&quot;</span>,<span class="st">&quot;indianred1&quot;</span>, <span class="st">&quot;gray90&quot;</span>), <span class="dt">notch =</span> <span class="ot">TRUE</span>, <span class="dt">horizontal =</span> <span class="ot">FALSE</span>, <span class="dt">outline =</span> <span class="ot">TRUE</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb243-2" title="2"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;TG&quot;</span>, <span class="st">&quot;PLT&quot;</span>, <span class="st">&quot;FBS&quot;</span>),<span class="dt">fill =</span> <span class="kw">c</span>(<span class="st">&quot;aquamarine&quot;</span>,<span class="st">&quot;indianred1&quot;</span>, <span class="st">&quot;gray90&quot;</span>))</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-51-1.png" width="672" /> #### Boxplot of Hemoglobin (Hb), Potassium (K), and Creatine (Cr):</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-51-1.png" width="672" /> #### Boxplot of Hemoglobin (Hb), Potassium (K), and Creatine (Cr):</p>
 <div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb244-1" title="1"><span class="kw">boxplot</span>(Hb, K, Cr, <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;aquamarine&quot;</span>,<span class="st">&quot;indianred1&quot;</span>, <span class="st">&quot;gray90&quot;</span>), <span class="dt">notch =</span> <span class="ot">TRUE</span>, <span class="dt">horizontal =</span> <span class="ot">FALSE</span>, <span class="dt">outline =</span> <span class="ot">TRUE</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb244-2" title="2"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;Hb&quot;</span>, <span class="st">&quot;K&quot;</span>, <span class="st">&quot;Cr&quot;</span>),<span class="dt">fill =</span> <span class="kw">c</span>(<span class="st">&quot;aquamarine&quot;</span>,<span class="st">&quot;indianred1&quot;</span>, <span class="st">&quot;gray90&quot;</span>))</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-52-1.png" width="672" /> #### Boxplot of White Blood Cell (WBC) count:</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-52-1.png" width="672" /> #### Boxplot of White Blood Cell (WBC) count:</p>
 <div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb245-1" title="1"><span class="kw">boxplot</span>(WBC, <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;antiquewhite&quot;</span>), <span class="dt">notch =</span> <span class="ot">TRUE</span>, <span class="dt">horizontal =</span> <span class="ot">FALSE</span>, <span class="dt">outline =</span> <span class="ot">TRUE</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb245-2" title="2"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;WBC&quot;</span>),<span class="dt">fill =</span> <span class="kw">c</span>(<span class="st">&quot;antiquewhite&quot;</span>))</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-53-1.png" width="672" /> #### Boxplot to show distribution of Age and Weight:</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-53-1.png" width="672" /> #### Boxplot to show distribution of Age and Weight:</p>
 <div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb246-1" title="1"><span class="kw">attach</span>(DemoB4)</a></code></pre></div>
 <pre><code>## The following object is masked from LABB4:
 ## 
 ##     CAD</code></pre>
 <div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb248-1" title="1"><span class="kw">boxplot</span>(Age, Weight, <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;aquamarine&quot;</span>,<span class="st">&quot;gray90&quot;</span>), <span class="dt">notch =</span> <span class="ot">TRUE</span>, <span class="dt">horizontal =</span> <span class="ot">FALSE</span>, <span class="dt">outline =</span> <span class="ot">TRUE</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb248-2" title="2"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;Age&quot;</span>, <span class="st">&quot;Weight&quot;</span>),<span class="dt">fill =</span> <span class="kw">c</span>(<span class="st">&quot;aquamarine&quot;</span>,<span class="st">&quot;gray90&quot;</span>))</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-54-1.png" width="672" /> #### Shapiro tests of normality (H0: Distribution is normal; Reject null if p-value is less than .05). Note: sensitive when n&gt;80. This test shows that ‘Age’ is NOT normally distributed.</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-54-1.png" width="672" /> #### Shapiro tests of normality (H0: Distribution is normal; Reject null if p-value is less than .05). Note: sensitive when n&gt;80. This test shows that ‘Age’ is NOT normally distributed.</p>
 <div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb249-1" title="1"><span class="kw">library</span>(psych)</a></code></pre></div>
 <pre><code>## 
 ## Attaching package: &#39;psych&#39;</code></pre>
@@ -1629,7 +1629,7 @@ summary {
 <pre><code>## Warning in bxp(list(stats = structure(c(90, 120, 130, 140, 170, 60, 70, :
 ## some notches went outside hinges (&#39;box&#39;): maybe set notch=FALSE</code></pre>
 <div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb272-1" title="1"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;Blood Pressure&quot;</span>, <span class="st">&quot;Pulse Rate&quot;</span>),<span class="dt">fill =</span> <span class="kw">c</span>(<span class="st">&quot;blue&quot;</span>,<span class="st">&quot;indianred1&quot;</span>))</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-59-1.png" width="672" /> #### Blood Pressure (BP) is not normally distributed:</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-59-1.png" width="672" /> #### Blood Pressure (BP) is not normally distributed:</p>
 <div class="sourceCode" id="cb273"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb273-1" title="1"><span class="kw">describe</span>(SymptomB4<span class="op">$</span>BP)</a></code></pre></div>
 <pre><code>##    vars   n   mean    sd median trimmed   mad min max range skew kurtosis
 ## X1    1 303 129.55 18.94    130  128.46 14.83  90 190   100 0.57     0.48
@@ -1674,7 +1674,7 @@ summary {
 <a class="sourceLine" id="cb283-3" title="3"><span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">data =</span> WeightMu, <span class="kw">aes</span>(<span class="dt">xintercept=</span>grp.mean, <span class="dt">colour =</span> Sex),</a>
 <a class="sourceLine" id="cb283-4" title="4">             <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>)</a>
 <a class="sourceLine" id="cb283-5" title="5">DDen1</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-62-1.png" width="672" /> #### Density plot of BMI and sex (before discretization):</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-62-1.png" width="672" /> #### Density plot of BMI and sex (before discretization):</p>
 <div class="sourceCode" id="cb284"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb284-1" title="1">BMIMu &lt;-<span class="st"> </span><span class="kw">ddply</span>(Allv1, <span class="st">&quot;Sex&quot;</span>, summarise, <span class="dt">grp.mean=</span><span class="kw">mean</span>(BMI))</a>
 <a class="sourceLine" id="cb284-2" title="2"><span class="kw">head</span>(BMIMu)</a></code></pre></div>
 <pre><code>##     Sex grp.mean
@@ -1685,7 +1685,7 @@ summary {
 <a class="sourceLine" id="cb286-3" title="3"><span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">data =</span> BMIMu, <span class="kw">aes</span>(<span class="dt">xintercept=</span>grp.mean, <span class="dt">colour =</span> Sex),</a>
 <a class="sourceLine" id="cb286-4" title="4">             <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>)</a>
 <a class="sourceLine" id="cb286-5" title="5">BMIden</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-63-1.png" width="672" /> #### Will be completing a number of ASSOCIATIONS between many categorical variables, starting with a few straight forward investigation into commonly accepted ‘associations’. Interpretation of results when K = 2: SMALL Association: 0.10 - &lt; 0.30; MEDIUM Association: 0.30 - &lt; 0.50; LARGE Association: ??? 0.50</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-63-1.png" width="672" /> #### Will be completing a number of ASSOCIATIONS between many categorical variables, starting with a few straight forward investigation into commonly accepted ‘associations’. Interpretation of results when K = 2: SMALL Association: 0.10 - &lt; 0.30; MEDIUM Association: 0.30 - &lt; 0.50; LARGE Association: ??? 0.50</p>
 </div>
 <div id="starting-with-diabetes-dm-and-hypertension-htn-shows-small-association" class="section level4">
 <h4>Starting with Diabetes (DM) and Hypertension (HTN): Shows small association</h4>
@@ -1740,9 +1740,9 @@ summary {
 <div id="barplot-of-bbb-attribute" class="section level4">
 <h4>Barplot of BBB attribute</h4>
 <div class="sourceCode" id="cb306"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb306-1" title="1"><span class="kw">barplot</span>(<span class="kw">prop.table</span>(<span class="kw">table</span>(FullSetB42<span class="op">$</span>BBB)))</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-72-1.png" width="672" /> #### Barplot of VHD attribute</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-72-1.png" width="672" /> #### Barplot of VHD attribute</p>
 <div class="sourceCode" id="cb307"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb307-1" title="1"><span class="kw">barplot</span>(<span class="kw">prop.table</span>(<span class="kw">table</span>(FullSetB42<span class="op">$</span>VHD)))</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-73-1.png" width="672" /></p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-73-1.png" width="672" /></p>
 </div>
 </div>
 <div id="feature-selection-on-all-the-attributes-combined-as-well-as-on-the-4-individual-attribute-groups---using-the-fselector-package" class="section level3">
@@ -1810,7 +1810,7 @@ summary {
 <a class="sourceLine" id="cb310-2" title="2">FSall &lt;-<span class="st"> </span><span class="kw">as.simple.formula</span>(subset, <span class="st">&quot;CAD&quot;</span>)</a>
 <a class="sourceLine" id="cb310-3" title="3"><span class="kw">print</span>(FSall)</a></code></pre></div>
 <pre><code>## CAD ~ TCP + ACP + RWMA + EF + Age + HTN + NCP + DM + Tinv + VHD
-## &lt;environment: 0x00000000211109a0&gt;</code></pre>
+## &lt;environment: 0x00000000210f2758&gt;</code></pre>
 </div>
 <div id="next-using-the-demo-demographic-attribute-data-set---results-cad-age-htn-dm-crf-ad" class="section level4">
 <h4>Next, using the ‘Demo’ (Demographic) attribute data set - results: CAD ~ Age + HTN + DM + CRF + AD</h4>
@@ -1836,7 +1836,7 @@ summary {
 <a class="sourceLine" id="cb314-2" title="2">FSdemo &lt;-<span class="st"> </span><span class="kw">as.simple.formula</span>(subset, <span class="st">&quot;CAD&quot;</span>)</a>
 <a class="sourceLine" id="cb314-3" title="3"><span class="kw">print</span>(FSdemo)</a></code></pre></div>
 <pre><code>## CAD ~ Age + HTN + DM + CRF + AD
-## &lt;environment: 0x0000000022c4a990&gt;</code></pre>
+## &lt;environment: 0x0000000022bdf318&gt;</code></pre>
 </div>
 <div id="next-using-the-symptom-symptom-examination-attribute-data-set---results-cad-tcp-acp-ncp-diam-bp" class="section level4">
 <h4>Next, using the ‘Symptom’ (Symptom &amp; Examination) attribute data set - results: CAD ~ TCP + ACP + NCP + DiaM + BP</h4>
@@ -1860,7 +1860,7 @@ summary {
 <a class="sourceLine" id="cb318-2" title="2">FSsym &lt;-<span class="st"> </span><span class="kw">as.simple.formula</span>(subset, <span class="st">&quot;CAD&quot;</span>)</a>
 <a class="sourceLine" id="cb318-3" title="3"><span class="kw">print</span>(FSsym)</a></code></pre></div>
 <pre><code>## CAD ~ TCP + ACP + NCP + DiaM + BP
-## &lt;environment: 0x000000001de09b10&gt;</code></pre>
+## &lt;environment: 0x000000001de91c60&gt;</code></pre>
 </div>
 <div id="next-using-the-ecgattribute-data-set---results-cad-tinv-qwave-stdep-stelev-poorr" class="section level4">
 <h4>Next, using the ’ECG’attribute data set - results: CAD ~ Tinv + QWave + STdep + STelev + PoorR</h4>
@@ -1878,7 +1878,7 @@ summary {
 <a class="sourceLine" id="cb322-2" title="2">FSecg &lt;-<span class="st"> </span><span class="kw">as.simple.formula</span>(subset, <span class="st">&quot;CAD&quot;</span>)</a>
 <a class="sourceLine" id="cb322-3" title="3"><span class="kw">print</span>(FSecg)</a></code></pre></div>
 <pre><code>## CAD ~ Tinv + QWave + STdep + STelev + PoorR
-## &lt;environment: 0x000000001b8485d0&gt;</code></pre>
+## &lt;environment: 0x000000001b873000&gt;</code></pre>
 </div>
 <div id="lastly-using-the-lab-laboratory-and-echocardiographic-attribute-data-set---results-cad-rwma-ef-vhd-fbs-lymph" class="section level4">
 <h4>Lastly, using the ‘LAB’ (Laboratory and Echocardiographic) attribute data set - results: CAD ~ RWMA + EF + VHD + FBS + Lymph</h4>
@@ -1906,7 +1906,7 @@ summary {
 <a class="sourceLine" id="cb326-2" title="2">FSlab &lt;-<span class="st"> </span><span class="kw">as.simple.formula</span>(subset, <span class="st">&quot;CAD&quot;</span>)</a>
 <a class="sourceLine" id="cb326-3" title="3"><span class="kw">print</span>(FSlab)</a></code></pre></div>
 <pre><code>## CAD ~ RWMA + EF + VHD + FBS + Lymph
-## &lt;environment: 0x0000000020b861c0&gt;</code></pre>
+## &lt;environment: 0x0000000020b60d98&gt;</code></pre>
 </div>
 </div>
 <div id="now-comparing-these-discretized-results-with-those-from-before-discretization" class="section level3">
@@ -1972,7 +1972,7 @@ summary {
 <a class="sourceLine" id="cb330-2" title="2">FSB4all &lt;-<span class="st"> </span><span class="kw">as.simple.formula</span>(subset, <span class="st">&quot;CAD&quot;</span>)</a>
 <a class="sourceLine" id="cb330-3" title="3"><span class="kw">print</span>(FSB4all)</a></code></pre></div>
 <pre><code>## CAD ~ TCP + ACP + RWMA + EF + Age + HTN + BP + NCP + DM + FBS
-## &lt;environment: 0x000000001dd51b60&gt;</code></pre>
+## &lt;environment: 0x000000001dd94240&gt;</code></pre>
 </div>
 <div id="comparing-the-discretized-feature-selection-results-found-using-the-fselector-package-with-the-results-using-the-fselectorrcpp-package---results-cad-tcp-acp-rwma-ef-htn-age-dm-ncp-tinv-fbs" class="section level4">
 <h4>Comparing the discretized feature selection results found using the ‘FSelector’ package with the results using the ‘FSelectorRcpp’ package - results: CAD ~ TCP + ACP + RWMA + EF + HTN + Age + DM + NCP + Tinv + FBS</h4>
@@ -1994,7 +1994,7 @@ summary {
 <a class="sourceLine" id="cb332-16" title="16">)</a>
 <a class="sourceLine" id="cb332-17" title="17"><span class="kw">print</span>(FS2all)</a></code></pre></div>
 <pre><code>## CAD ~ TCP + ACP + RWMA + EF + HTN + Age + DM + NCP + Tinv + FBS
-## &lt;environment: 0x000000001d42a260&gt;</code></pre>
+## &lt;environment: 0x000000001d470160&gt;</code></pre>
 </div>
 <div id="lastly-comparing-the-output-of-the-fselectorrcpp-package-using-the-data-set-that-was-not-discretized-yet-fullsetb42-data-set---result-cad-tcp-acp-rwma-age-ef-htn-dm-bp-ncp-tinv" class="section level4">
 <h4>Lastly, comparing the output of the FSelectorRcpp package using the data set that was not discretized yet (FullSetB42 data set) - result: CAD ~ TCP + ACP + RWMA + Age + EF + HTN + DM + BP + NCP + Tinv</h4>
@@ -2013,7 +2013,7 @@ summary {
 <a class="sourceLine" id="cb334-13" title="13">)</a>
 <a class="sourceLine" id="cb334-14" title="14"><span class="kw">print</span>(FS2B4all)</a></code></pre></div>
 <pre><code>## CAD ~ TCP + ACP + RWMA + Age + EF + HTN + DM + BP + NCP + Tinv
-## &lt;environment: 0x000000001d1676e0&gt;</code></pre>
+## &lt;environment: 0x000000001d1afd50&gt;</code></pre>
 </div>
 <div id="checking-on-strength-of-associations-between-top-12-attributes-and-the-dependent-variable-ranked-in-descending-order" class="section level4">
 <h4>Checking on strength of associations between top 12 attributes and the dependent variable, ranked in descending order:</h4>
@@ -2168,10 +2168,10 @@ summary {
 ## Resampling performance over subset size:
 ## 
 ##  Variables Accuracy  Kappa AccuracySD KappaSD Selected
-##          4   0.7894 0.4941    0.07528  0.1826         
-##          8   0.8036 0.5052    0.07898  0.1882         
-##         16   0.8088 0.5297    0.07677  0.1811         
-##         52   0.8306 0.5682    0.07743  0.1938        *
+##          4   0.7850 0.4843    0.07862  0.1861         
+##          8   0.8043 0.5011    0.07838  0.2017         
+##         16   0.8259 0.5669    0.07080  0.1717         
+##         52   0.8342 0.5782    0.06481  0.1669        *
 ## 
 ## The top 5 variables (out of 52):
 ##    TCP, ACP, RWMA, EF, NCP</code></pre>
@@ -2181,7 +2181,6 @@ summary {
 <div id="taking-the-top-8-predictors" class="section level4">
 <h4>Taking the top 8 predictors:</h4>
 <div class="sourceCode" id="cb430"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb430-1" title="1">predictors &lt;-<span class="kw">c</span>(<span class="st">&quot;TCP&quot;</span>, <span class="st">&quot;EF&quot;</span>, <span class="st">&quot;RWMA&quot;</span>, <span class="st">&quot;NCP&quot;</span>, <span class="st">&quot;ACP&quot;</span>, <span class="st">&quot;HTN&quot;</span>, <span class="st">&quot;Age&quot;</span>, <span class="st">&quot;DM&quot;</span>)</a></code></pre></div>
-<p>returnResamp = “final”, tuneLength = 5</p>
 </div>
 </div>
 <div id="random-forest-training-note-can-also-use-down-for-subsampling-if-smote-introduces-nas-into-the-results" class="section level3">
@@ -2192,23 +2191,161 @@ summary {
 <a class="sourceLine" id="cb431-4" title="4"></a>
 <a class="sourceLine" id="cb431-5" title="5"><span class="kw">tic</span>(<span class="st">&quot;Random Forest Algorithm Timing&quot;</span>)</a>
 <a class="sourceLine" id="cb431-6" title="6"></a>
-<a class="sourceLine" id="cb431-7" title="7">rfFit &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors], AllvFtrain[,outcomeName], <span class="dt">method =</span> <span class="st">&#39;rf&#39;</span>, <span class="dt">returnResamp =</span> <span class="st">&quot;final&quot;</span>, <span class="dt">tuneLength =</span> <span class="dv">5</span>, <span class="dt">trControl =</span> <span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>, <span class="dt">number =</span> <span class="dv">10</span>, <span class="dt">repeats =</span> <span class="dv">10</span>, <span class="dt">sampling =</span> <span class="st">&quot;smote&quot;</span>))</a>
+<a class="sourceLine" id="cb431-7" title="7">rfFit &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors], AllvFtrain[,outcomeName], <span class="dt">method =</span> <span class="st">&#39;rf&#39;</span>, <span class="dt">returnResamp =</span> <span class="st">&quot;final&quot;</span>, <span class="dt">trControl =</span> <span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>, <span class="dt">number =</span> <span class="dv">10</span>, <span class="dt">repeats =</span> <span class="dv">3</span>, <span class="dt">sampling =</span> <span class="st">&quot;smote&quot;</span>))</a>
 <a class="sourceLine" id="cb431-8" title="8">rfFit</a>
-<a class="sourceLine" id="cb431-9" title="9"><span class="kw">plot</span>(rfFit)</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-92-1.png" width="672" /></p>
-<div class="sourceCode" id="cb432"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb432-1" title="1"><span class="kw">varImp</span>(<span class="dt">object =</span> rfFit)</a>
-<a class="sourceLine" id="cb432-2" title="2"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> rfFit),<span class="dt">main=</span><span class="st">&quot;Random Forest - Variable Importance&quot;</span>)</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-92-2.png" width="672" /></p>
+<a class="sourceLine" id="cb431-9" title="9"><span class="kw">plot</span>(rfFit)</a>
+<a class="sourceLine" id="cb431-10" title="10"></a>
+<a class="sourceLine" id="cb431-11" title="11"><span class="kw">varImp</span>(<span class="dt">object =</span> rfFit)</a>
+<a class="sourceLine" id="cb431-12" title="12"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> rfFit),<span class="dt">main=</span><span class="st">&quot;Random Forest - Variable Importance&quot;</span>)</a></code></pre></div>
 <div id="random-forest-predictions" class="section level4">
 <h4>Random Forest Predictions</h4>
-<div class="sourceCode" id="cb433"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb433-1" title="1"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb433-2" title="2"></a>
-<a class="sourceLine" id="cb433-3" title="3">RFpredictions &lt;-<span class="st"> </span><span class="kw">predict.train</span>(<span class="dt">object =</span> rfFit, AllvFtest[,predictors], <span class="dt">type =</span> <span class="st">&quot;raw&quot;</span>)</a>
-<a class="sourceLine" id="cb433-4" title="4"><span class="kw">table</span>(RFpredictions)</a></code></pre></div>
-<pre><code>## RFpredictions
-##    Cad Normal 
-##     54     21</code></pre>
-<div class="sourceCode" id="cb435"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb435-1" title="1"><span class="kw">confusionMatrix</span>(RFpredictions, AllvFtest[,outcomeName])</a></code></pre></div>
+<div class="sourceCode" id="cb432"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb432-1" title="1"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb432-2" title="2"></a>
+<a class="sourceLine" id="cb432-3" title="3">RFpredictions &lt;-<span class="st"> </span><span class="kw">predict.train</span>(<span class="dt">object =</span> rfFit, AllvFtest[,predictors], <span class="dt">type =</span> <span class="st">&quot;raw&quot;</span>)</a>
+<a class="sourceLine" id="cb432-4" title="4"><span class="kw">table</span>(RFpredictions)</a>
+<a class="sourceLine" id="cb432-5" title="5"></a>
+<a class="sourceLine" id="cb432-6" title="6"><span class="kw">confusionMatrix</span>(RFpredictions, AllvFtest[,outcomeName])</a>
+<a class="sourceLine" id="cb432-7" title="7"></a>
+<a class="sourceLine" id="cb432-8" title="8">RFcm &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(RFpredictions, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a>
+<a class="sourceLine" id="cb432-9" title="9"></a>
+<a class="sourceLine" id="cb432-10" title="10">RFcm<span class="op">$</span>table <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb432-11" title="11"><span class="st">  </span><span class="kw">data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb432-12" title="12"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Prediction =</span> <span class="kw">factor</span>(Prediction, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Cad&quot;</span>, <span class="st">&quot;Normal&quot;</span>))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb432-13" title="13"><span class="st">  </span><span class="kw">group_by</span>(Reference) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb432-14" title="14"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total =</span> <span class="kw">sum</span>(Freq)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb432-15" title="15"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb432-16" title="16"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(Reference, Prediction, <span class="dt">fill =</span> Freq)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb432-17" title="17"><span class="st">  </span><span class="kw">geom_tile</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb432-18" title="18"><span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> Freq), <span class="dt">size =</span> <span class="dv">8</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb432-19" title="19"><span class="st">  </span><span class="kw">scale_fill_gradient</span>(<span class="dt">low =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">high =</span> <span class="st">&quot;palegreen4&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb432-20" title="20"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">position =</span> <span class="st">&quot;top&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb432-21" title="21"><span class="st">  </span><span class="kw">geom_tile</span>(<span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">alpha =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb432-22" title="22"></a>
+<a class="sourceLine" id="cb432-23" title="23"><span class="kw">toc</span>()</a></code></pre></div>
+</div>
+</div>
+<div id="training-for-naive-bayes-note-can-also-use-down-for-subsampling-if-smote-introduces-nas-into-the-results" class="section level3">
+<h3>Training for Naive Bayes (Note: can also use “down” for subsampling if “smote” introduces NA’s into the results):</h3>
+<div class="sourceCode" id="cb433"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb433-1" title="1"><span class="kw">library</span>(klaR)</a>
+<a class="sourceLine" id="cb433-2" title="2"><span class="kw">library</span>(caret)</a>
+<a class="sourceLine" id="cb433-3" title="3"></a>
+<a class="sourceLine" id="cb433-4" title="4"><span class="kw">tic</span>(<span class="st">&quot;Naive Bayes Algorithm Timing&quot;</span>)</a>
+<a class="sourceLine" id="cb433-5" title="5"></a>
+<a class="sourceLine" id="cb433-6" title="6">NBfit &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors], AllvFtrain[,outcomeName], <span class="dt">method =</span> <span class="st">&#39;nb&#39;</span>, <span class="dt">returnResamp =</span> <span class="st">&quot;final&quot;</span>, <span class="dt">trControl =</span> <span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>, <span class="dt">number =</span> <span class="dv">10</span>, <span class="dt">repeats =</span> <span class="dv">3</span>, <span class="dt">sampling =</span> <span class="st">&quot;smote&quot;</span>))</a>
+<a class="sourceLine" id="cb433-7" title="7">NBfit</a>
+<a class="sourceLine" id="cb433-8" title="8"></a>
+<a class="sourceLine" id="cb433-9" title="9"><span class="kw">varImp</span>(<span class="dt">object =</span> NBfit)</a>
+<a class="sourceLine" id="cb433-10" title="10"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> NBfit),<span class="dt">main=</span><span class="st">&quot;Naive Bayes - Variable Importance&quot;</span>)</a></code></pre></div>
+<div id="naive-bayes-predictions" class="section level4">
+<h4>Naive Bayes Predictions:</h4>
+<div class="sourceCode" id="cb434"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb434-1" title="1">NBpredictions &lt;-<span class="st"> </span><span class="kw">predict.train</span>(<span class="dt">object =</span> NBfit, AllvFtest[,predictors])</a>
+<a class="sourceLine" id="cb434-2" title="2"><span class="kw">table</span>(NBpredictions)</a>
+<a class="sourceLine" id="cb434-3" title="3"></a>
+<a class="sourceLine" id="cb434-4" title="4"><span class="kw">confusionMatrix</span>(NBpredictions, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a>
+<a class="sourceLine" id="cb434-5" title="5"></a>
+<a class="sourceLine" id="cb434-6" title="6">NBcm &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(NBpredictions, AllvFtest[,outcomeName])</a>
+<a class="sourceLine" id="cb434-7" title="7"></a>
+<a class="sourceLine" id="cb434-8" title="8">NBcm<span class="op">$</span>table <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb434-9" title="9"><span class="st">  </span><span class="kw">data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb434-10" title="10"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Prediction =</span> <span class="kw">factor</span>(Prediction, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Cad&quot;</span>, <span class="st">&quot;Normal&quot;</span>))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb434-11" title="11"><span class="st">  </span><span class="kw">group_by</span>(Reference) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb434-12" title="12"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total =</span> <span class="kw">sum</span>(Freq)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb434-13" title="13"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb434-14" title="14"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(Reference, Prediction, <span class="dt">fill =</span> Freq)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb434-15" title="15"><span class="st">  </span><span class="kw">geom_tile</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb434-16" title="16"><span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> Freq), <span class="dt">size =</span> <span class="dv">8</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb434-17" title="17"><span class="st">  </span><span class="kw">scale_fill_gradient</span>(<span class="dt">low =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">high =</span> <span class="st">&quot;palegreen4&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb434-18" title="18"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">position =</span> <span class="st">&quot;top&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb434-19" title="19"><span class="st">  </span><span class="kw">geom_tile</span>(<span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">alpha =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb434-20" title="20"></a>
+<a class="sourceLine" id="cb434-21" title="21"><span class="kw">toc</span>()</a></code></pre></div>
+</div>
+</div>
+<div id="training-for-logistic-regression-note-can-also-use-down-for-subsampling-if-smote-introduces-nas-into-the-results" class="section level3">
+<h3>Training for Logistic Regression (Note: can also use “down” for subsampling if “smote” introduces NA’s into the results):</h3>
+<div class="sourceCode" id="cb435"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb435-1" title="1"><span class="kw">tic</span>(<span class="st">&quot;Logistic Regression Algorithm Timing&quot;</span>)</a>
+<a class="sourceLine" id="cb435-2" title="2"></a>
+<a class="sourceLine" id="cb435-3" title="3">LRFit &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors], AllvFtrain[,outcomeName], <span class="dt">method =</span> <span class="st">&#39;glm&#39;</span>, <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>, <span class="dt">trControl =</span> <span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>, <span class="dt">number =</span> <span class="dv">10</span>, <span class="dt">repeats =</span> <span class="dv">3</span>, <span class="dt">sampling =</span> <span class="st">&quot;smote&quot;</span>))</a>
+<a class="sourceLine" id="cb435-4" title="4">LRFit</a>
+<a class="sourceLine" id="cb435-5" title="5"></a>
+<a class="sourceLine" id="cb435-6" title="6"><span class="kw">varImp</span>(<span class="dt">object =</span> LRFit)</a>
+<a class="sourceLine" id="cb435-7" title="7"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> LRFit), <span class="dt">main=</span><span class="st">&quot;Logistic Regression - Variable Importance&quot;</span>)</a></code></pre></div>
+<div id="logistic-regression-predictions" class="section level4">
+<h4>Logistic Regression Predictions:</h4>
+<div class="sourceCode" id="cb436"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb436-1" title="1"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb436-2" title="2"></a>
+<a class="sourceLine" id="cb436-3" title="3">LRpredictions &lt;-<span class="st"> </span><span class="kw">predict.train</span>(<span class="dt">object =</span> LRFit, AllvFtest[,predictors])</a>
+<a class="sourceLine" id="cb436-4" title="4"><span class="kw">table</span>(LRpredictions)</a>
+<a class="sourceLine" id="cb436-5" title="5"></a>
+<a class="sourceLine" id="cb436-6" title="6"><span class="kw">confusionMatrix</span>(LRpredictions, AllvFtest[,outcomeName])</a>
+<a class="sourceLine" id="cb436-7" title="7"></a>
+<a class="sourceLine" id="cb436-8" title="8">LRcm &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(LRpredictions, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a>
+<a class="sourceLine" id="cb436-9" title="9"></a>
+<a class="sourceLine" id="cb436-10" title="10">LRcm<span class="op">$</span>table <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb436-11" title="11"><span class="st">  </span><span class="kw">data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb436-12" title="12"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Prediction =</span> <span class="kw">factor</span>(Prediction, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Cad&quot;</span>, <span class="st">&quot;Normal&quot;</span>))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb436-13" title="13"><span class="st">  </span><span class="kw">group_by</span>(Reference) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb436-14" title="14"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total =</span> <span class="kw">sum</span>(Freq)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb436-15" title="15"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb436-16" title="16"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(Reference, Prediction, <span class="dt">fill =</span> Freq)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb436-17" title="17"><span class="st">  </span><span class="kw">geom_tile</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb436-18" title="18"><span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> Freq), <span class="dt">size =</span> <span class="dv">8</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb436-19" title="19"><span class="st">  </span><span class="kw">scale_fill_gradient</span>(<span class="dt">low =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">high =</span> <span class="st">&quot;palegreen4&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb436-20" title="20"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">position =</span> <span class="st">&quot;top&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb436-21" title="21"><span class="st">  </span><span class="kw">geom_tile</span>(<span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">alpha =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb436-22" title="22"></a>
+<a class="sourceLine" id="cb436-23" title="23"><span class="kw">toc</span>()</a></code></pre></div>
+</div>
+<div id="brier-score-for-logistic-regression-model" class="section level4">
+<h4>Brier Score for Logistic Regression model:</h4>
+<p>``{r results=‘hide’, message=FALSE, warning=FALSE} #### Training and testing for all Three Algorithms Combined:</p>
+<div class="sourceCode" id="cb437"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb437-1" title="1"><span class="kw">library</span>(tictoc)</a>
+<a class="sourceLine" id="cb437-2" title="2"><span class="kw">library</span>(caret)</a>
+<a class="sourceLine" id="cb437-3" title="3"><span class="kw">library</span>(DMwR)</a>
+<a class="sourceLine" id="cb437-4" title="4"><span class="co">#library(caretEnsemble)</span></a>
+<a class="sourceLine" id="cb437-5" title="5"></a>
+<a class="sourceLine" id="cb437-6" title="6"><span class="kw">tic</span>(<span class="st">&quot;Three Combined Algorithms Timing&quot;</span>)</a>
+<a class="sourceLine" id="cb437-7" title="7"></a>
+<a class="sourceLine" id="cb437-8" title="8"><span class="co"># Defining the training control:</span></a>
+<a class="sourceLine" id="cb437-9" title="9"></a>
+<a class="sourceLine" id="cb437-10" title="10">ENCntrl &lt;-<span class="st"> </span><span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;LOOCV&quot;</span>, <span class="dt">number =</span> <span class="dv">10</span>, <span class="dt">savePredictions =</span> <span class="st">&quot;all&quot;</span>, <span class="dt">search =</span> <span class="st">&quot;grid&quot;</span>, <span class="dt">sampling =</span> <span class="st">&quot;smote&quot;</span>)</a>
+<a class="sourceLine" id="cb437-11" title="11"></a>
+<a class="sourceLine" id="cb437-12" title="12"><span class="co"># Training the 3 models:</span></a>
+<a class="sourceLine" id="cb437-13" title="13"></a>
+<a class="sourceLine" id="cb437-14" title="14">RFmodel &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors],AllvFtrain[,outcomeName], <span class="dt">method=</span><span class="st">&#39;rf&#39;</span>, <span class="dt">trControl =</span> ENCntrl)</a>
+<a class="sourceLine" id="cb437-15" title="15"></a>
+<a class="sourceLine" id="cb437-16" title="16">NBmodel &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors],AllvFtrain[,outcomeName], <span class="dt">method=</span><span class="st">&#39;nb&#39;</span>, <span class="dt">trControl =</span> ENCntrl)</a>
+<a class="sourceLine" id="cb437-17" title="17"></a>
+<a class="sourceLine" id="cb437-18" title="18">LRmodel &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors],AllvFtrain[,outcomeName], <span class="dt">method=</span><span class="st">&#39;glm&#39;</span>, <span class="dt">trControl =</span> ENCntrl)</a>
+<a class="sourceLine" id="cb437-19" title="19"></a>
+<a class="sourceLine" id="cb437-20" title="20"><span class="co"># Predictions on the test data set:</span></a>
+<a class="sourceLine" id="cb437-21" title="21"></a>
+<a class="sourceLine" id="cb437-22" title="22">RF_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> RFmodel, AllvFtest[,predictors], <span class="dt">type =</span> <span class="st">&#39;raw&#39;</span>)</a>
+<a class="sourceLine" id="cb437-23" title="23">NB_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> NBmodel, AllvFtest[,predictors], <span class="dt">type =</span> <span class="st">&#39;raw&#39;</span>)</a>
+<a class="sourceLine" id="cb437-24" title="24">LR_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> LRmodel, AllvFtest[,predictors], <span class="dt">type =</span> <span class="st">&#39;raw&#39;</span>)</a>
+<a class="sourceLine" id="cb437-25" title="25"></a>
+<a class="sourceLine" id="cb437-26" title="26"><span class="kw">toc</span>()</a></code></pre></div>
+<pre><code>## Three Combined Algorithms Timing: 119.67 sec elapsed</code></pre>
+</div>
+<div id="variable-importance-and-confusion-matrix-for-the-random-forest-algorithm" class="section level4">
+<h4>Variable importance and confusion matrix for the Random Forest algorithm:</h4>
+<div class="sourceCode" id="cb439"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb439-1" title="1"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb439-2" title="2"></a>
+<a class="sourceLine" id="cb439-3" title="3"><span class="kw">varImp</span>(<span class="dt">object =</span> RFmodel)</a></code></pre></div>
+<pre><code>## rf variable importance
+## 
+##      Overall
+## TCP  100.000
+## Age   14.060
+## NCP   11.818
+## DM     9.969
+## RWMA   8.538
+## EF     6.882
+## ACP    1.455
+## HTN    0.000</code></pre>
+<div class="sourceCode" id="cb441"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb441-1" title="1"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> RFmodel), <span class="dt">main=</span><span class="st">&quot;Random Forest - Variable Importance&quot;</span>)</a></code></pre></div>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-100-1.png" width="672" /></p>
+<div class="sourceCode" id="cb442"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb442-1" title="1"><span class="kw">confusionMatrix</span>(RF_pred, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a></code></pre></div>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
@@ -2229,6 +2366,9 @@ summary {
 ##             Specificity : 0.9048         
 ##          Pos Pred Value : 0.9630         
 ##          Neg Pred Value : 0.9048         
+##               Precision : 0.9630         
+##                  Recall : 0.9630         
+##                      F1 : 0.9630         
 ##              Prevalence : 0.7200         
 ##          Detection Rate : 0.6933         
 ##    Detection Prevalence : 0.7200         
@@ -2236,192 +2376,147 @@ summary {
 ##                                          
 ##        &#39;Positive&#39; Class : Cad            
 ## </code></pre>
-<div class="sourceCode" id="cb437"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb437-1" title="1">RFcm &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(RFpredictions, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a>
-<a class="sourceLine" id="cb437-2" title="2"></a>
-<a class="sourceLine" id="cb437-3" title="3">RFcm<span class="op">$</span>table <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb437-4" title="4"><span class="st">  </span><span class="kw">data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb437-5" title="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Prediction =</span> <span class="kw">factor</span>(Prediction, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Cad&quot;</span>, <span class="st">&quot;Normal&quot;</span>))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb437-6" title="6"><span class="st">  </span><span class="kw">group_by</span>(Reference) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb437-7" title="7"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total =</span> <span class="kw">sum</span>(Freq)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb437-8" title="8"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb437-9" title="9"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(Reference, Prediction, <span class="dt">fill =</span> Freq)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb437-10" title="10"><span class="st">  </span><span class="kw">geom_tile</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb437-11" title="11"><span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> Freq), <span class="dt">size =</span> <span class="dv">8</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb437-12" title="12"><span class="st">  </span><span class="kw">scale_fill_gradient</span>(<span class="dt">low =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">high =</span> <span class="st">&quot;palegreen4&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb437-13" title="13"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">position =</span> <span class="st">&quot;top&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb437-14" title="14"><span class="st">  </span><span class="kw">geom_tile</span>(<span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">alpha =</span> <span class="dv">0</span>)</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-93-1.png" width="672" /></p>
-<div class="sourceCode" id="cb438"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb438-1" title="1"><span class="kw">toc</span>()</a></code></pre></div>
-<pre><code>## Random Forest Algorithm Timing: 79.72 sec elapsed</code></pre>
-</div>
-</div>
-<div id="training-for-naive-bayes-note-can-also-use-down-for-subsampling-if-smote-introduces-nas-into-the-results" class="section level3">
-<h3>Training for Naive Bayes (Note: can also use “down” for subsampling if “smote” introduces NA’s into the results):</h3>
-<div class="sourceCode" id="cb440"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb440-1" title="1"><span class="kw">library</span>(klaR)</a>
-<a class="sourceLine" id="cb440-2" title="2"><span class="kw">library</span>(caret)</a>
-<a class="sourceLine" id="cb440-3" title="3"></a>
-<a class="sourceLine" id="cb440-4" title="4"><span class="kw">tic</span>(<span class="st">&quot;Naive Bayes Algorithm Timing&quot;</span>)</a>
-<a class="sourceLine" id="cb440-5" title="5"></a>
-<a class="sourceLine" id="cb440-6" title="6">NBfit &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors], AllvFtrain[,outcomeName], <span class="dt">method =</span> <span class="st">&#39;nb&#39;</span>, <span class="dt">returnResamp =</span> <span class="st">&quot;final&quot;</span>, <span class="dt">tuneLength =</span> <span class="dv">5</span>, <span class="dt">trControl =</span> <span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>, <span class="dt">number =</span> <span class="dv">10</span>, <span class="dt">repeats =</span> <span class="dv">10</span>, <span class="dt">sampling =</span> <span class="st">&quot;smote&quot;</span>))</a>
-<a class="sourceLine" id="cb440-7" title="7">NBfit</a>
-<a class="sourceLine" id="cb440-8" title="8"></a>
-<a class="sourceLine" id="cb440-9" title="9"><span class="kw">varImp</span>(<span class="dt">object =</span> NBfit)</a>
-<a class="sourceLine" id="cb440-10" title="10"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> NBfit),<span class="dt">main=</span><span class="st">&quot;Naive Bayes - Variable Importance&quot;</span>)</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-94-1.png" width="672" /></p>
-<div id="naive-bayes-predictions" class="section level4">
-<h4>Naive Bayes Predictions:</h4>
-<div class="sourceCode" id="cb441"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb441-1" title="1">NBpredictions &lt;-<span class="st"> </span><span class="kw">predict.train</span>(<span class="dt">object =</span> NBfit, AllvFtest[,predictors])</a>
-<a class="sourceLine" id="cb441-2" title="2"><span class="kw">table</span>(NBpredictions)</a></code></pre></div>
-<pre><code>## NBpredictions
-##    Cad Normal 
-##     47     28</code></pre>
-<div class="sourceCode" id="cb443"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb443-1" title="1"><span class="kw">confusionMatrix</span>(NBpredictions, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb444"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb444-1" title="1">RFcMatrix &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(RF_pred, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a>
+<a class="sourceLine" id="cb444-2" title="2">RFcMatrix<span class="op">$</span>table <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb444-3" title="3"><span class="st">  </span><span class="kw">data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb444-4" title="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Prediction =</span> <span class="kw">factor</span>(Prediction, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Cad&quot;</span>, <span class="st">&quot;Normal&quot;</span>))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb444-5" title="5"><span class="st">  </span><span class="kw">group_by</span>(Reference) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb444-6" title="6"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total =</span> <span class="kw">sum</span>(Freq)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb444-7" title="7"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb444-8" title="8"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(Reference, Prediction, <span class="dt">fill =</span> Freq)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb444-9" title="9"><span class="st">  </span><span class="kw">geom_tile</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb444-10" title="10"><span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> Freq), <span class="dt">size =</span> <span class="dv">8</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb444-11" title="11"><span class="st">  </span><span class="kw">scale_fill_gradient</span>(<span class="dt">low =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">high =</span> <span class="st">&quot;palegreen4&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb444-12" title="12"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">position =</span> <span class="st">&quot;top&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb444-13" title="13"><span class="st">  </span><span class="kw">geom_tile</span>(<span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">alpha =</span> <span class="dv">0</span>)</a></code></pre></div>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-100-2.png" width="672" /> #### Variable importance and confusion matrix for the Naive Bayes algorithm:</p>
+<div class="sourceCode" id="cb445"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb445-1" title="1"><span class="kw">varImp</span>(<span class="dt">object =</span> NBmodel)</a></code></pre></div>
+<pre><code>## ROC curve variable importance
+## 
+##      Importance
+## TCP      100.00
+## ACP       64.28
+## EF        46.90
+## RWMA      43.50
+## Age       28.43
+## DM        22.48
+## HTN       19.56
+## NCP        0.00</code></pre>
+<div class="sourceCode" id="cb447"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb447-1" title="1"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> NBmodel), <span class="dt">main=</span><span class="st">&quot;Naive Bayes - Variable Importance&quot;</span>)</a></code></pre></div>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-101-1.png" width="672" /></p>
+<div class="sourceCode" id="cb448"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb448-1" title="1"><span class="kw">confusionMatrix</span>(NB_pred, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a></code></pre></div>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction Cad Normal
-##     Cad     46      1
-##     Normal   8     20
+##     Cad     48      2
+##     Normal   6     19
 ##                                           
-##                Accuracy : 0.88            
-##                  95% CI : (0.7844, 0.9436)
+##                Accuracy : 0.8933          
+##                  95% CI : (0.8006, 0.9528)
 ##     No Information Rate : 0.72            
-##     P-Value [Acc &gt; NIR] : 0.0007567       
+##     P-Value [Acc &gt; NIR] : 0.0002469       
 ##                                           
-##                   Kappa : 0.7299          
+##                   Kappa : 0.75            
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.0455003       
+##  Mcnemar&#39;s Test P-Value : 0.2888444       
 ##                                           
-##             Sensitivity : 0.8519          
-##             Specificity : 0.9524          
-##          Pos Pred Value : 0.9787          
-##          Neg Pred Value : 0.7143          
-##               Precision : 0.9787          
-##                  Recall : 0.8519          
-##                      F1 : 0.9109          
+##             Sensitivity : 0.8889          
+##             Specificity : 0.9048          
+##          Pos Pred Value : 0.9600          
+##          Neg Pred Value : 0.7600          
+##               Precision : 0.9600          
+##                  Recall : 0.8889          
+##                      F1 : 0.9231          
 ##              Prevalence : 0.7200          
-##          Detection Rate : 0.6133          
-##    Detection Prevalence : 0.6267          
-##       Balanced Accuracy : 0.9021          
+##          Detection Rate : 0.6400          
+##    Detection Prevalence : 0.6667          
+##       Balanced Accuracy : 0.8968          
 ##                                           
 ##        &#39;Positive&#39; Class : Cad             
 ## </code></pre>
-<div class="sourceCode" id="cb445"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb445-1" title="1">NBcm &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(NBpredictions, AllvFtest[,outcomeName])</a>
-<a class="sourceLine" id="cb445-2" title="2"></a>
-<a class="sourceLine" id="cb445-3" title="3">NBcm<span class="op">$</span>table <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb445-4" title="4"><span class="st">  </span><span class="kw">data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb445-5" title="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Prediction =</span> <span class="kw">factor</span>(Prediction, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Cad&quot;</span>, <span class="st">&quot;Normal&quot;</span>))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb445-6" title="6"><span class="st">  </span><span class="kw">group_by</span>(Reference) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb445-7" title="7"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total =</span> <span class="kw">sum</span>(Freq)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb445-8" title="8"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb445-9" title="9"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(Reference, Prediction, <span class="dt">fill =</span> Freq)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb445-10" title="10"><span class="st">  </span><span class="kw">geom_tile</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb445-11" title="11"><span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> Freq), <span class="dt">size =</span> <span class="dv">8</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb445-12" title="12"><span class="st">  </span><span class="kw">scale_fill_gradient</span>(<span class="dt">low =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">high =</span> <span class="st">&quot;palegreen4&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb445-13" title="13"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">position =</span> <span class="st">&quot;top&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb445-14" title="14"><span class="st">  </span><span class="kw">geom_tile</span>(<span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">alpha =</span> <span class="dv">0</span>)</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-95-1.png" width="672" /></p>
-<div class="sourceCode" id="cb446"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb446-1" title="1"><span class="kw">toc</span>()</a></code></pre></div>
-<pre><code>## Naive Bayes Algorithm Timing: 8.21 sec elapsed</code></pre>
+<div class="sourceCode" id="cb450"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb450-1" title="1">NBcMatrix &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(NB_pred, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a>
+<a class="sourceLine" id="cb450-2" title="2">NBcMatrix<span class="op">$</span>table <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb450-3" title="3"><span class="st">  </span><span class="kw">data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb450-4" title="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Prediction =</span> <span class="kw">factor</span>(Prediction, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Cad&quot;</span>, <span class="st">&quot;Normal&quot;</span>))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb450-5" title="5"><span class="st">  </span><span class="kw">group_by</span>(Reference) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb450-6" title="6"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total =</span> <span class="kw">sum</span>(Freq)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb450-7" title="7"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb450-8" title="8"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(Reference, Prediction, <span class="dt">fill =</span> Freq)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb450-9" title="9"><span class="st">  </span><span class="kw">geom_tile</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb450-10" title="10"><span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> Freq), <span class="dt">size =</span> <span class="dv">8</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb450-11" title="11"><span class="st">  </span><span class="kw">scale_fill_gradient</span>(<span class="dt">low =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">high =</span> <span class="st">&quot;palegreen4&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb450-12" title="12"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">position =</span> <span class="st">&quot;top&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb450-13" title="13"><span class="st">  </span><span class="kw">geom_tile</span>(<span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">alpha =</span> <span class="dv">0</span>)</a></code></pre></div>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-101-2.png" width="672" /></p>
 </div>
-</div>
-<div id="training-for-logistic-regression-note-can-also-use-down-for-subsampling-if-smote-introduces-nas-into-the-results" class="section level3">
-<h3>Training for Logistic Regression (Note: can also use “down” for subsampling if “smote” introduces NA’s into the results):</h3>
-<div class="sourceCode" id="cb448"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb448-1" title="1"><span class="kw">tic</span>(<span class="st">&quot;Logistic Regression Algorithm Timing&quot;</span>)</a>
-<a class="sourceLine" id="cb448-2" title="2"></a>
-<a class="sourceLine" id="cb448-3" title="3">LRFit &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors], AllvFtrain[,outcomeName], <span class="dt">method =</span> <span class="st">&#39;glm&#39;</span>, <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>, <span class="dt">trControl =</span> <span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>, <span class="dt">number =</span> <span class="dv">10</span>, <span class="dt">repeats =</span> <span class="dv">10</span>, <span class="dt">sampling =</span> <span class="st">&quot;smote&quot;</span>))</a>
-<a class="sourceLine" id="cb448-4" title="4">LRFit</a>
-<a class="sourceLine" id="cb448-5" title="5"></a>
-<a class="sourceLine" id="cb448-6" title="6"><span class="kw">varImp</span>(<span class="dt">object =</span> LRFit)</a>
-<a class="sourceLine" id="cb448-7" title="7"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> LRFit), <span class="dt">main=</span><span class="st">&quot;Logistic Regression - Variable Importance&quot;</span>)</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-96-1.png" width="672" /></p>
-<div id="logistic-regression-predictions" class="section level4">
-<h4>Logistic Regression Predictions:</h4>
-<div class="sourceCode" id="cb449"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb449-1" title="1"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb449-2" title="2"></a>
-<a class="sourceLine" id="cb449-3" title="3">LRpredictions &lt;-<span class="st"> </span><span class="kw">predict.train</span>(<span class="dt">object =</span> LRFit, AllvFtest[,predictors])</a>
-<a class="sourceLine" id="cb449-4" title="4"><span class="kw">table</span>(LRpredictions)</a></code></pre></div>
-<pre><code>## LRpredictions
-##    Cad Normal 
-##     50     25</code></pre>
-<div class="sourceCode" id="cb451"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb451-1" title="1"><span class="kw">confusionMatrix</span>(LRpredictions, AllvFtest[,outcomeName])</a></code></pre></div>
+<div id="variable-importance-and-confusion-matrix-for-the-logistic-regression-algorithm" class="section level4">
+<h4>Variable importance and confusion matrix for the Logistic Regression algorithm:</h4>
+<div class="sourceCode" id="cb451"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb451-1" title="1"><span class="kw">varImp</span>(<span class="dt">object =</span> LRmodel)</a></code></pre></div>
+<pre><code>## glm variable importance
+## 
+##         Overall
+## TCP      100.00
+## AgeMed    53.34
+## DM        46.90
+## EFMed     24.57
+## NCPY      21.45
+## RWMAMed   10.79
+## HTN       10.60
+## ACPY       0.00</code></pre>
+<div class="sourceCode" id="cb453"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb453-1" title="1"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> LRmodel), <span class="dt">main=</span><span class="st">&quot;LogistiC Regression - Variable Importance&quot;</span>)</a></code></pre></div>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-102-1.png" width="672" /></p>
+<div class="sourceCode" id="cb454"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb454-1" title="1"><span class="kw">confusionMatrix</span>(LR_pred, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a></code></pre></div>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction Cad Normal
-##     Cad     49      1
-##     Normal   5     20
-##                                          
-##                Accuracy : 0.92           
-##                  95% CI : (0.834, 0.9701)
-##     No Information Rate : 0.72           
-##     P-Value [Acc &gt; NIR] : 1.76e-05       
-##                                          
-##                   Kappa : 0.8125         
-##                                          
-##  Mcnemar&#39;s Test P-Value : 0.2207         
-##                                          
-##             Sensitivity : 0.9074         
-##             Specificity : 0.9524         
-##          Pos Pred Value : 0.9800         
-##          Neg Pred Value : 0.8000         
-##              Prevalence : 0.7200         
-##          Detection Rate : 0.6533         
-##    Detection Prevalence : 0.6667         
-##       Balanced Accuracy : 0.9299         
-##                                          
-##        &#39;Positive&#39; Class : Cad            
+##     Cad     48      1
+##     Normal   6     20
+##                                           
+##                Accuracy : 0.9067          
+##                  95% CI : (0.8171, 0.9616)
+##     No Information Rate : 0.72            
+##     P-Value [Acc &gt; NIR] : 7.087e-05       
+##                                           
+##                   Kappa : 0.7842          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 0.1306          
+##                                           
+##             Sensitivity : 0.8889          
+##             Specificity : 0.9524          
+##          Pos Pred Value : 0.9796          
+##          Neg Pred Value : 0.7692          
+##               Precision : 0.9796          
+##                  Recall : 0.8889          
+##                      F1 : 0.9320          
+##              Prevalence : 0.7200          
+##          Detection Rate : 0.6400          
+##    Detection Prevalence : 0.6533          
+##       Balanced Accuracy : 0.9206          
+##                                           
+##        &#39;Positive&#39; Class : Cad             
 ## </code></pre>
-<div class="sourceCode" id="cb453"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb453-1" title="1">LRcm &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(LRpredictions, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a>
-<a class="sourceLine" id="cb453-2" title="2"></a>
-<a class="sourceLine" id="cb453-3" title="3">LRcm<span class="op">$</span>table <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb453-4" title="4"><span class="st">  </span><span class="kw">data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb453-5" title="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Prediction =</span> <span class="kw">factor</span>(Prediction, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Cad&quot;</span>, <span class="st">&quot;Normal&quot;</span>))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb453-6" title="6"><span class="st">  </span><span class="kw">group_by</span>(Reference) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb453-7" title="7"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total =</span> <span class="kw">sum</span>(Freq)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb453-8" title="8"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb453-9" title="9"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(Reference, Prediction, <span class="dt">fill =</span> Freq)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb453-10" title="10"><span class="st">  </span><span class="kw">geom_tile</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb453-11" title="11"><span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> Freq), <span class="dt">size =</span> <span class="dv">8</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb453-12" title="12"><span class="st">  </span><span class="kw">scale_fill_gradient</span>(<span class="dt">low =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">high =</span> <span class="st">&quot;palegreen4&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb453-13" title="13"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">position =</span> <span class="st">&quot;top&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb453-14" title="14"><span class="st">  </span><span class="kw">geom_tile</span>(<span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">alpha =</span> <span class="dv">0</span>)</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-97-1.png" width="672" /></p>
-<div class="sourceCode" id="cb454"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb454-1" title="1"><span class="kw">toc</span>()</a></code></pre></div>
-<pre><code>## Logistic Regression Algorithm Timing: 4.05 sec elapsed</code></pre>
-</div>
-<div id="brier-score-for-logistic-regression-model" class="section level4">
-<h4>Brier Score for Logistic Regression model:</h4>
-</div>
-<div id="ensemble-evaluation---work-in-progress" class="section level4">
-<h4>Ensemble evaluation - work in progress</h4>
-<div class="sourceCode" id="cb456"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb456-1" title="1"><span class="kw">library</span>(caretEnsemble)</a>
-<a class="sourceLine" id="cb456-2" title="2"></a>
-<a class="sourceLine" id="cb456-3" title="3"><span class="co"># Defining the training control:</span></a>
-<a class="sourceLine" id="cb456-4" title="4"></a>
-<a class="sourceLine" id="cb456-5" title="5">ENCntrl &lt;-<span class="st"> </span><span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>, <span class="dt">number =</span> <span class="dv">10</span>, <span class="dt">repeats =</span> <span class="dv">10</span>, <span class="dt">search =</span> <span class="st">&quot;grid&quot;</span>, <span class="dt">savePredictions =</span> <span class="st">&quot;final&quot;</span>, <span class="dt">sampling =</span> <span class="st">&quot;down&quot;</span>)</a>
-<a class="sourceLine" id="cb456-6" title="6"></a>
-<a class="sourceLine" id="cb456-7" title="7"><span class="co"># Training the 3 models:</span></a>
-<a class="sourceLine" id="cb456-8" title="8"></a>
-<a class="sourceLine" id="cb456-9" title="9">RFmodel &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors],AllvFtrain[,outcomeName], <span class="dt">method=</span><span class="st">&#39;rf&#39;</span>,<span class="dt">tuneLength =</span> <span class="dv">5</span>, <span class="dt">trControl =</span> ENCntrl)</a>
-<a class="sourceLine" id="cb456-10" title="10"></a>
-<a class="sourceLine" id="cb456-11" title="11">NBmodel &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors],AllvFtrain[,outcomeName], <span class="dt">method=</span><span class="st">&#39;nb&#39;</span>,<span class="dt">tuneLength =</span> <span class="dv">5</span>, <span class="dt">trControl =</span> ENCntrl)</a>
-<a class="sourceLine" id="cb456-12" title="12"></a>
-<a class="sourceLine" id="cb456-13" title="13">LRmodel &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors],AllvFtrain[,outcomeName], <span class="dt">method=</span><span class="st">&#39;glm&#39;</span>,<span class="dt">tuneLength =</span> <span class="dv">5</span>, <span class="dt">trControl =</span> ENCntrl)</a>
-<a class="sourceLine" id="cb456-14" title="14"></a>
-<a class="sourceLine" id="cb456-15" title="15">RF_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> RFmodel, AllvFtest[,predictors], <span class="dt">type =</span> <span class="st">&#39;raw&#39;</span>)</a>
-<a class="sourceLine" id="cb456-16" title="16">NB_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> NBmodel, AllvFtest[,predictors], <span class="dt">type =</span> <span class="st">&#39;raw&#39;</span>)</a>
-<a class="sourceLine" id="cb456-17" title="17">LR_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> LRmodel, AllvFtest[,predictors], <span class="dt">type =</span> <span class="st">&#39;raw&#39;</span>)</a>
-<a class="sourceLine" id="cb456-18" title="18"></a>
-<a class="sourceLine" id="cb456-19" title="19"><span class="kw">confusionMatrix</span>(RF_pred, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a>
-<a class="sourceLine" id="cb456-20" title="20"><span class="kw">confusionMatrix</span>(NB_pred, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a>
-<a class="sourceLine" id="cb456-21" title="21"><span class="kw">confusionMatrix</span>(LR_pred, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb456"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb456-1" title="1">LRcMatrix &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(LR_pred, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a>
+<a class="sourceLine" id="cb456-2" title="2">LRcMatrix<span class="op">$</span>table <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb456-3" title="3"><span class="st">  </span><span class="kw">data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb456-4" title="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Prediction =</span> <span class="kw">factor</span>(Prediction, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Cad&quot;</span>, <span class="st">&quot;Normal&quot;</span>))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb456-5" title="5"><span class="st">  </span><span class="kw">group_by</span>(Reference) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb456-6" title="6"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total =</span> <span class="kw">sum</span>(Freq)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb456-7" title="7"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb456-8" title="8"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(Reference, Prediction, <span class="dt">fill =</span> Freq)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb456-9" title="9"><span class="st">  </span><span class="kw">geom_tile</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb456-10" title="10"><span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> Freq), <span class="dt">size =</span> <span class="dv">8</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb456-11" title="11"><span class="st">  </span><span class="kw">scale_fill_gradient</span>(<span class="dt">low =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">high =</span> <span class="st">&quot;palegreen4&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb456-12" title="12"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">position =</span> <span class="st">&quot;top&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb456-13" title="13"><span class="st">  </span><span class="kw">geom_tile</span>(<span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">alpha =</span> <span class="dv">0</span>)</a></code></pre></div>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-102-2.png" width="672" /></p>
 </div>
 <div id="ensamble-evaluation" class="section level4">
 <h4>Ensamble evaluation:</h4>
 <div class="sourceCode" id="cb457"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb457-1" title="1"><span class="kw">library</span>(caretEnsemble)</a>
 <a class="sourceLine" id="cb457-2" title="2"></a>
-<a class="sourceLine" id="cb457-3" title="3">ENCntrl &lt;-<span class="st"> </span><span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>, <span class="dt">number =</span> <span class="dv">10</span>, <span class="dt">repeats =</span> <span class="dv">10</span>, <span class="dt">search =</span> <span class="st">&quot;grid&quot;</span>, <span class="dt">savePredictions =</span> <span class="st">&quot;final&quot;</span>, <span class="dt">sampling =</span> <span class="st">&quot;down&quot;</span>)</a>
+<a class="sourceLine" id="cb457-3" title="3">ENCntrl &lt;-<span class="st"> </span><span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;repeatedcv&quot;</span>, <span class="dt">number =</span> <span class="dv">10</span>, <span class="dt">repeats =</span> <span class="dv">3</span>, <span class="dt">search =</span> <span class="st">&quot;grid&quot;</span>, <span class="dt">savePredictions =</span> <span class="st">&quot;final&quot;</span>, <span class="dt">sampling =</span> <span class="st">&quot;smote&quot;</span>)</a>
 <a class="sourceLine" id="cb457-4" title="4"></a>
 <a class="sourceLine" id="cb457-5" title="5">ENFit &lt;-<span class="st"> </span><span class="kw">caretList</span>(AllvFtrain[,predictors], AllvFtrain[,outcomeName], <span class="dt">methodList =</span> <span class="kw">c</span>(<span class="st">&quot;rf&quot;</span>, <span class="st">&quot;nb&quot;</span>, <span class="st">&quot;glm&quot;</span>))</a>
 <a class="sourceLine" id="cb457-6" title="6">ENFit</a>
@@ -2576,7 +2671,7 @@ summary {
 ##         r2CU 
 ##    0.6496073</code></pre>
 <div class="sourceCode" id="cb471"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb471-1" title="1"><span class="kw">plot</span>(<span class="kw">residuals</span>(LRlogit) <span class="op">~</span><span class="st"> </span><span class="kw">fitted</span>(LRlogit))</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-106-1.png" width="672" /></p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-109-1.png" width="672" /></p>
 <div class="sourceCode" id="cb472"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb472-1" title="1"><span class="kw">coef</span>(LRlogit)</a></code></pre></div>
 <pre><code>## (Intercept)         TCP     RWMAMed        NCPY        ACPY       EFMed 
 ##   1.8294680   3.4047423  -2.6388199  -1.4209405   0.4692772  -1.5196451 
@@ -2687,7 +2782,7 @@ summary {
 <a class="sourceLine" id="cb478-27" title="27"></a>
 <a class="sourceLine" id="cb478-28" title="28"><span class="kw">legend</span>(<span class="st">&#39;bottomright&#39;</span>,<span class="dt">legend=</span><span class="kw">colnames</span>(RFstability), <span class="dt">pch=</span>pch, </a>
 <a class="sourceLine" id="cb478-29" title="29">        <span class="dt">col=</span>cols, <span class="dt">cex=</span><span class="fl">1.0</span>, <span class="dt">bty=</span><span class="st">&quot;n&quot;</span>,  <span class="dt">lwd=</span><span class="dv">3</span>, <span class="dt">lty=</span><span class="dv">1</span>)</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-107-1.png" width="672" /></p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-110-1.png" width="672" /></p>
 <div id="next-plotting-the-stability-of-the-naive-bayes-algorithm" class="section level4">
 <h4>Next, plotting the stability of the Naive Bayes algorithm:</h4>
 <div class="sourceCode" id="cb479"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb479-1" title="1">NBstability &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Accuracy=</span><span class="kw">c</span>(<span class="fl">0.9200</span>, <span class="fl">0.9200</span>, <span class="fl">0.9333</span>, <span class="fl">0.9067</span>, <span class="fl">0.9067</span>, <span class="fl">0.9200</span>, <span class="fl">0.9200</span>), <span class="dt">Sensitivity=</span><span class="kw">c</span>(<span class="fl">0.8889</span>, <span class="fl">0.8889</span>, <span class="fl">0.9074</span>, <span class="fl">0.8704</span>, <span class="fl">0.8889</span>, <span class="fl">0.8889</span>, <span class="fl">0.8889</span>), <span class="dt">Specificity=</span><span class="kw">c</span>(<span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">0.9524</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span>))</a>
@@ -2730,7 +2825,7 @@ summary {
 <a class="sourceLine" id="cb481-27" title="27"></a>
 <a class="sourceLine" id="cb481-28" title="28"><span class="kw">legend</span>(<span class="st">&#39;bottomright&#39;</span>,<span class="dt">legend=</span><span class="kw">colnames</span>(NBstability), <span class="dt">pch=</span>pch, </a>
 <a class="sourceLine" id="cb481-29" title="29">        <span class="dt">col=</span>cols, <span class="dt">cex=</span><span class="fl">1.0</span>, <span class="dt">bty=</span><span class="st">&quot;n&quot;</span>,  <span class="dt">lwd=</span><span class="dv">3</span>, <span class="dt">lty=</span><span class="dv">1</span>)</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-108-1.png" width="672" /></p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-111-1.png" width="672" /></p>
 </div>
 <div id="lastly-plotting-the-stability-of-the-logistic-regression-algorithm" class="section level4">
 <h4>Lastly, plotting the stability of the Logistic Regression algorithm:</h4>
@@ -2774,7 +2869,7 @@ summary {
 <a class="sourceLine" id="cb484-27" title="27"></a>
 <a class="sourceLine" id="cb484-28" title="28"><span class="kw">legend</span>(<span class="st">&#39;bottomright&#39;</span>,<span class="dt">legend=</span><span class="kw">colnames</span>(LRstability), <span class="dt">pch=</span>pch, </a>
 <a class="sourceLine" id="cb484-29" title="29">        <span class="dt">col=</span>cols, <span class="dt">cex=</span><span class="fl">1.0</span>, <span class="dt">bty=</span><span class="st">&quot;n&quot;</span>,  <span class="dt">lwd=</span><span class="dv">3</span>, <span class="dt">lty=</span><span class="dv">1</span>)</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-109-1.png" width="672" /></p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-112-1.png" width="672" /></p>
 </div>
 <div id="plotting-the-duration-of-each-of-the-three-algorithms-for-each-of-the-seven-different-folds" class="section level4">
 <h4>Plotting the duration of each of the three algorithms for each of the seven different folds:</h4>
@@ -2818,7 +2913,7 @@ summary {
 <a class="sourceLine" id="cb487-27" title="27"></a>
 <a class="sourceLine" id="cb487-28" title="28"><span class="kw">legend</span>(<span class="st">&#39;bottomright&#39;</span>,<span class="dt">legend=</span><span class="kw">colnames</span>(Duration), <span class="dt">pch=</span>pch, </a>
 <a class="sourceLine" id="cb487-29" title="29">        <span class="dt">col=</span>cols, <span class="dt">cex=</span><span class="fl">1.0</span>, <span class="dt">bty=</span><span class="st">&quot;n&quot;</span>,  <span class="dt">lwd=</span><span class="dv">3</span>, <span class="dt">lty=</span><span class="dv">1</span>)</a></code></pre></div>
-<p><img src="CKME136CapstoneJuly20_files/figure-html/unnamed-chunk-110-1.png" width="672" /> #### Computing the Cliff’s Delta effect size (for ordinal variables):</p>
+<p><img src="CKME136CapstoneJuly21_files/figure-html/unnamed-chunk-113-1.png" width="672" /> #### Computing the Cliff’s Delta effect size (for ordinal variables):</p>
 <div class="sourceCode" id="cb488"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb488-1" title="1"><span class="kw">library</span>(effsize)</a>
 <a class="sourceLine" id="cb488-2" title="2"></a>
 <a class="sourceLine" id="cb488-3" title="3">RFacc &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="fl">0.9467</span>,<span class="dv">7</span>)</a>
