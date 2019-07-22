@@ -31,6 +31,8 @@ install.packages("pscl")
 install.packages("klaR")
 install.packages("DMwR")
 install.packages("caTools")
+install.packages("rms")
+install.packages("Hmisc")
 library(GGally)
 library(knitr)
 library(RCurl)
@@ -52,6 +54,8 @@ library(pscl)
 library(klaR)
 library(DMwR)
 library(caTools)
+library(rms)
+library(Hmisc)
 ---
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(knitr)
@@ -75,6 +79,8 @@ library(pscl)
 library(klaR)
 library(DMwR)
 library(caTools)
+library(rms)
+library(Hmisc)
 ```
 
 
@@ -931,26 +937,19 @@ TenVars2 <- AllvFinal[, c("TCP", "ACP", "RWMA", "EF", "HTN", "Age", "DM", "NCP",
 ```{r}
 library(caret)
 
-# index <- createDataPartition(AllvFinal$CAD, p = 0.75, list = FALSE)
-# AllvFtrain <- AllvFinal[ index,]
-# AllvFtest <- AllvFinal[-index,]
-```
-#### Included the following chunk to create a repeatable 75/25 split for evaluation of training/testing results (that is, for running and capturing multiple runs, with different folds, etc ):
-```{r}
+index <- createDataPartition(AllvFinal$CAD, p = 0.75, list = FALSE)
+AllvFtrain <- AllvFinal[ index,]
+AllvFtest <- AllvFinal[-index,]
 
-#AllvFtrainCopy2 <- AllvFtrain
-#AllvFtestCopy2 <- AllvFtest
-
-#write.csv(AllvFtrainCopy2,'C:\\Users\\TGB\\Documents\\Ryerson\\CKME 136\\RMD Versions\\AllvFtrainCopy2.csv')
-
-#write.csv(AllvFtestCopy2,'C:\\Users\\TGB\\Documents\\Ryerson\\CKME 136\\RMD Versions\\AllvFtestCopy2.csv')
+#str(AllvFtrain)
+#str(AllvFtest)
 ```
 
 #### Saved off resulting train and test files for retrieval for subsequent algorithms, etc. This is to ensure that the same training/test split files are used before the recursive feature elimination, cross validation, training and running of algorithms. Comment this out to use a different 75/25 beginning split each time:
 ```{r}
-AllvFtrain<-read.csv(file="https://raw.githubusercontent.com/ToddB11/TB136capstone/master/AllvFtrainCopy.csv",header=T,sep=",")
+#AllvFtrain<-read.csv(file="https://raw.githubusercontent.com/ToddB11/TB136capstone/master/AllvFtrainCopy.csv",header=T,sep=",")
 
-AllvFtest<-read.csv(file="https://raw.githubusercontent.com/ToddB11/TB136capstone/master/AllvFtestCopy.csv",header=T,sep=",")
+#AllvFtest<-read.csv(file="https://raw.githubusercontent.com/ToddB11/TB136capstone/master/AllvFtestCopy.csv",header=T,sep=",")
 
 ```
 
@@ -978,23 +977,21 @@ predictors <-c("TCP", "EF", "RWMA", "NCP", "ACP", "HTN", "Age", "DM")
 ```
 
 ### Random Forest Training (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
-```{r eval=FALSE, results='hide', message=FALSE, warning=FALSE}
+```{r results='hide', message=FALSE, warning=FALSE}
 library(tictoc)
 library(caret)
 library(DMwR)
 
 tic("Random Forest Algorithm Timing")
 
-rfFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'rf', returnResamp = "final", trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "smote"))
+rfFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'rf', returnResamp = "all", trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3))
 rfFit
 plot(rfFit)
 
 varImp(object = rfFit)
 plot(varImp(object = rfFit),main="Random Forest - Variable Importance")
-```
 
-#### Random Forest Predictions
-```{r eval=FALSE}
+# Random Forest Predictions
 library(tidyverse)
 
 RFpredictions <- predict.train(object = rfFit, AllvFtest[,predictors], type = "raw")
@@ -1021,21 +1018,19 @@ toc()
 ```
 
 ### Training for Naive Bayes (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
-```{r eval=FALSE, results='hide', message=FALSE, warning=FALSE}
+```{r results='hide', message=FALSE, warning=FALSE}
 library(klaR)
 library(caret)
 
 tic("Naive Bayes Algorithm Timing")
 
-NBfit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'nb', returnResamp = "final", trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "smote"))
+NBfit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'nb', returnResamp = "none", trControl = trainControl(method = "repeatedcv", number = 20, repeats = 3))
 NBfit
 
 varImp(object = NBfit)
 plot(varImp(object = NBfit),main="Naive Bayes - Variable Importance")
-```
 
-#### Naive Bayes Predictions:
-```{r eval=FALSE}
+# Naive Bayes Predictions:
 NBpredictions <- predict.train(object = NBfit, AllvFtest[,predictors])
 table(NBpredictions)
 
@@ -1060,20 +1055,17 @@ toc()
 ```
 
 ### Training for Logistic Regression (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
-```{r eval=FALSE, results='hide', message=FALSE, warning=FALSE}
+```{r results='hide', message=FALSE, warning=FALSE}
 
 tic("Logistic Regression Algorithm Timing")
 
-LRFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'glm', family = "binomial", trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "smote"))
+LRFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'glm', family = "binomial", trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "down"))
 LRFit
 
 varImp(object = LRFit)
 plot(varImp(object = LRFit), main="Logistic Regression - Variable Importance")
-```
 
-#### Logistic Regression Predictions:
-```{r eval=FALSE}
-library(tidyverse)
+# Logistic Regression Predictions:
 
 LRpredictions <- predict.train(object = LRFit, AllvFtest[,predictors])
 table(LRpredictions)
@@ -1097,14 +1089,9 @@ LRcm$table %>%
 
 toc()
 ```
-#### Brier Score for Logistic Regression model:
-```{r}
 
-
-```
-``{r results='hide', message=FALSE, warning=FALSE}
 #### Training and testing for all Three Algorithms Combined:
-```{r}
+```{r results='hide', message=FALSE, warning=FALSE}
 library(tictoc)
 library(caret)
 library(DMwR)
@@ -1114,7 +1101,7 @@ tic("Three Combined Algorithms Timing")
 
 # Defining the training control:
 
-ENCntrl <- trainControl(method = "LOOCV", number = 10, savePredictions = "all", search = "grid", sampling = "smote")
+ENCntrl <- trainControl(method = "LOOCV", number = 15, savePredictions = "all", search = "grid")
 
 # Training the 3 models:
 
@@ -1196,11 +1183,11 @@ LRcMatrix$table %>%
   geom_tile(color = "black", fill = "black", alpha = 0)
 ```
 
-#### Ensamble evaluation:
+#### Ensemble evaluation:
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(caretEnsemble)
 
-ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, search = "grid", savePredictions = "final", sampling = "smote")
+ENCntrl <- trainControl(method = "LOOCV", number = 10, search = "grid", savePredictions = "all", sampling = "smote")
 
 ENFit <- caretList(AllvFtrain[,predictors], AllvFtrain[,outcomeName], methodList = c("rf", "nb", "glm"))
 ENFit
@@ -1317,29 +1304,45 @@ C <- sum(LRPred$Predict >= 0.50)
 #### Note: The ACP result is not connected to the dependent variable in a  statistically significant way. (This needs more investigation.)
 
 #### TCP: For a one unit increase in TCP, the log odds of being diagnosed with Coronary Artery Disease increases by 3.4047
-#### ACP: For a one unit increase in ACP, the log odds of being diagnosed with Coronary Artery Disease increases by 0.4693 (*Note: Not statistically significant relationship, per the p-value)
-#### RWMA: For a one unit increase in RWMA, the log odds of being diagnosed with Coronary Artery Disease increases by 1.8659
-#### EF: For a one unit increase in EF, the log odds of being diagnosed with Coronary Artery Disease DECREASES by 1.0746
+#### ACP: For a one unit increase in ACP, the log odds of being diagnosed with Coronary Artery Disease increases by 0.312 (*Note: Not statistically significant relationship, per the p-value)
+#### RWMA: For a one unit increase in 'RWMA Medium' (versus 'High') , the log odds of being diagnosed with Coronary Artery Disease decreases by 2.6388
+#### EF: For a one unit increase in 'EF Medium' (versus 'Low'), the log odds of being diagnosed with Coronary Artery Disease DECREASES by 1.5196
 #### NCP: For a one unit increase in NCP, the log odds of being diagnosed with Coronary Artery Disease DECREASES by 1.4209 (*Note: not statistically significant, just outside of significance range per the p-value)
-#### Age: For a one unit increase in Age, the log odds of being diagnosed with Coronary Artery Disease increases by 1.1406
+#### Age: For a one unit increase in 'Age Medium' (versus 'High'), the log odds of being diagnosed with Coronary Artery Disease DECREASES by 1.6130
 #### HTN: For a one unit increase in HTN, the log odds of being diagnosed with Coronary Artery Disease increases by 0.8657
 #### DM: For a one unit increase in DM, the log odds of being diagnosed with Coronary Artery Disease increases by 1.8719
 
 
+#### Brier Score for Logistic Regression model:
+```{r results='hide', message=FALSE, warning=FALSE}}
+library(rms)
+library(Hmisc)
+
+logiTrain2 <- data.frame(AllvFtrain[,c(23,51,27,26,50,1,5,4,53)])
+
+logiTrain2$CAD <- relevel(logiTrain2$CAD, ref = "Normal")
+#str(logiTrain2)
+
+LRlrm <- lrm(formula = CAD~.,logiTrain2)
+contr.poly(LRlrm)
+LRlrm
+
+```
+
 ### Documenting and plotting the stability of the algorithms using different numbers of 'folds' during cross validation - starting with the Random Forest algorithm:
 ```{r}
-RFstability <- data.frame(Accuracy=rep(0.9467,7), Sensitivity=rep(0.9630, 7), Specificity=rep(0.9048,7))
-rownames(RFstability) <- c(3,5,7,10,15,20,25)
+RFstability <- data.frame(Accuracy=c(0.9200, 0.9200, 0.9467, 0.9200, 0.9467, 0.9467, 0.9467), Kappa=c(0.8072, 0.8072, 0.8677, 0.8072, 0.8677, 0.8677, 0.8677), Sensitivity=c(0.9259, 0.9259, 0.9630, 0.9259, 0.9630, 0.9630, 0.9630), Specificity=rep(0.9048, 7))
+rownames(RFstability) <- c(5,10,15,20,25,30,35)
 RFstability
 
-cols <- c("darkseagreen","cornflowerblue","gray48")
-pch <- c(17,18,15)
+cols <- c("darkseagreen", "darkorange1","cornflowerblue","gray48")
+pch <- c(17,18,15, 16)
 xmax <- nrow(RFstability) + 2.5
 par(mar=c(4,4,1,1))
 plot(1:nrow(RFstability), 1:nrow(RFstability), pch="", 
-		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
-		ylim=c(.9,.975), bty="n", xlim=c(1,xmax), main="Random Forest Stability Results")
-for (i in seq(.9,.975,by=.025)) {
+		xlab="Resampling Iterations", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(.6,1.0), bty="n", xlim=c(1,xmax), main="Random Forest Stability Results")
+for (i in seq(.6,1.0,by=.05)) {
 	lines(1:nrow(RFstability), rep(i,nrow(RFstability)), col="gray69")
 }
 for (i in 1:ncol(RFstability)) {
@@ -1356,8 +1359,8 @@ axis(side=1, at=1:nrow(RFstability), tick=FALSE,
 axis(side=1, at=seq(-0.5,8.5,by=1), 
 		tick=FALSE, labels=NA)
 
-axis(side=2, at=seq(.9,.975,by=.025), tick=TRUE, 
-		las=TRUE, labels=paste(seq(.9,.975,by=.025)))
+axis(side=2, at=seq(.6,1.0,by=.05), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.6,1.0,by=.05)))
 
 legend('bottomright',legend=colnames(RFstability), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
@@ -1365,21 +1368,21 @@ legend('bottomright',legend=colnames(RFstability), pch=pch,
 
 #### Next, plotting the stability of the Naive Bayes algorithm:
 ```{r}
-NBstability <- data.frame(Accuracy=c(0.9200, 0.9200, 0.9333, 0.9067, 0.9067, 0.9200, 0.9200), Sensitivity=c(0.8889, 0.8889, 0.9074, 0.8704, 0.8889, 0.8889, 0.8889), Specificity=c(1.0, 1.0, 1.0, 1.0, 0.9524, 1.0, 1.0))
-rownames(NBstability) <- c(3,5,7,10,15,20,25)
+NBstability <- data.frame(Accuracy=c(0.8933, 0.8933, 0.8533, 0.8533, 0.8933, 0.8533, 0.8533), Kappa=c(0.7500, 0.7500, 0.6699, 0.6699, 0.7500, 0.6864, 0.6699), Sensitivity=c(0.8889, 0.8889, 0.8333, 0.8333, 0.8889, 0.7963, 0.8333), Specificity=c(0.9048, 0.9048, 0.9048, 0.9048, .9048, 1.0, .9048))
+rownames(NBstability) <- c(5,10,15,20,25,30,35)
 NBstability
 
-cols <- c("darkseagreen","cornflowerblue","gray48")
-pch <- c(17,18,15)
+cols <- c("darkseagreen", "darkorange1","cornflowerblue","gray48")
+pch <- c(17,18,15, 16)
 xmax <- nrow(NBstability) + 2.5
 par(mar=c(4,4,1,1))
 plot(1:nrow(NBstability), 1:nrow(NBstability), pch="", 
-		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
-		ylim=c(.85,1.0), bty="n", xlim=c(1,xmax), main="Naive Bayes Stability Results")
-for (i in seq(.85,1.0,by=.05)) {
+		xlab="Resampling Iterations", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(.6,1.0), bty="n", xlim=c(1,xmax), main="Naive Bayes Stability Results")
+for (i in seq(.6,1.0,by=.05)) {
 	lines(1:nrow(NBstability), rep(i,nrow(NBstability)), col="gray69")
 }
-for (i in 1:ncol(RFstability)) {
+for (i in 1:ncol(NBstability)) {
 
 	points(1:nrow(NBstability), NBstability[,i], pch=pch[i], 
 		col=cols[i], cex=1.2)
@@ -1393,8 +1396,8 @@ axis(side=1, at=1:nrow(NBstability), tick=FALSE,
 axis(side=1, at=seq(-0.5,8.5,by=1), 
 		tick=FALSE, labels=NA)
 
-axis(side=2, at=seq(.85,1.0,by=.05), tick=TRUE, 
-		las=TRUE, labels=paste(seq(.85,1.0,by=.05)))
+axis(side=2, at=seq(.6,1.0,by=.05), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.6,1.0,by=.05)))
 
 legend('bottomright',legend=colnames(NBstability), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
@@ -1402,18 +1405,18 @@ legend('bottomright',legend=colnames(NBstability), pch=pch,
 
 #### Lastly, plotting the stability of the Logistic Regression algorithm:
 ```{r}
-LRstability <- data.frame(Accuracy=rep(0.9333,7), Sensitivity=rep(0.9630,7), Specificity=rep(0.8571,7))
-rownames(LRstability) <- c(3,5,7,10,15,20,25)
-RFstability
+LRstability <- data.frame(Accuracy=c(0.8933, 0.9200, 0.9333, 0.9333, 0.8933, 0.8933, 0.8933), Kappa=c(0.7567, 0.8072, 0.8416, 0.8416, 0.7567, 0.7567, 0.7500), Sensitivity=c(0.8704, 0.9259, 0.9259, 0.9259, 0.8704, 0.8704, 0.8889), Specificity=c(0.9524, 0.9048, 0.9524, 0.9524, 0.9524, 0.9524, 0.9048))
+rownames(LRstability) <- c(5,10,15,20,25,30,35)
+LRstability
 
-cols <- c("darkseagreen","cornflowerblue","gray48")
-pch <- c(17,18,15)
+cols <- c("darkseagreen", "darkorange1","cornflowerblue","gray48")
+pch <- c(17,18,15, 16)
 xmax <- nrow(LRstability) + 2.5
 par(mar=c(4,4,1,1))
 plot(1:nrow(LRstability), 1:nrow(LRstability), pch="", 
-		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
-		ylim=c(.85,.975), bty="n", xlim=c(1,xmax), main="Logistic Regression Stability Results")
-for (i in seq(.85,.975,by=.025)) {
+		xlab="Resampling Iterations", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(.6,1.0), bty="n", xlim=c(1,xmax), main="Logistic Regression Stability Results")
+for (i in seq(.6,1.0,by=.05)) {
 	lines(1:nrow(LRstability), rep(i,nrow(LRstability)), col="gray69")
 }
 for (i in 1:ncol(LRstability)) {
@@ -1425,13 +1428,13 @@ for (i in 1:ncol(LRstability)) {
 		lwd=2)
 }
 axis(side=1, at=1:nrow(LRstability), tick=FALSE, 
-		labels=rownames(RFstability))
+		labels=rownames(LRstability))
 
 axis(side=1, at=seq(-0.5,8.5,by=1), 
 		tick=FALSE, labels=NA)
 
-axis(side=2, at=seq(.85,.975,by=.025), tick=TRUE, 
-		las=TRUE, labels=paste(seq(.85,.975,by=.025)))
+axis(side=2, at=seq(.6,1.0,by=.05), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.6,1.0,by=.05)))
 
 legend('bottomright',legend=colnames(LRstability), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
@@ -1439,18 +1442,18 @@ legend('bottomright',legend=colnames(LRstability), pch=pch,
 
 #### Plotting the duration of each of the three algorithms for each of the seven different folds:
 ```{r}
-Duration <- data.frame(Rforest=c(6.97, 6.95, 6.97, 6.85, 6.91, 6.89, 7.14), NBayes=c(5.11, 6.39, 7.39, 8.86, 12.14, 14.50, 18.30), LRegression=c(2.84, 3.77, 4.99, 5.50, 7.77, 9.61, 11.25))
+Duration <- data.frame(All3Algorithms=c(124.07, 126.12, 140.51, 148.47, 158.02, 156.47, 139.47))
 rownames(Duration) <- c(3,5,7,10,15,20,25)
 Duration
 
-cols <- c("green3","indianred","gold")
+cols <- c("royalblue2")
 pch <- c(17,18,15)
 xmax <- nrow(Duration) + 2.5
 par(mar=c(4,4,1,1))
 plot(1:nrow(Duration), 1:nrow(Duration), pch="", 
-		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
-		ylim=c(2,20), bty="n", xlim=c(1,xmax), main="Algorithm Duration (Seconds)")
-for (i in seq(2, 20,by=2)) {
+		xlab="Resampling Iterations", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(100,180), bty="n", xlim=c(1,xmax), main="Algorithm's Total Duration (Seconds)")
+for (i in seq(100, 180,by=20)) {
 	lines(1:nrow(Duration), rep(i,nrow(Duration)), col="gray69")
 }
 for (i in 1:ncol(Duration)) {
@@ -1467,8 +1470,8 @@ axis(side=1, at=1:nrow(Duration), tick=FALSE,
 axis(side=1, at=seq(-0.5,8.5,by=1), 
 		tick=FALSE, labels=NA)
 
-axis(side=2, at=seq(2,20,by=2), tick=TRUE, 
-		las=TRUE, labels=paste(seq(2,20,by=2)))
+axis(side=2, at=seq(100,180,by=20), tick=TRUE, 
+		las=TRUE, labels=paste(seq(100,180,by=20)))
 
 legend('bottomright',legend=colnames(Duration), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
