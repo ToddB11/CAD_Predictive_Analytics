@@ -1,11 +1,11 @@
 ---
 title: "CKME 136 Capstone"
 author: "TODD BETHELL"
-date: "July 19, 2019"
+date: "July 23, 2019"
 output:
-  html_document:
-    self_contained: FALSE
+  html_document: 
     highlight: haddock
+    self_contained: no
     theme: readable
 ---
 #### !!NOTE!! This will install ALL of the caret package - which will take several minutes - so comment the install out if you do not want to install the full caret package.
@@ -33,6 +33,8 @@ install.packages("DMwR")
 install.packages("caTools")
 install.packages("rms")
 install.packages("Hmisc")
+install.packages("ggsignif")
+install.packages("ggsci")
 library(GGally)
 library(knitr)
 library(RCurl)
@@ -56,8 +58,10 @@ library(DMwR)
 library(caTools)
 library(rms)
 library(Hmisc)
+library(ggsignif)
+library(ggsci)
 ---
-```{r results='hide', message=FALSE, warning=FALSE}
+```{r}
 library(knitr)
 library(RCurl)
 library(caret)
@@ -81,6 +85,8 @@ library(DMwR)
 library(caTools)
 library(rms)
 library(Hmisc)
+library(ggsignif)
+library(ggsci)
 ```
 
 
@@ -945,14 +951,6 @@ AllvFtest <- AllvFinal[-index,]
 #str(AllvFtest)
 ```
 
-#### Saved off resulting train and test files for retrieval for subsequent algorithms, etc. This is to ensure that the same training/test split files are used before the recursive feature elimination, cross validation, training and running of algorithms. Comment this out to use a different 75/25 beginning split each time:
-```{r}
-#AllvFtrain<-read.csv(file="https://raw.githubusercontent.com/ToddB11/TB136capstone/master/AllvFtrainCopy.csv",header=T,sep=",")
-
-#AllvFtest<-read.csv(file="https://raw.githubusercontent.com/ToddB11/TB136capstone/master/AllvFtestCopy.csv",header=T,sep=",")
-
-```
-
 #### Using 'Recursive Feature Elimination' to find the best subset of atttributes to use for modeling (not needed for subsequent runs once the final set of predictors have been determined):
 ```{r}
 library(plyr)
@@ -975,33 +973,58 @@ CAD_Profile$optVariables[1:8]
 ```{r}
 predictors <-c("TCP", "EF", "RWMA", "NCP", "ACP", "HTN", "Age", "DM")
 ```
+#### Visualize degree of class imbalance:
+```{r}
+
+library(ggplot2)
+library(ggpubr)
+library(ggsci)
+library(plyr)
+library(dplyr)
+
+ggplot(AllvFinal, aes(CAD)) +
+  geom_bar(fill = "#0073C2FF") +
+  theme_pubclean()
+
+```
+
+
+#### Function created to provide additional metrics for evaluation:
+```{r}
+MySummary  <- function(data, lev = NULL, model = NULL){
+  a1 <- defaultSummary(data, lev, model)
+  b1 <- twoClassSummary(data, lev, model)
+  c1 <- prSummary(data, lev, model)
+  out <- c(a1, b1, c1)
+  out}
+```
+
 
 ### Random Forest Training (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
-```{r results='hide', message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 library(tictoc)
 library(caret)
 library(DMwR)
 
 tic("Random Forest Algorithm Timing")
 
-rfFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'rf', returnResamp = "all", trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3))
-rfFit
-plot(rfFit)
+RFControl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "down", savePredictions = TRUE, classProbs = TRUE, summaryFunction = MySummary)
 
-varImp(object = rfFit)
-plot(varImp(object = rfFit),main="Random Forest - Variable Importance")
+rfFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'rf', returnResamp = "all", trControl = RFControl)
 
-# Random Forest Predictions
-library(tidyverse)
+rfFit$results
+#plot(rfFit)
 
-RFpredictions <- predict.train(object = rfFit, AllvFtest[,predictors], type = "raw")
+RFpredictions <- predict(object = rfFit, AllvFtest[,predictors], type = 'raw')
 table(RFpredictions)
 
-confusionMatrix(RFpredictions, AllvFtest[,outcomeName])
+varImp(object = rfFit)
+plot(varImp(object = rfFit), main="Random Forest - Variable Importance")
 
-RFcm <- confusionMatrix(RFpredictions, AllvFtest[,outcomeName], mode = 'everything')
+confusionMatrix(RFpredictions, AllvFtest[,outcomeName], mode = 'everything')
 
-RFcm$table %>%
+RFcMatrix1 <- confusionMatrix(RFpredictions, AllvFtest[,outcomeName], mode = 'everything')
+RFcMatrix1$table %>%
   data.frame() %>% 
   mutate(Prediction = factor(Prediction, levels = c("Cad", "Normal"))) %>%
   group_by(Reference) %>% 
@@ -1013,32 +1036,39 @@ RFcm$table %>%
   scale_fill_gradient(low = "white", high = "palegreen4") +
   scale_x_discrete(position = "top") +
   geom_tile(color = "black", fill = "black", alpha = 0)
+
+EvalRF1 <- data.frame(c(RFcMatrix1$overall['Accuracy'], RFcMatrix1$overall['Kappa'], RFcMatrix1$byClass['Sensitivity'], RFcMatrix1$byClass['Specificity'], RFcMatrix1$byClass['Precision'], RFcMatrix1$byClass['Recall'], RFcMatrix1$byClass['F1'])) 
+colnames(EvalRF1)[1] <- "Metrics"
+EvalRF1
 
 toc()
 ```
 
 ### Training for Naive Bayes (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
-```{r results='hide', message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 library(klaR)
 library(caret)
 
 tic("Naive Bayes Algorithm Timing")
 
-NBfit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'nb', returnResamp = "none", trControl = trainControl(method = "repeatedcv", number = 20, repeats = 3))
-NBfit
+NBControl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "down", savePredictions = TRUE, classProbs = TRUE, summaryFunction = MySummary)
+
+NBfit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'nb', returnResamp = "all", trControl = NBControl)
+                 
+NBfit$results
+#plot(NBfit)
 
 varImp(object = NBfit)
 plot(varImp(object = NBfit),main="Naive Bayes - Variable Importance")
 
 # Naive Bayes Predictions:
-NBpredictions <- predict.train(object = NBfit, AllvFtest[,predictors])
+NBpredictions <- predict(object = NBfit, AllvFtest[,predictors], type = 'raw')
 table(NBpredictions)
 
 confusionMatrix(NBpredictions, AllvFtest[,outcomeName], mode = 'everything')
 
-NBcm <- confusionMatrix(NBpredictions, AllvFtest[,outcomeName])
-
-NBcm$table %>%
+NBcMatrix1 <- confusionMatrix(NBpredictions, AllvFtest[,outcomeName], mode = 'everything')
+NBcMatrix1$table %>%
   data.frame() %>% 
   mutate(Prediction = factor(Prediction, levels = c("Cad", "Normal"))) %>%
   group_by(Reference) %>% 
@@ -1051,30 +1081,36 @@ NBcm$table %>%
   scale_x_discrete(position = "top") +
   geom_tile(color = "black", fill = "black", alpha = 0)
 
+EvalNB1 <- data.frame(c(NBcMatrix1$overall['Accuracy'], NBcMatrix1$overall['Kappa'], NBcMatrix1$byClass['Sensitivity'], NBcMatrix1$byClass['Specificity'], NBcMatrix1$byClass['Precision'], NBcMatrix1$byClass['Recall'], NBcMatrix1$byClass['F1'])) 
+colnames(EvalNB1)[1] <- "Metrics"
+EvalNB1
+
 toc()
+
 ```
 
 ### Training for Logistic Regression (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
-```{r results='hide', message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 
 tic("Logistic Regression Algorithm Timing")
 
-LRFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'glm', family = "binomial", trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "down"))
-LRFit
+LRControl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "smote", savePredictions = TRUE, classProbs = TRUE, summaryFunction = MySummary)
+
+LRFit <- train(AllvFtrain[,predictors], AllvFtrain[,outcomeName], method = 'glm', family = "binomial", trControl = LRControl)
+LRFit$results
 
 varImp(object = LRFit)
 plot(varImp(object = LRFit), main="Logistic Regression - Variable Importance")
 
 # Logistic Regression Predictions:
 
-LRpredictions <- predict.train(object = LRFit, AllvFtest[,predictors])
+LRpredictions <- predict(object = LRFit, AllvFtest[,predictors], type = 'raw')
 table(LRpredictions)
 
-confusionMatrix(LRpredictions, AllvFtest[,outcomeName])
+confusionMatrix(LRpredictions, AllvFtest[,outcomeName], mode = 'everything')
 
-LRcm <- confusionMatrix(LRpredictions, AllvFtest[,outcomeName], mode = 'everything')
-
-LRcm$table %>%
+LRcMatrix1 <- confusionMatrix(LRpredictions, AllvFtest[,outcomeName], mode = 'everything')
+LRcMatrix1$table %>%
   data.frame() %>% 
   mutate(Prediction = factor(Prediction, levels = c("Cad", "Normal"))) %>%
   group_by(Reference) %>% 
@@ -1087,21 +1123,25 @@ LRcm$table %>%
   scale_x_discrete(position = "top") +
   geom_tile(color = "black", fill = "black", alpha = 0)
 
+EvalLR1 <- data.frame(c(LRcMatrix1$overall['Accuracy'], LRcMatrix1$overall['Kappa'], LRcMatrix1$byClass['Sensitivity'], LRcMatrix1$byClass['Specificity'], LRcMatrix1$byClass['Precision'], LRcMatrix1$byClass['Recall'], LRcMatrix1$byClass['F1'])) 
+colnames(EvalLR1)[1] <- "Metrics"
+EvalLR1
+
 toc()
+
 ```
 
-#### Training and testing for all Three Algorithms Combined:
+#### Training and testing for all Three Algorithms Combined (different parameters):
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(tictoc)
 library(caret)
 library(DMwR)
-#library(caretEnsemble)
 
 tic("Three Combined Algorithms Timing")
 
 # Defining the training control:
 
-ENCntrl <- trainControl(method = "LOOCV", number = 15, savePredictions = "all", search = "grid")
+ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "down", savePredictions = TRUE, classProbs = TRUE, summaryFunction = MySummary)
 
 # Training the 3 models:
 
@@ -1127,8 +1167,8 @@ varImp(object = RFmodel)
 plot(varImp(object = RFmodel), main="Random Forest - Variable Importance")
 
 confusionMatrix(RF_pred, AllvFtest[,outcomeName], mode = 'everything')
-RFcMatrix <- confusionMatrix(RF_pred, AllvFtest[,outcomeName], mode = 'everything')
-RFcMatrix$table %>%
+RFcMatrix2 <- confusionMatrix(RF_pred, AllvFtest[,outcomeName], mode = 'everything')
+RFcMatrix2$table %>%
   data.frame() %>% 
   mutate(Prediction = factor(Prediction, levels = c("Cad", "Normal"))) %>%
   group_by(Reference) %>% 
@@ -1140,6 +1180,10 @@ RFcMatrix$table %>%
   scale_fill_gradient(low = "white", high = "palegreen4") +
   scale_x_discrete(position = "top") +
   geom_tile(color = "black", fill = "black", alpha = 0)
+
+EvalRF2 <- data.frame(c(RFcMatrix2$overall['Accuracy'], RFcMatrix2$overall['Kappa'], RFcMatrix2$byClass['Sensitivity'], RFcMatrix2$byClass['Specificity'], RFcMatrix2$byClass['Precision'], RFcMatrix2$byClass['Recall'], RFcMatrix2$byClass['F1'])) 
+colnames(EvalRF2)[1] <- "Metrics"
+EvalRF2
 ```
 #### Variable importance and confusion matrix for the Naive Bayes algorithm:
 ```{r}
@@ -1147,8 +1191,8 @@ varImp(object = NBmodel)
 plot(varImp(object = NBmodel), main="Naive Bayes - Variable Importance")
 
 confusionMatrix(NB_pred, AllvFtest[,outcomeName], mode = 'everything')
-NBcMatrix <- confusionMatrix(NB_pred, AllvFtest[,outcomeName], mode = 'everything')
-NBcMatrix$table %>%
+NBcMatrix2 <- confusionMatrix(NB_pred, AllvFtest[,outcomeName], mode = 'everything')
+NBcMatrix2$table %>%
   data.frame() %>% 
   mutate(Prediction = factor(Prediction, levels = c("Cad", "Normal"))) %>%
   group_by(Reference) %>% 
@@ -1160,6 +1204,10 @@ NBcMatrix$table %>%
   scale_fill_gradient(low = "white", high = "palegreen4") +
   scale_x_discrete(position = "top") +
   geom_tile(color = "black", fill = "black", alpha = 0)
+
+EvalNB2 <- data.frame(c(NBcMatrix2$overall['Accuracy'], NBcMatrix2$overall['Kappa'], NBcMatrix2$byClass['Sensitivity'], NBcMatrix2$byClass['Specificity'], NBcMatrix2$byClass['Precision'], NBcMatrix2$byClass['Recall'], NBcMatrix2$byClass['F1'])) 
+colnames(EvalNB2)[1] <- "Metrics"
+EvalNB2
 ```
 
 #### Variable importance and confusion matrix for the Logistic Regression algorithm:
@@ -1168,8 +1216,8 @@ varImp(object = LRmodel)
 plot(varImp(object = LRmodel), main="LogistiC Regression - Variable Importance")
 
 confusionMatrix(LR_pred, AllvFtest[,outcomeName], mode = 'everything')
-LRcMatrix <- confusionMatrix(LR_pred, AllvFtest[,outcomeName], mode = 'everything')
-LRcMatrix$table %>%
+LRcMatrix2 <- confusionMatrix(LR_pred, AllvFtest[,outcomeName], mode = 'everything')
+LRcMatrix2$table %>%
   data.frame() %>% 
   mutate(Prediction = factor(Prediction, levels = c("Cad", "Normal"))) %>%
   group_by(Reference) %>% 
@@ -1181,6 +1229,10 @@ LRcMatrix$table %>%
   scale_fill_gradient(low = "white", high = "palegreen4") +
   scale_x_discrete(position = "top") +
   geom_tile(color = "black", fill = "black", alpha = 0)
+
+EvalLR2 <- data.frame(c(LRcMatrix2$overall['Accuracy'], LRcMatrix2$overall['Kappa'], LRcMatrix2$byClass['Sensitivity'], LRcMatrix2$byClass['Specificity'], LRcMatrix2$byClass['Precision'], LRcMatrix2$byClass['Recall'], LRcMatrix2$byClass['F1'])) 
+colnames(EvalLR2)[1] <- "Metrics"
+EvalLR2
 ```
 
 #### Ensemble evaluation:
@@ -1223,15 +1275,15 @@ exp(coef(LRlogit))
 ```{r}
 # The predicted value for TCP: the intercept, plus the dummy coefficient for TCP
 
-TCP1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["TCP"]
+TCP1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["TCP1"]
 
 # Converting the predicted value from log odds into percentage:
 
 TCPpresent <-exp(TCP1)/(1 + exp(TCP1))
 
 # Now for RWMA:
-RWMA1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["RWMAMed"]
-RWMAnormal <- exp(RWMA1)/(1 + exp(RWMA1))
+RWMA1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["RWMAHigh"]
+RWMAhigh <- exp(RWMA1)/(1 + exp(RWMA1))
 
 # Now for NCP: (Note: not statistically signficant):
 NCP1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["NCPY"]
@@ -1246,18 +1298,18 @@ EF1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["EFMed"]
 EFnormal <- exp(EF1)/(1 + exp(EF1))
 
 # Now for Age:
-Age1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["AgeMed"]
-AgeMedium <- exp(Age1)/(1 + exp(Age1))
+Age1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["AgeHigh"]
+AgeHigh <- exp(Age1)/(1 + exp(Age1))
 
 # Now for HTN:
-HTN1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["HTN"]
+HTN1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["HTN1"]
 HTNpresent <- exp(HTN1)/(1 + exp(HTN1))
 
 # Now for DM:
-DM1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["DM"]
+DM1 <- coef(LRlogit)["(Intercept)"] + coef(LRlogit)["DM1"]
 DMpresent <- exp(DM1)/(1 + exp(DM1))
 
-LRPredPerc <- data.frame(TCPpresent, RWMAnormal, NCPpresent, ACPpresent, EFnormal, AgeMedium, HTNpresent, DMpresent)
+LRPredPerc <- data.frame(TCPpresent, RWMAhigh, NCPpresent, ACPpresent, EFnormal, AgeHigh, HTNpresent, DMpresent)
 t(LRPredPerc)
 ```
 
@@ -1314,9 +1366,13 @@ C <- sum(LRPred$Predict >= 0.50)
 
 
 #### Brier Score for Logistic Regression model:
-```{r results='hide', message=FALSE, warning=FALSE}}
+```{r results='hide', message=FALSE, warning=FALSE}
 library(rms)
 library(Hmisc)
+
+options('contrasts')
+options(contrasts=c('contr.treatment','contr.treatment'))
+
 
 logiTrain2 <- data.frame(AllvFtrain[,c(23,51,27,26,50,1,5,4,53)])
 
@@ -1324,7 +1380,6 @@ logiTrain2$CAD <- relevel(logiTrain2$CAD, ref = "Normal")
 #str(logiTrain2)
 
 LRlrm <- lrm(formula = CAD~.,logiTrain2)
-contr.poly(LRlrm)
 LRlrm
 
 ```
