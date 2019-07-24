@@ -8,7 +8,7 @@ output:
     self_contained: no
     theme: readable
 ---
-#### !!NOTE!! This will install ALL of the caret package - which will take several minutes - so comment the install out if you do not want to install the full caret package.
+#### !!NOTE!! This will install ALL of the caret package - which will take several minutes - so comment the install out if you do not want to install the full caret package. Otherwise, start from line 66 (first chunk) to determine what packages you may need.
 
 install.packages("caret", dependencies = c("Depends", "Suggests"))
 install.packages("PerformanceAnalytics")
@@ -35,6 +35,7 @@ install.packages("rms")
 install.packages("Hmisc")
 install.packages("ggsignif")
 install.packages("ggsci")
+install.packages("ROSE")
 library(GGally)
 library(knitr)
 library(RCurl)
@@ -60,8 +61,9 @@ library(rms)
 library(Hmisc)
 library(ggsignif)
 library(ggsci)
+library(ROSE)
 ---
-```{r}
+```{r results='hide', message=FALSE, warning=FALSE}
 library(knitr)
 library(RCurl)
 library(caret)
@@ -87,6 +89,7 @@ library(rms)
 library(Hmisc)
 library(ggsignif)
 library(ggsci)
+library(ROSE)
 ```
 
 
@@ -975,16 +978,13 @@ predictors <-c("TCP", "EF", "RWMA", "NCP", "ACP", "HTN", "Age", "DM")
 ```
 #### Visualize degree of class imbalance:
 ```{r}
-
-library(ggplot2)
-library(ggpubr)
+library(ggsignif)
 library(ggsci)
-library(plyr)
-library(dplyr)
+library(ggplot2)
+
 
 ggplot(AllvFinal, aes(CAD)) +
-  geom_bar(fill = "#0073C2FF") +
-  theme_pubclean()
+  geom_bar(fill = "#0073C2FF")
 
 ```
 
@@ -1000,7 +1000,7 @@ MySummary  <- function(data, lev = NULL, model = NULL){
 ```
 
 
-### Random Forest Training (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
+### Random Forest Training (Note: Using "down" for subsampling for class imbalance since "smote" introduces NA's into the results):
 ```{r message=FALSE, warning=FALSE}
 library(tictoc)
 library(caret)
@@ -1044,7 +1044,7 @@ EvalRF1
 toc()
 ```
 
-### Training for Naive Bayes (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
+### Training for Naive Bayes (Note: Using "down" for subsampling to address class imbalance):
 ```{r message=FALSE, warning=FALSE}
 library(klaR)
 library(caret)
@@ -1089,7 +1089,7 @@ toc()
 
 ```
 
-### Training for Logistic Regression (Note: can also use "down" for subsampling if "smote" introduces NA's into the results):
+### Training for Logistic Regression (Note: Using 'smote' subsampling to address class imbalance):
 ```{r message=FALSE, warning=FALSE}
 
 tic("Logistic Regression Algorithm Timing")
@@ -1131,7 +1131,7 @@ toc()
 
 ```
 
-#### Training and testing for all Three Algorithms Combined (different parameters):
+#### Training and testing for all Three Algorithms Combined (different parameters). Using 'down' subsampling to address class imbalance:
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(tictoc)
 library(caret)
@@ -1141,7 +1141,7 @@ tic("Three Combined Algorithms Timing")
 
 # Defining the training control:
 
-ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "down", savePredictions = TRUE, classProbs = TRUE, summaryFunction = MySummary)
+ENCntrl <- trainControl(method = "repeatedcv", number = 15, repeats = 3, sampling = "down", savePredictions = TRUE, classProbs = TRUE, summaryFunction = MySummary)
 
 # Training the 3 models:
 
@@ -1239,21 +1239,13 @@ EvalLR2
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(caretEnsemble)
 
-ENCntrl <- trainControl(method = "LOOCV", number = 10, search = "grid", savePredictions = "all", sampling = "smote")
+ENCntrl <- trainControl(method = "LOOCV", number = 10, search = "grid", savePredictions = "all", sampling = "down")
 
 ENFit <- caretList(AllvFtrain[,predictors], AllvFtrain[,outcomeName], methodList = c("rf", "nb", "glm"))
 ENFit
 
 ENres <- resamples(ENFit)
 summary(ENFit)
-```
-
-#### Model comparisons:
-```{r}
-
-#ModelCompare <- resamples(list(RF = rfFit, NB = NBfit, LR = LRFit))
-#ModelCompare$values
-#summary(ModelCompare)
 ```
 
 #### Checking on the direction of log odds for a one unit increase in the selected features (using logistic regression) to confirm the relationship between the independent variables and the dependent variable (CAD or Normal):
@@ -1384,9 +1376,10 @@ LRlrm
 
 ```
 
-### Documenting and plotting the stability of the algorithms using different numbers of 'folds' during cross validation - starting with the Random Forest algorithm:
+#### Documenting and plotting the Accuracy/Kappa/Sensitivity/Specificity stability of the algorithms using different numbers of 'folds' during cross validation - starting with the Random Forest algorithm:
 ```{r}
-RFstability <- data.frame(Accuracy=c(0.9200, 0.9200, 0.9467, 0.9200, 0.9467, 0.9467, 0.9467), Kappa=c(0.8072, 0.8072, 0.8677, 0.8072, 0.8677, 0.8677, 0.8677), Sensitivity=c(0.9259, 0.9259, 0.9630, 0.9259, 0.9630, 0.9630, 0.9630), Specificity=rep(0.9048, 7))
+RFstability <- data.frame(Accuracy=c(0.8933333,	0.8933333,	0.9066667,	0.9066667,	0.9066667,	0.9066667,	0.9066667),Kappa=c(0.7566910,	0.7429306,	0.7782003,	0.7782003,	0.7782003,	0.7782003,	0.7718383), Sensitivity=c(0.8703704,	0.9074074,	0.9074074,	0.9074074,	0.9074074,	0.9074074,	0.9259259), Specificity=c(0.9523810,	0.8571429,	0.9047619,	0.9047619,	0.9047619,	0.9047619,	0.8571429))
+
 rownames(RFstability) <- c(5,10,15,20,25,30,35)
 RFstability
 
@@ -1395,9 +1388,9 @@ pch <- c(17,18,15, 16)
 xmax <- nrow(RFstability) + 2.5
 par(mar=c(4,4,1,1))
 plot(1:nrow(RFstability), 1:nrow(RFstability), pch="", 
-		xlab="Resampling Iterations", ylab=NA, xaxt="n", yaxt="n", 
-		ylim=c(.6,1.0), bty="n", xlim=c(1,xmax), main="Random Forest Stability Results")
-for (i in seq(.6,1.0,by=.05)) {
+		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(.725,.975), bty="n", xlim=c(1,xmax), main="Random Forest Stability Results; Part 1")
+for (i in seq(.725,.975,by=.025)) {
 	lines(1:nrow(RFstability), rep(i,nrow(RFstability)), col="gray69")
 }
 for (i in 1:ncol(RFstability)) {
@@ -1414,16 +1407,54 @@ axis(side=1, at=1:nrow(RFstability), tick=FALSE,
 axis(side=1, at=seq(-0.5,8.5,by=1), 
 		tick=FALSE, labels=NA)
 
-axis(side=2, at=seq(.6,1.0,by=.05), tick=TRUE, 
-		las=TRUE, labels=paste(seq(.6,1.0,by=.05)))
+axis(side=2, at=seq(.725,.975,by=.025), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.725,.975,by=.025)))
 
 legend('bottomright',legend=colnames(RFstability), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
 ```
-
-#### Next, plotting the stability of the Naive Bayes algorithm:
+#### Plotting the Precision/Recall/F1 stability of the Random Forest algorithm:
 ```{r}
-NBstability <- data.frame(Accuracy=c(0.8933, 0.8933, 0.8533, 0.8533, 0.8933, 0.8533, 0.8533), Kappa=c(0.7500, 0.7500, 0.6699, 0.6699, 0.7500, 0.6864, 0.6699), Sensitivity=c(0.8889, 0.8889, 0.8333, 0.8333, 0.8889, 0.7963, 0.8333), Specificity=c(0.9048, 0.9048, 0.9048, 0.9048, .9048, 1.0, .9048))
+RFstability2 <- data.frame(Precision=c(0.9791667,	0.9423077,	0.9607843,	0.9607843,	0.9607843,	0.9607843,	0.9433962), Recall=c(0.8703704,	0.9074074,	0.9074074,	0.9074074,	0.9074074,	0.9074074,	0.9259259), F1=c(0.9215686,	0.9245283,	0.9333333,	0.9333333,	0.9333333,	0.9333333,	0.9345794))
+
+rownames(RFstability2) <- c(5,10,15,20,25,30,35)
+RFstability2
+
+cols <- c("darkturquoise", "darkorchid1","gray0")
+pch <- c(17,18,15)
+xmax <- nrow(RFstability2) + 2.5
+par(mar=c(4,4,1,1))
+plot(1:nrow(RFstability2), 1:nrow(RFstability2), pch="", 
+		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(.85,1.0), bty="n", xlim=c(1,xmax), main="Random Forest Stability Results; Part 2")
+for (i in seq(.85,1.0,by=.025)) {
+	lines(1:nrow(RFstability2), rep(i,nrow(RFstability2)), col="gray69")
+}
+for (i in 1:ncol(RFstability2)) {
+
+	points(1:nrow(RFstability2), RFstability2[,i], pch=pch[i], 
+		col=cols[i], cex=1.2)
+
+	lines(1:nrow(RFstability2), RFstability2[,i], col=cols[i], 
+		lwd=2)
+}
+axis(side=1, at=1:nrow(RFstability2), tick=FALSE, 
+		labels=rownames(RFstability2))
+
+axis(side=1, at=seq(-0.5,8.5,by=1), 
+		tick=FALSE, labels=NA)
+
+axis(side=2, at=seq(.85,1.0,by=.025), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.85,1.0,by=.025)))
+
+legend('bottomright',legend=colnames(RFstability2), pch=pch, 
+		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
+```
+
+
+#### Plotting the Accuracy/Kappa/Sensitivity/Specificity stability of the Naive Bayes algorithm:
+```{r}
+NBstability <- data.frame(Accuracy=c(0.9200000,	0.9200000,	0.9200000,	0.9200000,	0.9066667,	0.9200000,	0.9200000), Kappa=c(0.8071979,	0.8071979,	0.8071979,	0.8071979,	0.7782003,	0.8071979,	0.8071979), Sensitivity=c(0.9259259,	0.9259259,	0.9259259,	0.9259259,	0.9074074,	0.9259259,	0.9259259), Specificity=rep(0.9047619, 7))
 rownames(NBstability) <- c(5,10,15,20,25,30,35)
 NBstability
 
@@ -1432,9 +1463,9 @@ pch <- c(17,18,15, 16)
 xmax <- nrow(NBstability) + 2.5
 par(mar=c(4,4,1,1))
 plot(1:nrow(NBstability), 1:nrow(NBstability), pch="", 
-		xlab="Resampling Iterations", ylab=NA, xaxt="n", yaxt="n", 
-		ylim=c(.6,1.0), bty="n", xlim=c(1,xmax), main="Naive Bayes Stability Results")
-for (i in seq(.6,1.0,by=.05)) {
+		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(.775,.95), bty="n", xlim=c(1,xmax), main="Naive Bayes Stability Results; Part 1")
+for (i in seq(.775,.95,by=.025)) {
 	lines(1:nrow(NBstability), rep(i,nrow(NBstability)), col="gray69")
 }
 for (i in 1:ncol(NBstability)) {
@@ -1451,16 +1482,55 @@ axis(side=1, at=1:nrow(NBstability), tick=FALSE,
 axis(side=1, at=seq(-0.5,8.5,by=1), 
 		tick=FALSE, labels=NA)
 
-axis(side=2, at=seq(.6,1.0,by=.05), tick=TRUE, 
-		las=TRUE, labels=paste(seq(.6,1.0,by=.05)))
+axis(side=2, at=seq(.775,.95,by=.025), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.775,.95,by=.025)))
 
 legend('bottomright',legend=colnames(NBstability), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
 ```
 
-#### Lastly, plotting the stability of the Logistic Regression algorithm:
+#### Plotting the Precision/Recall/F1 stability of the Naive Bayes algorithm:
 ```{r}
-LRstability <- data.frame(Accuracy=c(0.8933, 0.9200, 0.9333, 0.9333, 0.8933, 0.8933, 0.8933), Kappa=c(0.7567, 0.8072, 0.8416, 0.8416, 0.7567, 0.7567, 0.7500), Sensitivity=c(0.8704, 0.9259, 0.9259, 0.9259, 0.8704, 0.8704, 0.8889), Specificity=c(0.9524, 0.9048, 0.9524, 0.9524, 0.9524, 0.9524, 0.9048))
+NBstability2 <- data.frame(Precision=c(0.9615385,	0.9615385,	0.9615385,	0.9615385,	0.9607843,	0.9615385,	0.9615385), Recall=c(0.9259259,	0.9259259,	0.9259259,	0.9259259,	0.9074074,	0.9259259,	0.9259259), F1=c(0.9433962,	0.9433962,	0.9433962,	0.9433962,	0.9333333,	0.9433962,	0.9433962))
+
+rownames(NBstability2) <- c(5,10,15,20,25,30,35)
+NBstability2
+
+cols <- c("darkturquoise", "darkorchid1","gray0")
+pch <- c(17,18,15)
+xmax <- nrow(NBstability2) + 2.5
+par(mar=c(4,4,1,1))
+plot(1:nrow(NBstability2), 1:nrow(NBstability2), pch="", 
+		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(.9,1.0), bty="n", xlim=c(1,xmax), main="Naive Bayes Stability Results; Part 2")
+for (i in seq(.9,1.0,by=.025)) {
+	lines(1:nrow(NBstability2), rep(i,nrow(NBstability2)), col="gray69")
+}
+for (i in 1:ncol(NBstability2)) {
+
+	points(1:nrow(NBstability2), NBstability2[,i], pch=pch[i], 
+		col=cols[i], cex=1.2)
+
+	lines(1:nrow(NBstability2), NBstability2[,i], col=cols[i], 
+		lwd=2)
+}
+axis(side=1, at=1:nrow(NBstability2), tick=FALSE, 
+		labels=rownames(NBstability2))
+
+axis(side=1, at=seq(-0.5,8.5,by=1), 
+		tick=FALSE, labels=NA)
+
+axis(side=2, at=seq(.9,1.0,by=.025), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.9,1.0,by=.025)))
+
+legend('bottomright',legend=colnames(NBstability2), pch=pch, 
+		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
+```
+
+
+#### Plotting the Accuracy/Kappa/Sensitivity/Specificity stability of the Logistic Regression algorithm:
+```{r}
+LRstability <- data.frame(Accuracy=c(0.8800000,	0.9066667,	0.9066667,	0.9066667,	0.9066667,	0.9066667,	0.8933333), Kappa=c(0.6686303,	0.7503566,	0.7503566,	0.7503566,	0.7503566,	0.7503566,	0.7101449), Sensitivity=rep(0.9814815, 7), Specificity=c(0.6190476,	0.7142857,	0.7142857,	0.7142857,	0.7142857,	0.7142857,	0.6666667))
 rownames(LRstability) <- c(5,10,15,20,25,30,35)
 LRstability
 
@@ -1469,9 +1539,9 @@ pch <- c(17,18,15, 16)
 xmax <- nrow(LRstability) + 2.5
 par(mar=c(4,4,1,1))
 plot(1:nrow(LRstability), 1:nrow(LRstability), pch="", 
-		xlab="Resampling Iterations", ylab=NA, xaxt="n", yaxt="n", 
-		ylim=c(.6,1.0), bty="n", xlim=c(1,xmax), main="Logistic Regression Stability Results")
-for (i in seq(.6,1.0,by=.05)) {
+		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(.6,1.0), bty="n", xlim=c(1,xmax), main="Logistic Regression Stability Results; Part 1")
+for (i in seq(.6,1.0,by=.025)) {
 	lines(1:nrow(LRstability), rep(i,nrow(LRstability)), col="gray69")
 }
 for (i in 1:ncol(LRstability)) {
@@ -1488,27 +1558,66 @@ axis(side=1, at=1:nrow(LRstability), tick=FALSE,
 axis(side=1, at=seq(-0.5,8.5,by=1), 
 		tick=FALSE, labels=NA)
 
-axis(side=2, at=seq(.6,1.0,by=.05), tick=TRUE, 
-		las=TRUE, labels=paste(seq(.6,1.0,by=.05)))
+axis(side=2, at=seq(.6,1.0,by=.025), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.6,1.0,by=.025)))
 
 legend('bottomright',legend=colnames(LRstability), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
 ```
-
-#### Plotting the duration of each of the three algorithms for each of the seven different folds:
+#### Plotting the Precision/Recall/F1 stability of the Logistic Regression algorithm:
 ```{r}
-Duration <- data.frame(All3Algorithms=c(124.07, 126.12, 140.51, 148.47, 158.02, 156.47, 139.47))
+LRstability2 <- data.frame(Precision=c(0.8688525,	0.8983051,	0.8983051,	0.8983051,	0.8983051,	0.8983051,	0.8833333), Recall=rep(0.9814815, 7), F1=c(0.9217391,	0.9380531,	0.9380531,	0.9380531,	0.9380531,	0.9380531,	0.9298246))
+
+rownames(LRstability2) <- c(5,10,15,20,25,30,35)
+LRstability2
+
+cols <- c("darkturquoise", "darkorchid1","gray0")
+pch <- c(17,18,15)
+xmax <- nrow(LRstability2) + 2.5
+par(mar=c(4,4,1,1))
+plot(1:nrow(LRstability2), 1:nrow(LRstability2), pch="", 
+		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(.85,1.0), bty="n", xlim=c(1,xmax), main="Logistic Regression Stability Results; Part 2")
+for (i in seq(.85,1.0,by=.025)) {
+	lines(1:nrow(LRstability2), rep(i,nrow(LRstability2)), col="gray69")
+}
+for (i in 1:ncol(LRstability2)) {
+
+	points(1:nrow(LRstability2), LRstability2[,i], pch=pch[i], 
+		col=cols[i], cex=1.2)
+
+	lines(1:nrow(LRstability2), LRstability2[,i], col=cols[i], 
+		lwd=2)
+}
+axis(side=1, at=1:nrow(LRstability2), tick=FALSE, 
+		labels=rownames(LRstability2))
+
+axis(side=1, at=seq(-0.5,8.5,by=1), 
+		tick=FALSE, labels=NA)
+
+axis(side=2, at=seq(.85,1.0,by=.025), tick=TRUE, 
+		las=TRUE, labels=paste(seq(.85,1.0,by=.025)))
+
+legend('bottomright',legend=colnames(LRstability2), pch=pch, 
+		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
+```
+
+
+#### Plotting the total duration of each of the three algorithms combined for each of the seven different folds:
+```{r}
+Duration <- data.frame(All3Algorithms=c(11.57,	10.17,	13.86,	16.69,	20.46,	23.51,	28.65))
+						
 rownames(Duration) <- c(3,5,7,10,15,20,25)
 Duration
 
 cols <- c("royalblue2")
-pch <- c(17,18,15)
+pch <- c(16)
 xmax <- nrow(Duration) + 2.5
 par(mar=c(4,4,1,1))
 plot(1:nrow(Duration), 1:nrow(Duration), pch="", 
-		xlab="Resampling Iterations", ylab=NA, xaxt="n", yaxt="n", 
-		ylim=c(100,180), bty="n", xlim=c(1,xmax), main="Algorithm's Total Duration (Seconds)")
-for (i in seq(100, 180,by=20)) {
+		xlab="nFolds", ylab=NA, xaxt="n", yaxt="n", 
+		ylim=c(10,30), bty="n", xlim=c(1,xmax), main="Three Algorithm's Total Duration (Seconds)")
+for (i in seq(10, 30,by=2)) {
 	lines(1:nrow(Duration), rep(i,nrow(Duration)), col="gray69")
 }
 for (i in 1:ncol(Duration)) {
@@ -1525,8 +1634,8 @@ axis(side=1, at=1:nrow(Duration), tick=FALSE,
 axis(side=1, at=seq(-0.5,8.5,by=1), 
 		tick=FALSE, labels=NA)
 
-axis(side=2, at=seq(100,180,by=20), tick=TRUE, 
-		las=TRUE, labels=paste(seq(100,180,by=20)))
+axis(side=2, at=seq(10,30,by=2), tick=TRUE, 
+		las=TRUE, labels=paste(seq(10,30,by=2)))
 
 legend('bottomright',legend=colnames(Duration), pch=pch, 
 		col=cols, cex=1.0, bty="n",  lwd=3, lty=1)
@@ -1536,37 +1645,51 @@ legend('bottomright',legend=colnames(Duration), pch=pch,
 ```{r}
 library(effsize)
 
-RFacc <- rep(0.9467,7)
-RFsens <- rep(0.9630, 7)
-RFspec <- rep(0.9048,7)
+RFacc <- c(0.8933333,	0.8933333,	0.9066667,	0.9066667,	0.9066667,	0.9066667,	0.9066667)
+RFsens <- c(0.8703704,	0.9074074,	0.9074074,	0.9074074,	0.9074074,	0.9074074,	0.9259259)
+RFspec <- c(0.9523810,	0.8571429,	0.9047619,	0.9047619,	0.9047619,	0.9047619,	0.8571429)
 
-NBacc <- c(0.9200, 0.9200, 0.9333, 0.9067, 0.9067, 0.9200, 0.9200)
-NBsens <- c(0.8889, 0.8889, 0.9074, 0.8704, 0.8889, 0.8889, 0.8889)
-NBspec <- c(1.0, 1.0, 1.0, 1.0, 0.9524, 1.0, 1.0)
+NBacc <- c(0.9200000,	0.9200000,	0.9200000,	0.9200000,	0.9066667,	0.9200000,	0.9200000)
+NBsens <- c(0.9259259,	0.9259259,	0.9259259,	0.9259259,	0.9074074,	0.9259259,	0.9259259)
+NBspec <- rep(0.9047619, 7)
 
-LRacc <- rep(0.9333,7)
-LRsens <- rep(0.9630,7)
-LRspec <- rep(0.8571,7)
-
+LRacc <- c(0.8800000,	0.9066667,	0.9066667,	0.9066667,	0.9066667,	0.9066667,	0.8933333)
+LRsens <- rep(0.9814815, 7)
+LRspec <- c(0.6190476,	0.7142857,	0.7142857,	0.7142857,	0.7142857,	0.7142857,	0.6666667)
+```
+#### Cliff's Delta effect size for Accuracy:
+```{r}
+#Random Forest accuracy to Naive Bayes accuracy:
 RFNBaccDelta <- cliff.delta(RFacc, NBacc)
 RFNBaccDelta
+#Random Forest accuracy to Logistic Regression accuracy:
 RFLRaccDelta <- cliff.delta(RFacc, LRacc)
 RFLRaccDelta
+#Logistic Regression accuracy to Naive Bayes accuracy:
 LRNBaccDelta <- cliff.delta(LRacc, NBacc)
 LRNBaccDelta
-
+```
+#### Cliff's Delta effect size for Sensitivity:
+```{r}
+#Random Forest sensitivity to Naive Bayes sensitivity:
 RFNBsensDelta <- cliff.delta(RFsens, NBsens)
 RFNBsensDelta
+#Random Forest sensitivity to Logistic Regression sensitivity:
 RFLRsensDelta <- cliff.delta(RFsens, LRsens)
 RFLRsensDelta
+#Logistic Regression sensitivity to Naive Bayes sensitivity:
 LRNBsensDelta <- cliff.delta(LRsens, NBsens)
 LRNBsensDelta
-
+```
+#### Cliff's Delta effect size for Specificity:
+```{r}
+#Random Forest specificity to Naive Bayes specificity:
 RFNBspecDelta <- cliff.delta(RFspec, NBspec)
 RFNBspecDelta
+#Random Forest specificity to Logistic Regression specificity:
 RFLRspecDelta <- cliff.delta(RFspec, LRspec)
 RFLRspecDelta
+#Logistic Regression specificity to Naive Bayes specificity:
 LRNBspecDelta <- cliff.delta(LRspec, NBspec)
 LRNBspecDelta
-
 ```
