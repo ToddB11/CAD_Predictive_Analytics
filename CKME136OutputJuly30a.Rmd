@@ -1,13 +1,14 @@
 ---
 title: "CKME 136 Capstone"
 author: "TODD BETHELL"
-date: "July 23, 2019"
+date: "July 30, 2019"
 output:
   html_document: 
     highlight: haddock
     self_contained: no
     theme: readable
 ---
+
 #### !!NOTE!! This will install ALL of the caret package - which will take several minutes - so comment the install out if you do not want to install the full caret package. Otherwise, start from line 66 (first chunk) to determine what packages you may need.
 
 install.packages("caret", dependencies = c("Depends", "Suggests"))
@@ -35,7 +36,7 @@ install.packages("rms")
 install.packages("Hmisc")
 install.packages("ggsignif")
 install.packages("ggsci")
-install.packages("ROSE")
+install.packages("pedometrics")
 library(GGally)
 library(knitr)
 library(RCurl)
@@ -61,7 +62,7 @@ library(rms)
 library(Hmisc)
 library(ggsignif)
 library(ggsci)
-library(ROSE)
+library(pedometrics)
 ---
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(knitr)
@@ -89,7 +90,7 @@ library(rms)
 library(Hmisc)
 library(ggsignif)
 library(ggsci)
-library(ROSE)
+library(pedometrics)
 ```
 
 
@@ -121,7 +122,7 @@ library(skimr)
 library(knitr)
 library(tidyverse)
 
-skim1 <- FullSetB4[,c(1,2,16,17,36:50)]
+skim1 <- FullSetB4[,c(1:2,16:17,36:50)]
 skimr::skim(skim1) %>%
   filter(stat == "hist") %>%
   print.listof(locale = locale(encoding = "UTF-8"))
@@ -244,7 +245,7 @@ BPcount
 ```{r}
 (BPmed/(BPmed+BPhigh))*100
 ```
-#### Discretize PUlse Rate (PR). Note: Very low variation in pulse rate (98.3% was categorized with a 'medium' heart rate). THis would make the 'Pulse rate' attribute a good candidate for removal.
+#### Discretize Pulse Rate (PR). Note: Very low variation in pulse rate (98.3% was categorized with a 'medium' heart rate). THis would make the 'Pulse rate' attribute a good candidate for removal.
 ```{r}
 max(Allv1$PR)
 Allv1$PR <- cut(Allv1$PR, breaks = c(0,59,100,200), labels = c("Low", "Med", "High"))
@@ -651,21 +652,30 @@ attach(DemoB4)
 boxplot(Age, Weight, col = c("aquamarine","gray90"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
 legend("topright", c("Age", "Weight"),fill = c("aquamarine","gray90"))
 ```
-#### Shapiro tests of normality (H0: Distribution is normal; Reject null if p-value is less than .05). Note: sensitive when n>80. This test shows that 'Age' is NOT normally distributed.
+
+#### Describe continuous variables:
 ```{r}
 library(psych)
-
-describe(DemoB4$Age)
-AgeNorm <- shapiro.test((DemoB4$Age))
-AgeNorm
+FullSetB43 <- FullSetB42
+FullSetB43[3:15] <- NULL
+FullSetB43[5:22] <- NULL
+FullSetB43[20:22] <- NULL
+describe(FullSetB43)
 ```
-#### Hence, weight is also not normally distributed in this study.
+#### Shapiro tests of normality (H0: Distribution is normal; Reject null if p-value is less than .05). This test shows that none of the continuous variables are normally distributed.
 ```{r}
-library(psych)
 
-describe(DemoB4$Weight)
-WeightNorm <- shapiro.test((DemoB4$Weight))
-WeightNorm
+NormAll <- lapply(FullSetB43, shapiro.test)
+```
+#### Pulling p-values of Shapiro-Wilk Tests:
+```{r}
+NormAll2 <- data.frame(c(NormAll$Age['p.value'], NormAll$Weight['p.value'], NormAll$BP['p.value'], NormAll$PR['p.value'], NormAll$FBS['p.value'], NormAll$Cr['p.value'], NormAll$TG['p.value'], NormAll$LDL['p.value'], NormAll$HDL['p.value'], NormAll$BUN['p.value'], NormAll$ESR['p.value'], NormAll$Hb['p.value'], NormAll$K['p.value'], NormAll$Na['p.value'], NormAll$WBC['p.value'], NormAll$Lymph['p.value'], NormAll$Neut['p.value'], NormAll$PLT['p.value'], NormAll$EF['p.value']))
+                       
+colnames(NormAll2)= Attributes = c('Age', 'Weight', 'BP', 'PR', 'FBS', 'Cr', 'TG', 'LDL', 'HDL', 'BUN', 'ESR', 'Hb', 'K', 'Na', 'WBC', 'Lymph', 'Neut', 'PLT', 'EF')
+
+NormAll3 <- t(NormAll2)
+NormAll3
+
 ```
 #### And BMI is also not normally distributed.
 ```{r}
@@ -673,29 +683,14 @@ describe(Allv1$BMI)
 BMINorm <- shapiro.test((Allv1$BMI))
 BMINorm
 ```
-#### Can (carefully) use 'describe' for categorical variables too (since the psych package recodes categories as numbers):
-```{r}
-library(psych)
-describe(FullSetB42[1:17])
-```
+
 #### Boxplot to show distribution of Blood Pressure and Pulse Rate
 ```{r}
 attach(SymptomB4)
 boxplot(BP, PR, col = c("blue","indianred1"), notch = TRUE, horizontal = FALSE, outline = TRUE, plot = TRUE)
 legend("topright", c("Blood Pressure", "Pulse Rate"),fill = c("blue","indianred1"))
 ```
-#### Blood Pressure (BP) is not normally distributed:
-```{r}
-describe(SymptomB4$BP)
-BPNorm <- shapiro.test((SymptomB4$BP))
-BPNorm
-```
-#### Pulse Rate is not normally distributed:
-```{r}
-describe(SymptomB4$PR)
-PRNorm <- shapiro.test((SymptomB4$PR))
-PRNorm
-```
+
 #### Density plot of weight and sex (before discretization):
 ```{r}
 library(ggplot2)
@@ -722,36 +717,74 @@ BMIden <- ggplot(Allv1, aes(x = BMI, fill = Sex)) +
              linetype = "dashed")
 BMIden
 ```
-#### Will be completing a number of ASSOCIATIONS between many categorical variables, starting with a few straight forward investigation into commonly accepted 'associations'. Interpretation of results when K = 2:  SMALL Association: 0.10 - < 0.30; MEDIUM Association: 0.30 - < 0.50; LARGE Association: ??? 0.50
+#### Will be completing a number of ASSOCIATIONS between all categorical variables. Interpretation of results when K = 2:  SMALL Association: 0.10 - < 0.30; MEDIUM Association: 0.30 - < 0.50; LARGE Association: >0.50
 
-#### Starting with Diabetes (DM) and Hypertension (HTN): Shows small association
+#### Running CramersV on all factor data combined:
+```{r out.width = "150%"}
+library(pedometrics); library(GGally)
+
+CV1 <- AllvFinal
+CV1[1:2] <- NULL
+CV1[14:15] <- NULL
+CV1[32:46] <- NULL
+
+CVresults <- cramer(CV1)
+#CVresults
+#corrplot(CVresults, type = "upper", order = "hclust")
+#corrplot(CVresults, method = "number")
+corrplot(CVresults, type = "upper", tl.cex=0.6)
+
+```
+
+#### Running Cramer's V on individual pairs of variables that show some levels of association - starting with TCP and ACP:
 ```{r}
 library(lsr)
 
-AllCatB4 <- Allv2[,c(3:15, 18:24,26:35)]
-cramersV(AllCatB4$DM, AllCatB4$HTN)
+cramersV(CV1$TCP, CV1$ACP)
 ```
-#### Ex-Smoker and Obesity shows no association:
+#### Association between SysM and VHD:
 ```{r}
-cramersV(AllCatB4$ExSmoker,AllCatB4$Obesity)
+cramersV(CV1$SysM, CV1$VHD)
 ```
-#### Ex-Smoker and Obesity shows no association:
+#### Association between DiaM and VHD:
 ```{r}
-cramersV(AllCatB4$DM,AllCatB4$Obesity)
+cramersV(CV1$DiaM, CV1$VHD)
 ```
-
-#### Hypertensin and current smoker has a small association:
+#### Association between TCP and CAD:
 ```{r}
-cramersV(AllCatB4$HTN,AllCatB4$Smoker)
+cramersV(CV1$TCP, CV1$CAD)
 ```
-
-#### Hypertension and Stroke (CVA) has no association:
+#### Association between ACP and CAD:
 ```{r}
-cramersV(AllCatB4$HTN,AllCatB4$CVA)
+cramersV(CV1$ACP, CV1$CAD)
 ```
-#### Congestive Heart Failure (CHF) and Obsesity has no association (see below):
+#### Association between RWMA and CAD:
 ```{r}
-cramersV(AllCatB4$CHF,AllCatB4$Obesity)
+cramersV(CV1$RWMA, CV1$CAD)
+```
+#### Association between Edema and LR:
+```{r}
+cramersV(CV1$Edema, CV1$LR)
+```
+#### Association between HTN and CAD:
+```{r}
+cramersV(CV1$HTN, CV1$CAD)
+```
+#### Association between Smoker and Sex:
+```{r}
+cramersV(CV1$Smoker, CV1$Sex)
+```
+#### Association between Sex and DLP:
+```{r}
+cramersV(CV1$Sex, CV1$DLP)
+```
+#### Association between DM and PoorR:
+```{r}
+cramersV(CV1$DM, CV1$PoorR)
+```
+#### Association between DM and CAD:
+```{r}
+cramersV(CV1$DM, CV1$CAD)
 ```
 
 #### Determining whether there is any significant variation in the 'NCP' column: Very low variation (94.7% of NCP entries are 'No')
@@ -783,7 +816,7 @@ barplot(prop.table(table(FullSetB42$VHD)))
 ```{r}
 library(FSelector)
 
-AllWeights <- chi.squared(CAD~.,AllvFinal)
+AllWeights <- information.gain(CAD~.,AllvFinal)
 print(AllWeights)
 subset <- cutoff.k(AllWeights, 10)
 FSall <- as.simple.formula(subset, "CAD")
@@ -792,7 +825,7 @@ print(FSall)
 
 #### Next, using the 'Demo' (Demographic) attribute data set - results:  CAD ~ Age + HTN + DM + CRF + AD
 ```{r}
-DemoWeights <- chi.squared(CAD~.,Demo)
+DemoWeights <- information.gain(CAD~.,Demo)
 print(DemoWeights)
 subset <- cutoff.k(DemoWeights, 5)
 FSdemo <- as.simple.formula(subset, "CAD")
@@ -801,7 +834,7 @@ print(FSdemo)
 
 #### Next, using the 'Symptom' (Symptom & Examination) attribute data set - results:  CAD ~ TCP + ACP + NCP + DiaM + BP
 ```{r}
-SymWeights <- chi.squared(CAD~.,Symptom)
+SymWeights <- information.gain(CAD~.,Symptom)
 print(SymWeights)
 subset <- cutoff.k(SymWeights, 5)
 FSsym <- as.simple.formula(subset, "CAD")
@@ -810,7 +843,7 @@ print(FSsym)
 
 #### Next, using the 'ECG'attribute data set - results:  CAD ~ Tinv + QWave + STdep + STelev + PoorR
 ```{r}
-ECGWeights <- chi.squared(CAD~.,ECG)
+ECGWeights <- information.gain(CAD~.,ECG)
 print(ECGWeights)
 subset <- cutoff.k(ECGWeights, 5)
 FSecg <- as.simple.formula(subset, "CAD")
@@ -819,7 +852,7 @@ print(FSecg)
 
 #### Lastly, using the 'LAB' (Laboratory and Echocardiographic) attribute data set - results:  CAD ~ RWMA + EF + VHD + FBS + Lymph 
 ```{r}
-LABWeights <- chi.squared(CAD~.,LAB)
+LABWeights <- information.gain(CAD~.,LAB)
 print(LABWeights)
 subset <- cutoff.k(LABWeights, 5)
 FSlab <- as.simple.formula(subset, "CAD")
@@ -828,9 +861,9 @@ print(FSlab)
 
 ### Now, comparing these discretized results with those from before discretization:
 
-#### Using the full data set (FullSetB42) - results: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + *BP* + NCP + DM + *FBS* (while the discretized results were: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + NCP + DM + Tinv + VHD).  NOTE: The top 6 were the same for both data sets (and 8 of the top 10 were shared across both data sets)
+#### Using the full data set (FullSetB42) - results: CAD ~ TCP + ACP + RWMA + Age + EF + HTN + DM + BP + NCP + Tinv (while the discretized results were: CAD ~ TCP + ACP + RWMA + EF + Age + HTN + NCP + DM + Tinv + VHD).  NOTE: The top 6 were the same for both data sets (and 8 of the top 10 were shared across both data sets)
 ```{r}
-AllB4Weights <- chi.squared(CAD~.,FullSetB42)
+AllB4Weights <- information.gain(CAD~.,FullSetB42)
 print(AllB4Weights)
 subset <- cutoff.k(AllB4Weights, 10)
 FSB4all <- as.simple.formula(subset, "CAD")
@@ -876,6 +909,7 @@ to_formula(
 )
 print(FS2B4all)
 ```
+
 #### Checking on strength of associations between top 12 attributes and the dependent variable, ranked in descending order:
 ```{r}
 library(lsr)
@@ -910,7 +944,7 @@ cramersV(AllvFinal$RWMA, AllvFinal$Age)
 cramersV(AllvFinal$HTN, AllvFinal$Age)
 
 ```
-#### Checking associations between the final variables that do not have a statistically significant relationship with the dependent variable (per the logistic regression results later).  That is, checkint ACP and NCP against each other, and the other variables, including TCP, EF, RWMA, HTN, Age and DM (as well as the dependent variable).  NOTE: When DF=1, the interpretation of the Cramer's V results (effect) would be as follows: (0.10 = small effect) (0.30 = medium effect) (0.50=large effect)
+#### Checking associations between the final variables that do not have a statistically significant relationship with the dependent variable (per the logistic regression results later).  That is, checking ACP and NCP against each other, and the other variables, including TCP, EF, RWMA, HTN, Age and DM (as well as the dependent variable).  NOTE: When DF=1, the interpretation of the Cramer's V results (effect) would be as follows: (0.10 = small effect) (0.30 = medium effect) (0.50=large effect)
 ```{r}
 library(lsr)
 
@@ -956,7 +990,7 @@ AllvFtest <- AllvFinal[-index,]
 
 #### Using 'Recursive Feature Elimination' to find the best subset of atttributes to use for modeling (not needed for subsequent runs once the final set of predictors have been determined):
 ```{r}
-library(plyr)
+library(plyr); library(dplyr)
 
 control <- rfeControl(functions = rfFuncs,
                    method = "repeatedcv",
@@ -1141,7 +1175,7 @@ tic("Three Combined Algorithms Timing")
 
 # Defining the training control:
 
-ENCntrl <- trainControl(method = "repeatedcv", number = 15, repeats = 3, sampling = "down", savePredictions = TRUE, classProbs = TRUE, summaryFunction = MySummary)
+ENCntrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3, sampling = "down", savePredictions = TRUE, classProbs = TRUE, summaryFunction = MySummary)
 
 # Training the 3 models:
 
@@ -1213,7 +1247,7 @@ EvalNB2
 #### Variable importance and confusion matrix for the Logistic Regression algorithm:
 ```{r}
 varImp(object = LRmodel)
-plot(varImp(object = LRmodel), main="LogistiC Regression - Variable Importance")
+plot(varImp(object = LRmodel), main="Logistic Regression - Variable Importance")
 
 confusionMatrix(LR_pred, AllvFtest[,outcomeName], mode = 'everything')
 LRcMatrix2 <- confusionMatrix(LR_pred, AllvFtest[,outcomeName], mode = 'everything')
@@ -1692,4 +1726,10 @@ RFLRspecDelta
 #Logistic Regression specificity to Naive Bayes specificity:
 LRNBspecDelta <- cliff.delta(LRspec, NBspec)
 LRNBspecDelta
+```
+####
+
+```{r}
+
+
 ```
