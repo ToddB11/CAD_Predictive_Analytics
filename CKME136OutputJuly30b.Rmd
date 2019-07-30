@@ -1472,7 +1472,7 @@ C <- sum(LRPred$Predict >= 0.50)
 #### DM: For a one unit increase in DM, the log odds of being diagnosed with Coronary Artery Disease increases by 1.8719
 
 
-#### Brier Score for Logistic Regression model:
+#### Brier Score for Logistic Regression model shows a good result as well (0.091):
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(rms)
 library(Hmisc)
