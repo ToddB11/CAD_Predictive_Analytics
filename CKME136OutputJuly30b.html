@@ -1848,7 +1848,7 @@ summary {
 <a class="sourceLine" id="cb312-2" title="2">FSall &lt;-<span class="st"> </span><span class="kw">as.simple.formula</span>(subset, <span class="st">&quot;CAD&quot;</span>)</a>
 <a class="sourceLine" id="cb312-3" title="3"><span class="kw">print</span>(FSall)</a></code></pre></div>
 <pre><code>## CAD ~ TCP + ACP + RWMA + EF + HTN + Age + DM + NCP + Tinv + FBS
-## &lt;environment: 0x000000001dc51878&gt;</code></pre>
+## &lt;environment: 0x000000001dc548b8&gt;</code></pre>
 </div>
 <div id="next-using-the-demo-demographic-attribute-data-set---results-cad-age-htn-dm-crf-ad" class="section level4">
 <h4>Next, using the ‘Demo’ (Demographic) attribute data set - results: CAD ~ Age + HTN + DM + CRF + AD</h4>
@@ -1874,7 +1874,7 @@ summary {
 <a class="sourceLine" id="cb316-2" title="2">FSdemo &lt;-<span class="st"> </span><span class="kw">as.simple.formula</span>(subset, <span class="st">&quot;CAD&quot;</span>)</a>
 <a class="sourceLine" id="cb316-3" title="3"><span class="kw">print</span>(FSdemo)</a></code></pre></div>
 <pre><code>## CAD ~ HTN + Age + DM + CRF + AD
-## &lt;environment: 0x00000000202437c0&gt;</code></pre>
+## &lt;environment: 0x0000000020253c78&gt;</code></pre>
 </div>
 <div id="next-using-the-symptom-symptom-examination-attribute-data-set---results-cad-tcp-acp-ncp-diam-bp" class="section level4">
 <h4>Next, using the ‘Symptom’ (Symptom &amp; Examination) attribute data set - results: CAD ~ TCP + ACP + NCP + DiaM + BP</h4>
@@ -1898,7 +1898,7 @@ summary {
 <a class="sourceLine" id="cb320-2" title="2">FSsym &lt;-<span class="st"> </span><span class="kw">as.simple.formula</span>(subset, <span class="st">&quot;CAD&quot;</span>)</a>
 <a class="sourceLine" id="cb320-3" title="3"><span class="kw">print</span>(FSsym)</a></code></pre></div>
 <pre><code>## CAD ~ TCP + ACP + NCP + BP + DiaM
-## &lt;environment: 0x0000000021dc9558&gt;</code></pre>
+## &lt;environment: 0x0000000021ddf760&gt;</code></pre>
 </div>
 <div id="next-using-the-ecgattribute-data-set---results-cad-tinv-qwave-stdep-stelev-poorr" class="section level4">
 <h4>Next, using the ’ECG’attribute data set - results: CAD ~ Tinv + QWave + STdep + STelev + PoorR</h4>
@@ -1916,7 +1916,7 @@ summary {
 <a class="sourceLine" id="cb324-2" title="2">FSecg &lt;-<span class="st"> </span><span class="kw">as.simple.formula</span>(subset, <span class="st">&quot;CAD&quot;</span>)</a>
 <a class="sourceLine" id="cb324-3" title="3"><span class="kw">print</span>(FSecg)</a></code></pre></div>
 <pre><code>## CAD ~ Tinv + QWave + STelev + STdep + PoorR
-## &lt;environment: 0x000000002471b518&gt;</code></pre>
+## &lt;environment: 0x000000002472b9f0&gt;</code></pre>
 </div>
 <div id="lastly-using-the-lab-laboratory-and-echocardiographic-attribute-data-set---results-cad-rwma-ef-vhd-fbs-lymph" class="section level4">
 <h4>Lastly, using the ‘LAB’ (Laboratory and Echocardiographic) attribute data set - results: CAD ~ RWMA + EF + VHD + FBS + Lymph</h4>
@@ -1944,7 +1944,7 @@ summary {
 <a class="sourceLine" id="cb328-2" title="2">FSlab &lt;-<span class="st"> </span><span class="kw">as.simple.formula</span>(subset, <span class="st">&quot;CAD&quot;</span>)</a>
 <a class="sourceLine" id="cb328-3" title="3"><span class="kw">print</span>(FSlab)</a></code></pre></div>
 <pre><code>## CAD ~ RWMA + EF + FBS + VHD + Lymph
-## &lt;environment: 0x00000000200d2a88&gt;</code></pre>
+## &lt;environment: 0x00000000200e3b10&gt;</code></pre>
 </div>
 </div>
 <div id="now-comparing-these-discretized-results-with-those-from-before-discretization" class="section level3">
@@ -2010,7 +2010,7 @@ summary {
 <a class="sourceLine" id="cb332-2" title="2">FSB4all &lt;-<span class="st"> </span><span class="kw">as.simple.formula</span>(subset, <span class="st">&quot;CAD&quot;</span>)</a>
 <a class="sourceLine" id="cb332-3" title="3"><span class="kw">print</span>(FSB4all)</a></code></pre></div>
 <pre><code>## CAD ~ TCP + ACP + RWMA + Age + EF + HTN + DM + BP + NCP + Tinv
-## &lt;environment: 0x0000000014670bd8&gt;</code></pre>
+## &lt;environment: 0x0000000014660ca0&gt;</code></pre>
 </div>
 <div id="comparing-the-discretized-feature-selection-results-found-using-the-fselector-package-with-the-results-using-the-fselectorrcpp-package---results-cad-tcp-acp-rwma-ef-htn-age-dm-ncp-tinv-fbs" class="section level4">
 <h4>Comparing the discretized feature selection results found using the ‘FSelector’ package with the results using the ‘FSelectorRcpp’ package - results: CAD ~ TCP + ACP + RWMA + EF + HTN + Age + DM + NCP + Tinv + FBS</h4>
@@ -2032,7 +2032,7 @@ summary {
 <a class="sourceLine" id="cb334-16" title="16">)</a>
 <a class="sourceLine" id="cb334-17" title="17"><span class="kw">print</span>(FS2all)</a></code></pre></div>
 <pre><code>## CAD ~ TCP + ACP + RWMA + EF + HTN + Age + DM + NCP + Tinv + FBS
-## &lt;environment: 0x000000001f504e80&gt;</code></pre>
+## &lt;environment: 0x000000001f5166c8&gt;</code></pre>
 </div>
 <div id="lastly-comparing-the-output-of-the-fselectorrcpp-package-using-the-data-set-that-was-not-discretized-yet-fullsetb42-data-set---result-cad-tcp-acp-rwma-age-ef-htn-dm-bp-ncp-tinv" class="section level4">
 <h4>Lastly, comparing the output of the FSelectorRcpp package using the data set that was not discretized yet (FullSetB42 data set) - result: CAD ~ TCP + ACP + RWMA + Age + EF + HTN + DM + BP + NCP + Tinv</h4>
@@ -2051,7 +2051,7 @@ summary {
 <a class="sourceLine" id="cb336-13" title="13">)</a>
 <a class="sourceLine" id="cb336-14" title="14"><span class="kw">print</span>(FS2B4all)</a></code></pre></div>
 <pre><code>## CAD ~ TCP + ACP + RWMA + Age + EF + HTN + DM + BP + NCP + Tinv
-## &lt;environment: 0x000000001f7d4e80&gt;</code></pre>
+## &lt;environment: 0x000000001f7e6608&gt;</code></pre>
 </div>
 <div id="checking-on-strength-of-associations-between-top-12-attributes-and-the-dependent-variable-ranked-in-descending-order" class="section level4">
 <h4>Checking on strength of associations between top 12 attributes and the dependent variable, ranked in descending order:</h4>
@@ -2194,15 +2194,15 @@ summary {
 ## Resampling performance over subset size:
 ## 
 ##  Variables Accuracy  Kappa AccuracySD KappaSD Selected
-##          4   0.8117 0.5041    0.07747  0.2146         
-##          8   0.8404 0.5831    0.07042  0.2043         
-##         16   0.8298 0.5618    0.07579  0.2112         
-##         52   0.8425 0.5855    0.06409  0.1846        *
+##          4   0.7722 0.4192    0.08019  0.2109         
+##          8   0.8277 0.5584    0.07138  0.1860         
+##         16   0.8267 0.5662    0.07274  0.1871         
+##         52   0.8541 0.6273    0.06454  0.1771        *
 ## 
 ## The top 5 variables (out of 52):
-##    TCP, EF, ACP, HTN, RWMA</code></pre>
+##    TCP, ACP, RWMA, EF, Tinv</code></pre>
 <div class="sourceCode" id="cb428"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb428-1" title="1">CAD_Profile<span class="op">$</span>optVariables[<span class="dv">1</span><span class="op">:</span><span class="dv">8</span>]</a></code></pre></div>
-<pre><code>## [1] &quot;TCP&quot;  &quot;EF&quot;   &quot;ACP&quot;  &quot;HTN&quot;  &quot;RWMA&quot; &quot;DM&quot;   &quot;NCP&quot;  &quot;VHD&quot;</code></pre>
+<pre><code>## [1] &quot;TCP&quot;  &quot;ACP&quot;  &quot;RWMA&quot; &quot;EF&quot;   &quot;Tinv&quot; &quot;HTN&quot;  &quot;Age&quot;  &quot;DM&quot;</code></pre>
 </div>
 <div id="taking-the-top-8-predictors" class="section level4">
 <h4>Taking the top 8 predictors:</h4>
@@ -2243,35 +2243,35 @@ summary {
 <a class="sourceLine" id="cb433-10" title="10"></a>
 <a class="sourceLine" id="cb433-11" title="11">rfFit<span class="op">$</span>results</a></code></pre></div>
 <pre><code>##   mtry  Accuracy     Kappa       ROC      Sens      Spec       AUC
-## 1    2 0.8189394 0.5865247 0.9063711 0.8316176 0.7912698 0.8499469
-## 2    5 0.8279699 0.6091168 0.9014954 0.8355392 0.8126984 0.6870234
-## 3    8 0.8072079 0.5571323 0.8893412 0.8251225 0.7666667 0.6624434
+## 1    2 0.7955808 0.5454283 0.8905156 0.7938725 0.7992063 0.8191681
+## 2    5 0.7952734 0.5433359 0.8828183 0.8020833 0.7769841 0.7050318
+## 3    8 0.8083773 0.5708250 0.8739583 0.8082108 0.8071429 0.6577260
 ##   Precision    Recall         F AccuracySD   KappaSD      ROCSD     SensSD
-## 1 0.9098583 0.8316176 0.8660230 0.07211293 0.1636722 0.07111546 0.08242015
-## 2 0.9171733 0.8355392 0.8721152 0.07616771 0.1665063 0.07898420 0.08229867
-## 3 0.9010518 0.8251225 0.8574243 0.08084869 0.1850189 0.07411281 0.09294642
+## 1 0.9077673 0.7938725 0.8450911 0.07969212 0.1706799 0.07698716 0.08072623
+## 2 0.8990254 0.8020833 0.8451536 0.08900606 0.1859755 0.08261898 0.10055034
+## 3 0.9130152 0.8082108 0.8554324 0.07287774 0.1526769 0.08378821 0.07978045
 ##      SpecSD      AUCSD PrecisionSD   RecallSD        FSD
-## 1 0.1515788 0.07010232  0.06364441 0.08242015 0.05490154
-## 2 0.1453979 0.13514470  0.06330660 0.08229867 0.05958449
-## 3 0.1841520 0.10929134  0.07467244 0.09294642 0.06254410</code></pre>
+## 1 0.1429506 0.08176626  0.06435348 0.08072623 0.06357333
+## 2 0.1321202 0.12984551  0.05931819 0.10055034 0.07146063
+## 3 0.1274306 0.12331878  0.05575173 0.07978045 0.05997136</code></pre>
 <div class="sourceCode" id="cb435"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb435-1" title="1"><span class="co">#plot(rfFit)</span></a>
 <a class="sourceLine" id="cb435-2" title="2"></a>
 <a class="sourceLine" id="cb435-3" title="3">RFpredictions &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> rfFit, AllvFtest[,predictors], <span class="dt">type =</span> <span class="st">&#39;raw&#39;</span>)</a>
 <a class="sourceLine" id="cb435-4" title="4"><span class="kw">table</span>(RFpredictions)</a></code></pre></div>
 <pre><code>## RFpredictions
 ##    Cad Normal 
-##     49     26</code></pre>
+##     51     24</code></pre>
 <div class="sourceCode" id="cb437"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb437-1" title="1"><span class="kw">varImp</span>(<span class="dt">object =</span> rfFit)</a></code></pre></div>
 <pre><code>## rf variable importance
 ## 
 ##      Overall
 ## TCP  100.000
-## EF    25.064
-## ACP   18.522
-## HTN   18.416
-## RWMA  17.484
-## DM    13.391
-## Age    6.922
+## RWMA  18.554
+## HTN   10.279
+## EF     9.450
+## ACP    8.997
+## Age    7.788
+## DM     3.911
 ## NCP    0.000</code></pre>
 <div class="sourceCode" id="cb439"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb439-1" title="1"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> rfFit), <span class="dt">main=</span><span class="st">&quot;Random Forest - Variable Importance&quot;</span>)</a></code></pre></div>
 <p><img src="CKME136OutputJuly30b_files/figure-html/unnamed-chunk-97-1.png" width="672" /></p>
@@ -2280,29 +2280,29 @@ summary {
 ## 
 ##           Reference
 ## Prediction Cad Normal
-##     Cad     47      2
-##     Normal   7     19
+##     Cad     47      4
+##     Normal   7     17
 ##                                           
-##                Accuracy : 0.88            
-##                  95% CI : (0.7844, 0.9436)
+##                Accuracy : 0.8533          
+##                  95% CI : (0.7527, 0.9244)
 ##     No Information Rate : 0.72            
-##     P-Value [Acc &gt; NIR] : 0.0007567       
+##     P-Value [Acc &gt; NIR] : 0.005071        
 ##                                           
-##                   Kappa : 0.7226          
+##                   Kappa : 0.6515          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.1824224       
+##  Mcnemar&#39;s Test P-Value : 0.546494        
 ##                                           
 ##             Sensitivity : 0.8704          
-##             Specificity : 0.9048          
-##          Pos Pred Value : 0.9592          
-##          Neg Pred Value : 0.7308          
-##               Precision : 0.9592          
+##             Specificity : 0.8095          
+##          Pos Pred Value : 0.9216          
+##          Neg Pred Value : 0.7083          
+##               Precision : 0.9216          
 ##                  Recall : 0.8704          
-##                      F1 : 0.9126          
+##                      F1 : 0.8952          
 ##              Prevalence : 0.7200          
 ##          Detection Rate : 0.6267          
-##    Detection Prevalence : 0.6533          
-##       Balanced Accuracy : 0.8876          
+##    Detection Prevalence : 0.6800          
+##       Balanced Accuracy : 0.8399          
 ##                                           
 ##        &#39;Positive&#39; Class : Cad             
 ## </code></pre>
@@ -2324,13 +2324,13 @@ summary {
 <a class="sourceLine" id="cb443-2" title="2"><span class="kw">colnames</span>(EvalRF1)[<span class="dv">1</span>] &lt;-<span class="st"> &quot;Metrics&quot;</span></a>
 <a class="sourceLine" id="cb443-3" title="3">EvalRF1</a></code></pre></div>
 <pre><code>##               Metrics
-## Accuracy    0.8800000
-## Kappa       0.7225647
+## Accuracy    0.8533333
+## Kappa       0.6514575
 ## Sensitivity 0.8703704
-## Specificity 0.9047619
-## Precision   0.9591837
+## Specificity 0.8095238
+## Precision   0.9215686
 ## Recall      0.8703704
-## F1          0.9126214</code></pre>
+## F1          0.8952381</code></pre>
 <div class="sourceCode" id="cb445"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb445-1" title="1"><span class="co"># Calculating Matthew&#39;s Correlation Coefficient:</span></a>
 <a class="sourceLine" id="cb445-2" title="2"></a>
 <a class="sourceLine" id="cb445-3" title="3">RF1.TP &lt;-<span class="st"> </span>RFcMatrix1<span class="op">$</span>table[<span class="dv">1</span>,<span class="dv">1</span>]</a>
@@ -2343,9 +2343,9 @@ summary {
 <a class="sourceLine" id="cb445-10" title="10"></a>
 <a class="sourceLine" id="cb445-11" title="11">RF1mcc_final &lt;-<span class="st"> </span>RF1mcc_num<span class="op">/</span><span class="kw">sqrt</span>(RF1mcc_den)</a>
 <a class="sourceLine" id="cb445-12" title="12">RF1mcc_final</a></code></pre></div>
-<pre><code>## [1] 0.7313035</code></pre>
+<pre><code>## [1] 0.6544209</code></pre>
 <div class="sourceCode" id="cb447"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb447-1" title="1"><span class="kw">toc</span>()</a></code></pre></div>
-<pre><code>## Random Forest Algorithm Timing: 5.52 sec elapsed</code></pre>
+<pre><code>## Random Forest Algorithm Timing: 5.62 sec elapsed</code></pre>
 </div>
 <div id="training-for-naive-bayes-note-using-down-for-subsampling-to-address-class-imbalance" class="section level3">
 <h3>Training for Naive Bayes (Note: Using “down” for subsampling to address class imbalance):</h3>
@@ -2360,14 +2360,14 @@ summary {
 <a class="sourceLine" id="cb449-9" title="9">                 </a>
 <a class="sourceLine" id="cb449-10" title="10">NBfit<span class="op">$</span>results</a></code></pre></div>
 <pre><code>##   usekernel fL adjust  Accuracy     Kappa       ROC      Sens      Spec
-## 1     FALSE  0      1 0.8489679 0.6600990 0.9307904 0.8490196 0.8460317
-## 2      TRUE  0      1 0.8460639 0.6529888 0.9320480 0.8470588 0.8420635
+## 1     FALSE  0      1 0.8409640 0.6366675 0.9198515 0.8497549 0.8222222
+## 2      TRUE  0      1 0.8484684 0.6519206 0.9221420 0.8561275 0.8325397
 ##         AUC Precision    Recall         F AccuracySD   KappaSD      ROCSD
-## 1 0.8939648 0.9349563 0.8490196 0.8855317 0.08033448 0.1626199 0.04150715
-## 2 0.8900604 0.9325825 0.8470588 0.8837334 0.08034443 0.1660812 0.04938335
-##      SensSD    SpecSD      AUCSD PrecisionSD  RecallSD        FSD
-## 1 0.1074816 0.1385127 0.03827237  0.05408203 0.1074816 0.06812330
-## 2 0.1034092 0.1405789 0.04252982  0.05474448 0.1034092 0.06689622</code></pre>
+## 1 0.8866666 0.9238249 0.8497549 0.8820015 0.07022706 0.1561499 0.06870770
+## 2 0.8878770 0.9286292 0.8561275 0.8881215 0.07562012 0.1745292 0.06222516
+##       SensSD    SpecSD      AUCSD PrecisionSD   RecallSD        FSD
+## 1 0.08705866 0.1432307 0.04545725  0.05814829 0.08705866 0.05486183
+## 2 0.08295751 0.1592268 0.04220411  0.06366851 0.08295751 0.05719891</code></pre>
 <div class="sourceCode" id="cb451"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb451-1" title="1"><span class="co">#plot(NBfit)</span></a>
 <a class="sourceLine" id="cb451-2" title="2"></a>
 <a class="sourceLine" id="cb451-3" title="3"><span class="kw">varImp</span>(<span class="dt">object =</span> NBfit)</a></code></pre></div>
@@ -2375,12 +2375,12 @@ summary {
 ## 
 ##      Importance
 ## TCP      100.00
-## ACP       74.07
-## EF        61.28
-## HTN       49.19
-## RWMA      45.47
-## DM        37.33
-## Age       19.53
+## ACP       76.58
+## EF        61.22
+## HTN       50.59
+## RWMA      44.79
+## Age       36.09
+## DM        33.19
 ## NCP        0.00</code></pre>
 <div class="sourceCode" id="cb453"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb453-1" title="1"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> NBfit),<span class="dt">main=</span><span class="st">&quot;Naive Bayes - Variable Importance&quot;</span>)</a></code></pre></div>
 <p><img src="CKME136OutputJuly30b_files/figure-html/unnamed-chunk-98-1.png" width="672" /></p>
@@ -2389,35 +2389,35 @@ summary {
 <a class="sourceLine" id="cb454-3" title="3"><span class="kw">table</span>(NBpredictions)</a></code></pre></div>
 <pre><code>## NBpredictions
 ##    Cad Normal 
-##     49     26</code></pre>
+##     48     27</code></pre>
 <div class="sourceCode" id="cb456"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb456-1" title="1"><span class="kw">confusionMatrix</span>(NBpredictions, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a></code></pre></div>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction Cad Normal
-##     Cad     47      2
-##     Normal   7     19
+##     Cad     47      1
+##     Normal   7     20
 ##                                           
-##                Accuracy : 0.88            
-##                  95% CI : (0.7844, 0.9436)
+##                Accuracy : 0.8933          
+##                  95% CI : (0.8006, 0.9528)
 ##     No Information Rate : 0.72            
-##     P-Value [Acc &gt; NIR] : 0.0007567       
+##     P-Value [Acc &gt; NIR] : 0.0002469       
 ##                                           
-##                   Kappa : 0.7226          
+##                   Kappa : 0.7567          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.1824224       
+##  Mcnemar&#39;s Test P-Value : 0.0770999       
 ##                                           
 ##             Sensitivity : 0.8704          
-##             Specificity : 0.9048          
-##          Pos Pred Value : 0.9592          
-##          Neg Pred Value : 0.7308          
-##               Precision : 0.9592          
+##             Specificity : 0.9524          
+##          Pos Pred Value : 0.9792          
+##          Neg Pred Value : 0.7407          
+##               Precision : 0.9792          
 ##                  Recall : 0.8704          
-##                      F1 : 0.9126          
+##                      F1 : 0.9216          
 ##              Prevalence : 0.7200          
 ##          Detection Rate : 0.6267          
-##    Detection Prevalence : 0.6533          
-##       Balanced Accuracy : 0.8876          
+##    Detection Prevalence : 0.6400          
+##       Balanced Accuracy : 0.9114          
 ##                                           
 ##        &#39;Positive&#39; Class : Cad             
 ## </code></pre>
@@ -2439,13 +2439,13 @@ summary {
 <a class="sourceLine" id="cb459-2" title="2"><span class="kw">colnames</span>(EvalNB1)[<span class="dv">1</span>] &lt;-<span class="st"> &quot;Metrics&quot;</span></a>
 <a class="sourceLine" id="cb459-3" title="3">EvalNB1</a></code></pre></div>
 <pre><code>##               Metrics
-## Accuracy    0.8800000
-## Kappa       0.7225647
+## Accuracy    0.8933333
+## Kappa       0.7566910
 ## Sensitivity 0.8703704
-## Specificity 0.9047619
-## Precision   0.9591837
+## Specificity 0.9523810
+## Precision   0.9791667
 ## Recall      0.8703704
-## F1          0.9126214</code></pre>
+## F1          0.9215686</code></pre>
 <div class="sourceCode" id="cb461"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb461-1" title="1"><span class="co"># Calculating Matthew&#39;s Correlation Coefficient:</span></a>
 <a class="sourceLine" id="cb461-2" title="2"></a>
 <a class="sourceLine" id="cb461-3" title="3">NB1.TP &lt;-<span class="st"> </span>NBcMatrix1<span class="op">$</span>table[<span class="dv">1</span>,<span class="dv">1</span>]</a>
@@ -2458,9 +2458,9 @@ summary {
 <a class="sourceLine" id="cb461-10" title="10"></a>
 <a class="sourceLine" id="cb461-11" title="11">NB1mcc_final &lt;-<span class="st"> </span>NB1mcc_num<span class="op">/</span><span class="kw">sqrt</span>(NB1mcc_den)</a>
 <a class="sourceLine" id="cb461-12" title="12">NB1mcc_final</a></code></pre></div>
-<pre><code>## [1] 0.7313035</code></pre>
+<pre><code>## [1] 0.7696134</code></pre>
 <div class="sourceCode" id="cb463"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb463-1" title="1"><span class="kw">toc</span>()</a></code></pre></div>
-<pre><code>## Naive Bayes Algorithm Timing: 2.63 sec elapsed</code></pre>
+<pre><code>## Naive Bayes Algorithm Timing: 2.77 sec elapsed</code></pre>
 </div>
 <div id="training-for-logistic-regression-note-using-smote-subsampling-to-address-class-imbalance" class="section level3">
 <h3>Training for Logistic Regression (Note: Using ‘smote’ subsampling to address class imbalance):</h3>
@@ -2470,24 +2470,24 @@ summary {
 <a class="sourceLine" id="cb465-4" title="4"></a>
 <a class="sourceLine" id="cb465-5" title="5">LRFit &lt;-<span class="st"> </span><span class="kw">train</span>(AllvFtrain[,predictors], AllvFtrain[,outcomeName], <span class="dt">method =</span> <span class="st">&#39;glm&#39;</span>, <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>, <span class="dt">trControl =</span> LRControl)</a>
 <a class="sourceLine" id="cb465-6" title="6">LRFit<span class="op">$</span>results</a></code></pre></div>
-<pre><code>##   parameter  Accuracy     Kappa       ROC      Sens      Spec       AUC
-## 1      none 0.8610343 0.6397232 0.9287261 0.9341912 0.6801587 0.8960637
+<pre><code>##   parameter  Accuracy     Kappa       ROC      Sens Spec       AUC
+## 1      none 0.8459816 0.6028281 0.9211689 0.9256127 0.65 0.8800816
 ##   Precision    Recall         F AccuracySD   KappaSD      ROCSD     SensSD
-## 1 0.8810648 0.9341912 0.9056892 0.07215796 0.1929768 0.05372585 0.05321891
-##      SpecSD     AUCSD PrecisionSD   RecallSD        FSD
-## 1 0.1815093 0.0298172  0.06282234 0.05321891 0.04861031</code></pre>
+## 1  0.870367 0.9256127 0.8949447 0.06239763 0.1686914 0.04883568 0.06769226
+##      SpecSD     AUCSD PrecisionSD   RecallSD      FSD
+## 1 0.1689557 0.0580679  0.05509047 0.06769226 0.042172</code></pre>
 <div class="sourceCode" id="cb467"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb467-1" title="1"><span class="kw">varImp</span>(<span class="dt">object =</span> LRFit)</a></code></pre></div>
 <pre><code>## glm variable importance
 ## 
-##        Overall
-## EF.L   100.000
-## TCP1    91.160
-## HTN1    85.371
-## RWMA.L  72.058
-## DM1     66.853
-## Age.L   55.332
-## NCPY     5.995
-## ACPY     0.000</code></pre>
+##         Overall
+## TCP1   100.0000
+## Age.L   88.0537
+## HTN1    80.8146
+## RWMA.L  67.2687
+## EF.L    58.0701
+## DM1     56.7755
+## ACPY     0.5168
+## NCPY     0.0000</code></pre>
 <div class="sourceCode" id="cb469"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb469-1" title="1"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> LRFit), <span class="dt">main=</span><span class="st">&quot;Logistic Regression - Variable Importance&quot;</span>)</a></code></pre></div>
 <p><img src="CKME136OutputJuly30b_files/figure-html/unnamed-chunk-99-1.png" width="672" /></p>
 <div class="sourceCode" id="cb470"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb470-1" title="1"><span class="co"># Logistic Regression Predictions:</span></a>
@@ -2496,35 +2496,35 @@ summary {
 <a class="sourceLine" id="cb470-4" title="4"><span class="kw">table</span>(LRpredictions)</a></code></pre></div>
 <pre><code>## LRpredictions
 ##    Cad Normal 
-##     58     17</code></pre>
+##     59     16</code></pre>
 <div class="sourceCode" id="cb472"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb472-1" title="1"><span class="kw">confusionMatrix</span>(LRpredictions, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a></code></pre></div>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction Cad Normal
-##     Cad     51      7
-##     Normal   3     14
+##     Cad     51      8
+##     Normal   3     13
 ##                                           
-##                Accuracy : 0.8667          
-##                  95% CI : (0.7684, 0.9342)
+##                Accuracy : 0.8533          
+##                  95% CI : (0.7527, 0.9244)
 ##     No Information Rate : 0.72            
-##     P-Value [Acc &gt; NIR] : 0.002065        
+##     P-Value [Acc &gt; NIR] : 0.005071        
 ##                                           
-##                   Kappa : 0.6489          
+##                   Kappa : 0.6077          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.342782        
+##  Mcnemar&#39;s Test P-Value : 0.227800        
 ##                                           
 ##             Sensitivity : 0.9444          
-##             Specificity : 0.6667          
-##          Pos Pred Value : 0.8793          
-##          Neg Pred Value : 0.8235          
-##               Precision : 0.8793          
+##             Specificity : 0.6190          
+##          Pos Pred Value : 0.8644          
+##          Neg Pred Value : 0.8125          
+##               Precision : 0.8644          
 ##                  Recall : 0.9444          
-##                      F1 : 0.9107          
+##                      F1 : 0.9027          
 ##              Prevalence : 0.7200          
 ##          Detection Rate : 0.6800          
-##    Detection Prevalence : 0.7733          
-##       Balanced Accuracy : 0.8056          
+##    Detection Prevalence : 0.7867          
+##       Balanced Accuracy : 0.7817          
 ##                                           
 ##        &#39;Positive&#39; Class : Cad             
 ## </code></pre>
@@ -2546,13 +2546,13 @@ summary {
 <a class="sourceLine" id="cb475-2" title="2"><span class="kw">colnames</span>(EvalLR1)[<span class="dv">1</span>] &lt;-<span class="st"> &quot;Metrics&quot;</span></a>
 <a class="sourceLine" id="cb475-3" title="3">EvalLR1</a></code></pre></div>
 <pre><code>##               Metrics
-## Accuracy    0.8666667
-## Kappa       0.6488764
+## Accuracy    0.8533333
+## Kappa       0.6077033
 ## Sensitivity 0.9444444
-## Specificity 0.6666667
-## Precision   0.8793103
+## Specificity 0.6190476
+## Precision   0.8644068
 ## Recall      0.9444444
-## F1          0.9107143</code></pre>
+## F1          0.9026549</code></pre>
 <div class="sourceCode" id="cb477"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb477-1" title="1"><span class="co"># Calculating Matthew&#39;s Correlation Coefficient:</span></a>
 <a class="sourceLine" id="cb477-2" title="2"></a>
 <a class="sourceLine" id="cb477-3" title="3">LR1.TP &lt;-<span class="st"> </span>LRcMatrix1<span class="op">$</span>table[<span class="dv">1</span>,<span class="dv">1</span>]</a>
@@ -2565,9 +2565,9 @@ summary {
 <a class="sourceLine" id="cb477-10" title="10"></a>
 <a class="sourceLine" id="cb477-11" title="11">LR1mcc_final &lt;-<span class="st"> </span>LR1mcc_num<span class="op">/</span><span class="kw">sqrt</span>(LR1mcc_den)</a>
 <a class="sourceLine" id="cb477-12" title="12">LR1mcc_final</a></code></pre></div>
-<pre><code>## [1] 0.6553726</code></pre>
+<pre><code>## [1] 0.6176015</code></pre>
 <div class="sourceCode" id="cb479"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb479-1" title="1"><span class="kw">toc</span>()</a></code></pre></div>
-<pre><code>## Logistic Regression Algorithm Timing: 2.29 sec elapsed</code></pre>
+<pre><code>## Logistic Regression Algorithm Timing: 2.39 sec elapsed</code></pre>
 <div id="training-and-testing-for-all-three-algorithms-combined-different-parameters.-using-down-subsampling-to-address-class-imbalance" class="section level4">
 <h4>Training and testing for all Three Algorithms Combined (different parameters). Using ‘down’ subsampling to address class imbalance:</h4>
 <div class="sourceCode" id="cb481"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb481-1" title="1"><span class="kw">library</span>(tictoc)</a>
@@ -2604,14 +2604,14 @@ summary {
 <pre><code>## rf variable importance
 ## 
 ##      Overall
-## TCP  100.000
-## ACP   48.249
-## EF    39.427
-## RWMA  34.486
-## HTN   27.876
-## DM    20.694
-## Age    3.525
-## NCP    0.000</code></pre>
+## TCP   100.00
+## RWMA   41.62
+## HTN    27.82
+## ACP    24.62
+## EF     24.51
+## DM     23.25
+## Age    21.16
+## NCP     0.00</code></pre>
 <div class="sourceCode" id="cb484"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb484-1" title="1"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> RFmodel), <span class="dt">main=</span><span class="st">&quot;Random Forest - Variable Importance&quot;</span>)</a></code></pre></div>
 <p><img src="CKME136OutputJuly30b_files/figure-html/unnamed-chunk-101-1.png" width="672" /></p>
 <div class="sourceCode" id="cb485"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb485-1" title="1"><span class="kw">confusionMatrix</span>(RF_pred, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a></code></pre></div>
@@ -2619,29 +2619,29 @@ summary {
 ## 
 ##           Reference
 ## Prediction Cad Normal
-##     Cad     44      4
-##     Normal  10     17
+##     Cad     50      1
+##     Normal   4     20
 ##                                          
-##                Accuracy : 0.8133         
-##                  95% CI : (0.7067, 0.894)
+##                Accuracy : 0.9333         
+##                  95% CI : (0.8512, 0.978)
 ##     No Information Rate : 0.72           
-##     P-Value [Acc &gt; NIR] : 0.0433         
+##     P-Value [Acc &gt; NIR] : 3.705e-06      
 ##                                          
-##                   Kappa : 0.5742         
+##                   Kappa : 0.8416         
 ##                                          
-##  Mcnemar&#39;s Test P-Value : 0.1814         
+##  Mcnemar&#39;s Test P-Value : 0.3711         
 ##                                          
-##             Sensitivity : 0.8148         
-##             Specificity : 0.8095         
-##          Pos Pred Value : 0.9167         
-##          Neg Pred Value : 0.6296         
-##               Precision : 0.9167         
-##                  Recall : 0.8148         
-##                      F1 : 0.8627         
+##             Sensitivity : 0.9259         
+##             Specificity : 0.9524         
+##          Pos Pred Value : 0.9804         
+##          Neg Pred Value : 0.8333         
+##               Precision : 0.9804         
+##                  Recall : 0.9259         
+##                      F1 : 0.9524         
 ##              Prevalence : 0.7200         
-##          Detection Rate : 0.5867         
-##    Detection Prevalence : 0.6400         
-##       Balanced Accuracy : 0.8122         
+##          Detection Rate : 0.6667         
+##    Detection Prevalence : 0.6800         
+##       Balanced Accuracy : 0.9392         
 ##                                          
 ##        &#39;Positive&#39; Class : Cad            
 ## </code></pre>
@@ -2663,13 +2663,13 @@ summary {
 <a class="sourceLine" id="cb488-2" title="2"><span class="kw">colnames</span>(EvalRF2)[<span class="dv">1</span>] &lt;-<span class="st"> &quot;Metrics&quot;</span></a>
 <a class="sourceLine" id="cb488-3" title="3">EvalRF2</a></code></pre></div>
 <pre><code>##               Metrics
-## Accuracy    0.8133333
-## Kappa       0.5742092
-## Sensitivity 0.8148148
-## Specificity 0.8095238
-## Precision   0.9166667
-## Recall      0.8148148
-## F1          0.8627451</code></pre>
+## Accuracy    0.9333333
+## Kappa       0.8415716
+## Sensitivity 0.9259259
+## Specificity 0.9523810
+## Precision   0.9803922
+## Recall      0.9259259
+## F1          0.9523810</code></pre>
 <div class="sourceCode" id="cb490"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb490-1" title="1"><span class="co"># Calculating Matthew&#39;s Correlation Coefficient:</span></a>
 <a class="sourceLine" id="cb490-2" title="2"></a>
 <a class="sourceLine" id="cb490-3" title="3">RF2.TP &lt;-<span class="st"> </span>RFcMatrix2<span class="op">$</span>table[<span class="dv">1</span>,<span class="dv">1</span>]</a>
@@ -2682,7 +2682,7 @@ summary {
 <a class="sourceLine" id="cb490-10" title="10"></a>
 <a class="sourceLine" id="cb490-11" title="11">RF2mcc_final &lt;-<span class="st"> </span>RF2mcc_num<span class="op">/</span><span class="kw">sqrt</span>(RF2mcc_den)</a>
 <a class="sourceLine" id="cb490-12" title="12">RF2mcc_final</a></code></pre></div>
-<pre><code>## [1] 0.5840153</code></pre>
+<pre><code>## [1] 0.8453997</code></pre>
 </div>
 <div id="variable-importance-and-confusion-matrix-for-the-naive-bayes-algorithm" class="section level4">
 <h4>Variable importance and confusion matrix for the Naive Bayes algorithm:</h4>
@@ -2691,12 +2691,12 @@ summary {
 ## 
 ##      Importance
 ## TCP      100.00
-## ACP       74.07
-## EF        61.28
-## HTN       49.19
-## RWMA      45.47
-## DM        37.33
-## Age       19.53
+## ACP       76.58
+## EF        61.22
+## HTN       50.59
+## RWMA      44.79
+## Age       36.09
+## DM        33.19
 ## NCP        0.00</code></pre>
 <div class="sourceCode" id="cb494"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb494-1" title="1"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> NBmodel), <span class="dt">main=</span><span class="st">&quot;Naive Bayes - Variable Importance&quot;</span>)</a></code></pre></div>
 <p><img src="CKME136OutputJuly30b_files/figure-html/unnamed-chunk-102-1.png" width="672" /></p>
@@ -2705,29 +2705,29 @@ summary {
 ## 
 ##           Reference
 ## Prediction Cad Normal
-##     Cad     48      1
-##     Normal   6     20
+##     Cad     47      1
+##     Normal   7     20
 ##                                           
-##                Accuracy : 0.9067          
-##                  95% CI : (0.8171, 0.9616)
+##                Accuracy : 0.8933          
+##                  95% CI : (0.8006, 0.9528)
 ##     No Information Rate : 0.72            
-##     P-Value [Acc &gt; NIR] : 7.087e-05       
+##     P-Value [Acc &gt; NIR] : 0.0002469       
 ##                                           
-##                   Kappa : 0.7842          
+##                   Kappa : 0.7567          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.1306          
+##  Mcnemar&#39;s Test P-Value : 0.0770999       
 ##                                           
-##             Sensitivity : 0.8889          
+##             Sensitivity : 0.8704          
 ##             Specificity : 0.9524          
-##          Pos Pred Value : 0.9796          
-##          Neg Pred Value : 0.7692          
-##               Precision : 0.9796          
-##                  Recall : 0.8889          
-##                      F1 : 0.9320          
+##          Pos Pred Value : 0.9792          
+##          Neg Pred Value : 0.7407          
+##               Precision : 0.9792          
+##                  Recall : 0.8704          
+##                      F1 : 0.9216          
 ##              Prevalence : 0.7200          
-##          Detection Rate : 0.6400          
-##    Detection Prevalence : 0.6533          
-##       Balanced Accuracy : 0.9206          
+##          Detection Rate : 0.6267          
+##    Detection Prevalence : 0.6400          
+##       Balanced Accuracy : 0.9114          
 ##                                           
 ##        &#39;Positive&#39; Class : Cad             
 ## </code></pre>
@@ -2749,13 +2749,13 @@ summary {
 <a class="sourceLine" id="cb498-2" title="2"><span class="kw">colnames</span>(EvalNB2)[<span class="dv">1</span>] &lt;-<span class="st"> &quot;Metrics&quot;</span></a>
 <a class="sourceLine" id="cb498-3" title="3">EvalNB2</a></code></pre></div>
 <pre><code>##               Metrics
-## Accuracy    0.9066667
-## Kappa       0.7842170
-## Sensitivity 0.8888889
+## Accuracy    0.8933333
+## Kappa       0.7566910
+## Sensitivity 0.8703704
 ## Specificity 0.9523810
-## Precision   0.9795918
-## Recall      0.8888889
-## F1          0.9320388</code></pre>
+## Precision   0.9791667
+## Recall      0.8703704
+## F1          0.9215686</code></pre>
 <div class="sourceCode" id="cb500"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb500-1" title="1"><span class="co"># Calculating Matthew&#39;s Correlation Coefficient:</span></a>
 <a class="sourceLine" id="cb500-2" title="2"></a>
 <a class="sourceLine" id="cb500-3" title="3">NB2.TP &lt;-<span class="st"> </span>NBcMatrix2<span class="op">$</span>table[<span class="dv">1</span>,<span class="dv">1</span>]</a>
@@ -2768,7 +2768,7 @@ summary {
 <a class="sourceLine" id="cb500-10" title="10"></a>
 <a class="sourceLine" id="cb500-11" title="11">NB2mcc_final &lt;-<span class="st"> </span>NB2mcc_num<span class="op">/</span><span class="kw">sqrt</span>(NB2mcc_den)</a>
 <a class="sourceLine" id="cb500-12" title="12">NB2mcc_final</a></code></pre></div>
-<pre><code>## [1] 0.7937014</code></pre>
+<pre><code>## [1] 0.7696134</code></pre>
 </div>
 <div id="variable-importance-and-confusion-matrix-for-the-logistic-regression-algorithm" class="section level4">
 <h4>Variable importance and confusion matrix for the Logistic Regression algorithm:</h4>
@@ -2776,14 +2776,14 @@ summary {
 <pre><code>## glm variable importance
 ## 
 ##        Overall
-## DM1     100.00
-## RWMA.L   91.04
-## TCP1     86.23
-## HTN1     80.69
-## EF.L     45.65
-## NCPY     24.08
-## ACPY     23.60
-## Age.L     0.00</code></pre>
+## TCP1   100.000
+## RWMA.L  90.148
+## DM1     86.264
+## EF.L    71.017
+## HTN1    63.133
+## Age.L   42.124
+## ACPY     5.367
+## NCPY     0.000</code></pre>
 <div class="sourceCode" id="cb504"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb504-1" title="1"><span class="kw">plot</span>(<span class="kw">varImp</span>(<span class="dt">object =</span> LRmodel), <span class="dt">main=</span><span class="st">&quot;Logistic Regression - Variable Importance&quot;</span>)</a></code></pre></div>
 <p><img src="CKME136OutputJuly30b_files/figure-html/unnamed-chunk-103-1.png" width="672" /></p>
 <div class="sourceCode" id="cb505"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb505-1" title="1"><span class="kw">confusionMatrix</span>(LR_pred, AllvFtest[,outcomeName], <span class="dt">mode =</span> <span class="st">&#39;everything&#39;</span>)</a></code></pre></div>
@@ -2791,29 +2791,29 @@ summary {
 ## 
 ##           Reference
 ## Prediction Cad Normal
-##     Cad     46      3
-##     Normal   8     18
+##     Cad     48      3
+##     Normal   6     18
 ##                                           
-##                Accuracy : 0.8533          
-##                  95% CI : (0.7527, 0.9244)
+##                Accuracy : 0.88            
+##                  95% CI : (0.7844, 0.9436)
 ##     No Information Rate : 0.72            
-##     P-Value [Acc &gt; NIR] : 0.005071        
+##     P-Value [Acc &gt; NIR] : 0.0007567       
 ##                                           
-##                   Kappa : 0.6609          
+##                   Kappa : 0.7148          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.227800        
+##  Mcnemar&#39;s Test P-Value : 0.5049851       
 ##                                           
-##             Sensitivity : 0.8519          
+##             Sensitivity : 0.8889          
 ##             Specificity : 0.8571          
-##          Pos Pred Value : 0.9388          
-##          Neg Pred Value : 0.6923          
-##               Precision : 0.9388          
-##                  Recall : 0.8519          
-##                      F1 : 0.8932          
+##          Pos Pred Value : 0.9412          
+##          Neg Pred Value : 0.7500          
+##               Precision : 0.9412          
+##                  Recall : 0.8889          
+##                      F1 : 0.9143          
 ##              Prevalence : 0.7200          
-##          Detection Rate : 0.6133          
-##    Detection Prevalence : 0.6533          
-##       Balanced Accuracy : 0.8545          
+##          Detection Rate : 0.6400          
+##    Detection Prevalence : 0.6800          
+##       Balanced Accuracy : 0.8730          
 ##                                           
 ##        &#39;Positive&#39; Class : Cad             
 ## </code></pre>
@@ -2835,13 +2835,13 @@ summary {
 <a class="sourceLine" id="cb508-2" title="2"><span class="kw">colnames</span>(EvalLR2)[<span class="dv">1</span>] &lt;-<span class="st"> &quot;Metrics&quot;</span></a>
 <a class="sourceLine" id="cb508-3" title="3">EvalLR2</a></code></pre></div>
 <pre><code>##               Metrics
-## Accuracy    0.8533333
-## Kappa       0.6609125
-## Sensitivity 0.8518519
+## Accuracy    0.8800000
+## Kappa       0.7148289
+## Sensitivity 0.8888889
 ## Specificity 0.8571429
-## Precision   0.9387755
-## Recall      0.8518519
-## F1          0.8932039</code></pre>
+## Precision   0.9411765
+## Recall      0.8888889
+## F1          0.9142857</code></pre>
 <div class="sourceCode" id="cb510"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb510-1" title="1"><span class="co"># Calculating Matthew&#39;s Correlation Coefficient:</span></a>
 <a class="sourceLine" id="cb510-2" title="2"></a>
 <a class="sourceLine" id="cb510-3" title="3">LR2.TP &lt;-<span class="st"> </span>LRcMatrix2<span class="op">$</span>table[<span class="dv">1</span>,<span class="dv">1</span>]</a>
@@ -2854,7 +2854,7 @@ summary {
 <a class="sourceLine" id="cb510-10" title="10"></a>
 <a class="sourceLine" id="cb510-11" title="11">LR2mcc_final &lt;-<span class="st"> </span>LR2mcc_num<span class="op">/</span><span class="kw">sqrt</span>(LR2mcc_den)</a>
 <a class="sourceLine" id="cb510-12" title="12">LR2mcc_final</a></code></pre></div>
-<pre><code>## [1] 0.6689056</code></pre>
+<pre><code>## [1] 0.7180805</code></pre>
 </div>
 <div id="ensemble-evaluation" class="section level4">
 <h4>Ensemble evaluation:</h4>
@@ -2875,15 +2875,15 @@ summary {
 <a class="sourceLine" id="cb513-3" title="3">logiTrain<span class="op">$</span>CAD &lt;-<span class="st"> </span><span class="kw">relevel</span>(logiTrain<span class="op">$</span>CAD, <span class="dt">ref =</span> <span class="st">&quot;Normal&quot;</span>)</a>
 <a class="sourceLine" id="cb513-4" title="4"><span class="kw">str</span>(logiTrain)</a></code></pre></div>
 <pre><code>## &#39;data.frame&#39;:    228 obs. of  9 variables:
-##  $ TCP : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 2 2 1 1 2 2 1 2 1 ...
-##  $ RWMA: Ord.factor w/ 2 levels &quot;Med&quot;&lt;&quot;High&quot;: 1 2 2 1 1 2 2 1 2 2 ...
-##  $ NCP : Factor w/ 2 levels &quot;N&quot;,&quot;Y&quot;: 1 1 1 2 1 1 1 2 1 1 ...
-##  $ ACP : Factor w/ 2 levels &quot;N&quot;,&quot;Y&quot;: 1 1 1 1 1 1 1 1 1 2 ...
-##  $ EF  : Ord.factor w/ 2 levels &quot;Low&quot;&lt;&quot;Med&quot;: 1 1 1 2 1 1 1 1 1 1 ...
-##  $ Age : Ord.factor w/ 2 levels &quot;Med&quot;&lt;&quot;High&quot;: 2 2 2 2 1 2 2 2 2 2 ...
-##  $ HTN : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 2 1 2 2 1 1 1 2 2 ...
-##  $ DM  : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 2 1 1 2 ...
-##  $ CAD : Factor w/ 2 levels &quot;Normal&quot;,&quot;Cad&quot;: 2 2 2 1 1 2 2 1 2 2 ...</code></pre>
+##  $ TCP : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 2 1 2 2 2 1 1 2 1 ...
+##  $ RWMA: Ord.factor w/ 2 levels &quot;Med&quot;&lt;&quot;High&quot;: 1 2 1 1 2 1 2 1 1 1 ...
+##  $ NCP : Factor w/ 2 levels &quot;N&quot;,&quot;Y&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ ACP : Factor w/ 2 levels &quot;N&quot;,&quot;Y&quot;: 1 1 1 1 1 1 2 2 1 1 ...
+##  $ EF  : Ord.factor w/ 2 levels &quot;Low&quot;&lt;&quot;Med&quot;: 1 1 1 1 1 1 2 2 1 1 ...
+##  $ Age : Ord.factor w/ 2 levels &quot;Med&quot;&lt;&quot;High&quot;: 2 2 1 2 2 2 2 2 2 1 ...
+##  $ HTN : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 2 2 1 1 2 2 2 1 1 ...
+##  $ DM  : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 2 1 2 2 2 1 ...
+##  $ CAD : Factor w/ 2 levels &quot;Normal&quot;,&quot;Cad&quot;: 2 2 1 2 2 2 2 2 2 1 ...</code></pre>
 <div class="sourceCode" id="cb515"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb515-1" title="1">LRlogit &lt;-<span class="st"> </span><span class="kw">glm</span>(CAD<span class="op">~</span>.,logiTrain, <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</a>
 <a class="sourceLine" id="cb515-2" title="2"><span class="kw">summary</span>(LRlogit)</a></code></pre></div>
 <pre><code>## 
@@ -2892,27 +2892,27 @@ summary {
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.3309  -0.3360   0.1311   0.3298   2.4094  
+## -2.7605  -0.3679   0.1379   0.4058   2.1517  
 ## 
 ## Coefficients:
 ##             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -1.26230    0.71753  -1.759  0.07854 .  
-## TCP1         3.35196    0.78996   4.243 2.20e-05 ***
-## RWMA.L       1.48753    0.53336   2.789  0.00529 ** 
-## NCPY        -0.79792    0.95679  -0.834  0.40431    
-## ACPY         0.03622    0.66111   0.055  0.95630    
-## EF.L        -1.54041    0.37216  -4.139 3.49e-05 ***
-## Age.L        0.73690    0.37902   1.944  0.05187 .  
-## HTN1         1.57678    0.48389   3.259  0.00112 ** 
-## DM1          2.02111    0.61889   3.266  0.00109 ** 
+## (Intercept) -0.97739    0.70571  -1.385 0.166058    
+## TCP1         3.12150    0.73133   4.268 1.97e-05 ***
+## RWMA.L       1.59908    0.55622   2.875 0.004041 ** 
+## NCPY        -0.39191    1.02599  -0.382 0.702477    
+## ACPY         0.07263    0.64405   0.113 0.910211    
+## EF.L        -1.14380    0.33156  -3.450 0.000561 ***
+## Age.L        0.89566    0.37013   2.420 0.015526 *  
+## HTN1         1.33229    0.45330   2.939 0.003292 ** 
+## DM1          1.65896    0.58440   2.839 0.004529 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 274.37  on 227  degrees of freedom
-## Residual deviance: 122.85  on 219  degrees of freedom
-## AIC: 140.85
+## Residual deviance: 132.84  on 219  degrees of freedom
+## AIC: 150.84
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
 </div>
@@ -2920,9 +2920,9 @@ summary {
 <h4>Logistic regression coefficients with exponentiated coefficients:</h4>
 <div class="sourceCode" id="cb517"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb517-1" title="1"><span class="kw">exp</span>(<span class="kw">coef</span>(LRlogit))</a></code></pre></div>
 <pre><code>## (Intercept)        TCP1      RWMA.L        NCPY        ACPY        EF.L 
-##   0.2830021  28.5586189   4.4261686   0.4502646   1.0368875   0.2142924 
+##   0.3762925  22.6804212   4.9484987   0.6757666   1.0753329   0.3186072 
 ##       Age.L        HTN1         DM1 
-##   2.0894447   4.8393705   7.5466837</code></pre>
+##   2.4489500   3.7897118   5.2538681</code></pre>
 </div>
 <div id="converting-to-log-odds-into-percentages-to-assist-with-interpretation-of-impact-of-each-independent-variable-used-in-the-logistic-regression" class="section level4">
 <h4>Converting to log odds into percentages to assist with interpretation of impact of each independent variable used in the logistic regression:</h4>
@@ -2965,14 +2965,14 @@ summary {
 <a class="sourceLine" id="cb519-37" title="37">LRPredPerc &lt;-<span class="st"> </span><span class="kw">data.frame</span>(TCPpresent, RWMAhigh, NCPpresent, ACPpresent, EFnormal, AgeHigh, HTNpresent, DMpresent)</a>
 <a class="sourceLine" id="cb519-38" title="38"><span class="kw">t</span>(LRPredPerc)</a></code></pre></div>
 <pre><code>##            (Intercept)
-## TCPpresent   0.8898939
+## TCPpresent   0.8951174
 ## RWMAhigh            NA
-## NCPpresent   0.1130237
-## ACPpresent   0.2268687
+## NCPpresent   0.2027336
+## ACPpresent   0.2880737
 ## EFnormal            NA
 ## AgeHigh             NA
-## HTNpresent   0.5779793
-## DMpresent    0.6810947</code></pre>
+## HTNpresent   0.5878057
+## DMpresent    0.6640904</code></pre>
 </div>
 <div id="running-avova-function-on-the-model-to-analyze-the-table-of-deviance.-shows-that-there-is-a-significant-gap-between-the-null-model-with-only-the-intercept-and-the-residual-deviance-after-adding-each-variable.-adding-tcp-and-rwma-significantly-reduces-the-residual-deviance.-the-large-p-value-for-acp-indicates-that-the-model-without-this-variable-explains-approximately-the-same-amount-of-variation---that-is-it-has-little-impact." class="section level4">
 <h4>Running avova() function on the model to analyze the table of deviance. Shows that there is a significant gap between the null model (with only the intercept) and the residual deviance (after adding each variable). Adding ‘TCP’ and ‘RWMA’ significantly reduces the residual deviance. (The large p-value for ‘ACP’ indicates that the model without this variable explains ‘approximately’ the same amount of variation - that is, it has little impact).</h4>
@@ -2988,14 +2988,14 @@ summary {
 ## 
 ##      Df Deviance Resid. Df Resid. Dev  Pr(&gt;Chi)    
 ## NULL                   227     274.37              
-## TCP   1   70.759       226     203.61 &lt; 2.2e-16 ***
-## RWMA  1   20.737       225     182.87 5.269e-06 ***
-## NCP   1    1.901       224     180.97 0.1679547    
-## ACP   1    2.514       223     178.46 0.1128542    
-## EF    1   20.992       222     157.46 4.611e-06 ***
-## Age   1    5.762       221     151.70 0.0163763 *  
-## HTN   1   15.808       220     135.89 7.009e-05 ***
-## DM    1   13.042       219     122.85 0.0003045 ***
+## TCP   1   72.253       226     202.11 &lt; 2.2e-16 ***
+## RWMA  1   21.738       225     180.38 3.126e-06 ***
+## NCP   1    0.847       224     179.53 0.3573886    
+## ACP   1    1.294       223     178.23 0.2552364    
+## EF    1   15.204       222     163.03 9.652e-05 ***
+## Age   1    8.220       221     154.81 0.0041439 ** 
+## HTN   1   12.585       220     142.22 0.0003889 ***
+## DM    1    9.388       219     132.84 0.0021837 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
@@ -3005,23 +3005,23 @@ summary {
 <a class="sourceLine" id="cb523-2" title="2"></a>
 <a class="sourceLine" id="cb523-3" title="3"><span class="kw">pR2</span>(LRlogit)</a></code></pre></div>
 <pre><code>##          llh      llhNull           G2     McFadden         r2ML 
-##  -61.4249755 -137.1829841  151.5160172    0.5522406    0.4854919 
+##  -66.4184680 -137.1829841  141.5290322    0.5158403    0.4624542 
 ##         r2CU 
-##    0.6937422</code></pre>
+##    0.6608226</code></pre>
 <div class="sourceCode" id="cb525"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb525-1" title="1"><span class="kw">plot</span>(<span class="kw">residuals</span>(LRlogit) <span class="op">~</span><span class="st"> </span><span class="kw">fitted</span>(LRlogit))</a></code></pre></div>
 <p><img src="CKME136OutputJuly30b_files/figure-html/unnamed-chunk-109-1.png" width="672" /></p>
 <div class="sourceCode" id="cb526"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb526-1" title="1"><span class="kw">coef</span>(LRlogit)</a></code></pre></div>
 <pre><code>## (Intercept)        TCP1      RWMA.L        NCPY        ACPY        EF.L 
-## -1.26230110  3.35195878  1.48753433 -0.79791991  0.03622342 -1.54041384 
+## -0.97738839  3.12150205  1.59908425 -0.39190748  0.07263025 -1.14379641 
 ##       Age.L        HTN1         DM1 
-##  0.73689832  1.57678465  2.02110822</code></pre>
+##  0.89565935  1.33228997  1.65896459</code></pre>
 <div class="sourceCode" id="cb528"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb528-1" title="1">LRPred &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">predict</span>(LRlogit, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>))</a>
 <a class="sourceLine" id="cb528-2" title="2"><span class="kw">names</span>(LRPred)[<span class="dv">1</span>]&lt;-<span class="st">&quot;Predict&quot;</span></a>
 <a class="sourceLine" id="cb528-3" title="3"></a>
 <a class="sourceLine" id="cb528-4" title="4">N &lt;-<span class="st"> </span><span class="kw">sum</span>(LRPred<span class="op">$</span>Predict <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.50</span>)</a>
 <a class="sourceLine" id="cb528-5" title="5">C &lt;-<span class="st"> </span><span class="kw">sum</span>(LRPred<span class="op">$</span>Predict <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.50</span>)</a>
 <a class="sourceLine" id="cb528-6" title="6">(N<span class="op">/</span>C)<span class="op">*</span><span class="dv">100</span></a></code></pre></div>
-<pre><code>## [1] 37.3494</code></pre>
+<pre><code>## [1] 36.52695</code></pre>
 </div>
 <div id="explanation-of-the-order-of-factor-variables-for-the-logistic-regression-output-in-r-r-will-use-the-alphabetical-order-of-the-variable-results---and-choose-the-letter-that-is-higher-in-the-alphabet-as-the-reference-variable-which-is-typically-coded-automatically-with-a-1-versus-0---or-a-2-vs-1-on-the-str-output.-as-such-normal-would-be-the-reference-variable-equal-to-2-on-the-str-output..-however-cad-should-be-the-reference-variable-and-so-i-have-re-leveled-that-attribute-so-that-cad-is-used-as-the-reference-and-as-such-is-showing-as-a-2-on-the-str-output." class="section level4">
 <h4>Explanation of the order of factor variables for the logistic regression output in R: R will use the alphabetical order of the variable results - and choose the letter that is higher in the alphabet as the reference variable (which is typically coded automatically with a ‘1’, versus ‘0’ - or a ‘2’ vs ‘1’ on the str() output). As such, ‘Normal’ would be the reference variable (equal to ‘2’ on the str() output.). However, ‘CAD’ should be the reference variable and so I have ‘re-leveled’ that attribute so that ‘CAD’ is used as the reference (and as such, is showing as a ‘2’ on the str() output).</h4>
