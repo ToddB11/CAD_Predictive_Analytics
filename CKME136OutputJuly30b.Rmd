@@ -1075,6 +1075,19 @@ EvalRF1 <- data.frame(c(RFcMatrix1$overall['Accuracy'], RFcMatrix1$overall['Kapp
 colnames(EvalRF1)[1] <- "Metrics"
 EvalRF1
 
+# Calculating Matthew's Correlation Coefficient:
+
+RF1.TP <- RFcMatrix1$table[1,1]
+RF1.TN <- RFcMatrix1$table[2,2]
+RF1.FP <- RFcMatrix1$table[1,2]
+RF1.FN <- RFcMatrix1$table[2,1]
+
+RF1mcc_num <- (RF1.TP*RF1.TN) - (RF1.FP*RF1.FN)
+RF1mcc_den <- as.double((RF1.TP+RF1.FP))*as.double((RF1.TP+RF1.FN))*as.double((RF1.TN+RF1.FP))*as.double((RF1.TN+RF1.FN))
+
+RF1mcc_final <- RF1mcc_num/sqrt(RF1mcc_den)
+RF1mcc_final
+
 toc()
 ```
 
@@ -1119,6 +1132,19 @@ EvalNB1 <- data.frame(c(NBcMatrix1$overall['Accuracy'], NBcMatrix1$overall['Kapp
 colnames(EvalNB1)[1] <- "Metrics"
 EvalNB1
 
+# Calculating Matthew's Correlation Coefficient:
+
+NB1.TP <- NBcMatrix1$table[1,1]
+NB1.TN <- NBcMatrix1$table[2,2]
+NB1.FP <- NBcMatrix1$table[1,2]
+NB1.FN <- NBcMatrix1$table[2,1]
+
+NB1mcc_num <- (NB1.TP*NB1.TN) - (NB1.FP*NB1.FN)
+NB1mcc_den <- as.double((NB1.TP+NB1.FP))*as.double((NB1.TP+NB1.FN))*as.double((NB1.TN+NB1.FP))*as.double((NB1.TN+NB1.FN))
+
+NB1mcc_final <- NB1mcc_num/sqrt(NB1mcc_den)
+NB1mcc_final
+
 toc()
 
 ```
@@ -1160,6 +1186,19 @@ LRcMatrix1$table %>%
 EvalLR1 <- data.frame(c(LRcMatrix1$overall['Accuracy'], LRcMatrix1$overall['Kappa'], LRcMatrix1$byClass['Sensitivity'], LRcMatrix1$byClass['Specificity'], LRcMatrix1$byClass['Precision'], LRcMatrix1$byClass['Recall'], LRcMatrix1$byClass['F1'])) 
 colnames(EvalLR1)[1] <- "Metrics"
 EvalLR1
+
+# Calculating Matthew's Correlation Coefficient:
+
+LR1.TP <- LRcMatrix1$table[1,1]
+LR1.TN <- LRcMatrix1$table[2,2]
+LR1.FP <- LRcMatrix1$table[1,2]
+LR1.FN <- LRcMatrix1$table[2,1]
+
+LR1mcc_num <- (LR1.TP*LR1.TN) - (LR1.FP*LR1.FN)
+LR1mcc_den <- as.double((LR1.TP+LR1.FP))*as.double((LR1.TP+LR1.FN))*as.double((LR1.TN+LR1.FP))*as.double((LR1.TN+LR1.FN))
+
+LR1mcc_final <- LR1mcc_num/sqrt(LR1mcc_den)
+LR1mcc_final
 
 toc()
 
@@ -1218,6 +1257,20 @@ RFcMatrix2$table %>%
 EvalRF2 <- data.frame(c(RFcMatrix2$overall['Accuracy'], RFcMatrix2$overall['Kappa'], RFcMatrix2$byClass['Sensitivity'], RFcMatrix2$byClass['Specificity'], RFcMatrix2$byClass['Precision'], RFcMatrix2$byClass['Recall'], RFcMatrix2$byClass['F1'])) 
 colnames(EvalRF2)[1] <- "Metrics"
 EvalRF2
+
+# Calculating Matthew's Correlation Coefficient:
+
+RF2.TP <- RFcMatrix2$table[1,1]
+RF2.TN <- RFcMatrix2$table[2,2]
+RF2.FP <- RFcMatrix2$table[1,2]
+RF2.FN <- RFcMatrix2$table[2,1]
+
+RF2mcc_num <- (RF2.TP*RF2.TN) - (RF2.FP*RF2.FN)
+RF2mcc_den <- as.double((RF2.TP+RF2.FP))*as.double((RF2.TP+RF2.FN))*as.double((RF2.TN+RF2.FP))*as.double((RF2.TN+RF2.FN))
+
+RF2mcc_final <- RF2mcc_num/sqrt(RF2mcc_den)
+RF2mcc_final
+
 ```
 #### Variable importance and confusion matrix for the Naive Bayes algorithm:
 ```{r}
@@ -1242,6 +1295,20 @@ NBcMatrix2$table %>%
 EvalNB2 <- data.frame(c(NBcMatrix2$overall['Accuracy'], NBcMatrix2$overall['Kappa'], NBcMatrix2$byClass['Sensitivity'], NBcMatrix2$byClass['Specificity'], NBcMatrix2$byClass['Precision'], NBcMatrix2$byClass['Recall'], NBcMatrix2$byClass['F1'])) 
 colnames(EvalNB2)[1] <- "Metrics"
 EvalNB2
+
+# Calculating Matthew's Correlation Coefficient:
+
+NB2.TP <- NBcMatrix2$table[1,1]
+NB2.TN <- NBcMatrix2$table[2,2]
+NB2.FP <- NBcMatrix2$table[1,2]
+NB2.FN <- NBcMatrix2$table[2,1]
+
+NB2mcc_num <- (NB2.TP*NB2.TN) - (NB2.FP*NB2.FN)
+NB2mcc_den <- as.double((NB2.TP+NB2.FP))*as.double((NB2.TP+NB2.FN))*as.double((NB2.TN+NB2.FP))*as.double((NB2.TN+NB2.FN))
+
+NB2mcc_final <- NB2mcc_num/sqrt(NB2mcc_den)
+NB2mcc_final
+
 ```
 
 #### Variable importance and confusion matrix for the Logistic Regression algorithm:
@@ -1267,6 +1334,20 @@ LRcMatrix2$table %>%
 EvalLR2 <- data.frame(c(LRcMatrix2$overall['Accuracy'], LRcMatrix2$overall['Kappa'], LRcMatrix2$byClass['Sensitivity'], LRcMatrix2$byClass['Specificity'], LRcMatrix2$byClass['Precision'], LRcMatrix2$byClass['Recall'], LRcMatrix2$byClass['F1'])) 
 colnames(EvalLR2)[1] <- "Metrics"
 EvalLR2
+
+# Calculating Matthew's Correlation Coefficient:
+
+LR2.TP <- LRcMatrix2$table[1,1]
+LR2.TN <- LRcMatrix2$table[2,2]
+LR2.FP <- LRcMatrix2$table[1,2]
+LR2.FN <- LRcMatrix2$table[2,1]
+
+LR2mcc_num <- (LR2.TP*LR2.TN) - (LR2.FP*LR2.FN)
+LR2mcc_den <- as.double((LR2.TP+LR2.FP))*as.double((LR2.TP+LR2.FN))*as.double((LR2.TN+LR2.FP))*as.double((LR2.TN+LR2.FN))
+
+LR2mcc_final <- LR2mcc_num/sqrt(LR2mcc_den)
+LR2mcc_final
+
 ```
 
 #### Ensemble evaluation:
