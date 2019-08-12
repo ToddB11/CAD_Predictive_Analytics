@@ -1,0 +1,8 @@
+# TB136capstone
+
+# This is a coronary artery disease predictive analytics project using the random forest, naive bayes and logistic regression algorithms.
+# All programming completed using R
+
+# There is also a pdf final report, and Powerpoint presentation of the results.
+
+# Questions can be directed to tbethell@gmail.com
